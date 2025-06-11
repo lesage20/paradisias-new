@@ -1,0 +1,3252 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Paradisias ",
+        "description": "Django template est un package qui vise a offrir les fonctionnailit\u00e9s de bases d'un site moderne via des api",
+        "contact": {
+            "email": "angezanou00@gmail.com"
+        },
+        "author": {
+            "name": "Lesage"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:9001",
+    "schemes": [
+        "http"
+    ],
+    "basePath": "/",
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "securityDefinitions": {
+        "Basic": {
+            "type": "basic"
+        }
+    },
+    "security": [
+        {
+            "Basic": []
+        }
+    ],
+    "paths": {
+        "/accounts/": {
+            "get": {
+                "operationId": "accounts_list",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "accounts"
+                ]
+            },
+            "parameters": []
+        },
+        "/accounts/clients/": {
+            "get": {
+                "operationId": "accounts_clients_list",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Profil"
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "accounts"
+                ]
+            },
+            "post": {
+                "operationId": "accounts_clients_create",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Profil"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Profil"
+                        }
+                    }
+                },
+                "tags": [
+                    "accounts"
+                ]
+            },
+            "parameters": []
+        },
+        "/accounts/clients/{id}": {
+            "get": {
+                "operationId": "accounts_clients_read",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Profil"
+                        }
+                    }
+                },
+                "tags": [
+                    "accounts"
+                ]
+            },
+            "put": {
+                "operationId": "accounts_clients_update",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Profil"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Profil"
+                        }
+                    }
+                },
+                "tags": [
+                    "accounts"
+                ]
+            },
+            "delete": {
+                "operationId": "accounts_clients_delete",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "accounts"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "A unique integer value identifying this Profils  utilisateur.",
+                    "required": true,
+                    "type": "integer"
+                }
+            ]
+        },
+        "/accounts/employes/": {
+            "get": {
+                "operationId": "accounts_employes_list",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Profil"
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "accounts"
+                ]
+            },
+            "post": {
+                "operationId": "accounts_employes_create",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Profil"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Profil"
+                        }
+                    }
+                },
+                "tags": [
+                    "accounts"
+                ]
+            },
+            "parameters": []
+        },
+        "/accounts/employes/{id}": {
+            "get": {
+                "operationId": "accounts_employes_read",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Profil"
+                        }
+                    }
+                },
+                "tags": [
+                    "accounts"
+                ]
+            },
+            "put": {
+                "operationId": "accounts_employes_update",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Profil"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Profil"
+                        }
+                    }
+                },
+                "tags": [
+                    "accounts"
+                ]
+            },
+            "delete": {
+                "operationId": "accounts_employes_delete",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "accounts"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "A unique integer value identifying this Profils  utilisateur.",
+                    "required": true,
+                    "type": "integer"
+                }
+            ]
+        },
+        "/accounts/groups/": {
+            "get": {
+                "operationId": "accounts_groups_list",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Group"
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "accounts"
+                ]
+            },
+            "post": {
+                "operationId": "accounts_groups_create",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Group"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Group"
+                        }
+                    }
+                },
+                "tags": [
+                    "accounts"
+                ]
+            },
+            "parameters": []
+        },
+        "/accounts/groups/{id}/": {
+            "get": {
+                "operationId": "accounts_groups_read",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Group"
+                        }
+                    }
+                },
+                "tags": [
+                    "accounts"
+                ]
+            },
+            "put": {
+                "operationId": "accounts_groups_update",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Group"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Group"
+                        }
+                    }
+                },
+                "tags": [
+                    "accounts"
+                ]
+            },
+            "patch": {
+                "operationId": "accounts_groups_partial_update",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Group"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Group"
+                        }
+                    }
+                },
+                "tags": [
+                    "accounts"
+                ]
+            },
+            "delete": {
+                "operationId": "accounts_groups_delete",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "accounts"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "A unique integer value identifying this groupe.",
+                    "required": true,
+                    "type": "integer"
+                }
+            ]
+        },
+        "/accounts/permissions/": {
+            "get": {
+                "operationId": "accounts_permissions_list",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Permission"
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "accounts"
+                ]
+            },
+            "post": {
+                "operationId": "accounts_permissions_create",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Permission"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Permission"
+                        }
+                    }
+                },
+                "tags": [
+                    "accounts"
+                ]
+            },
+            "parameters": []
+        },
+        "/accounts/permissions/{id}/": {
+            "get": {
+                "operationId": "accounts_permissions_read",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Permission"
+                        }
+                    }
+                },
+                "tags": [
+                    "accounts"
+                ]
+            },
+            "put": {
+                "operationId": "accounts_permissions_update",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Permission"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Permission"
+                        }
+                    }
+                },
+                "tags": [
+                    "accounts"
+                ]
+            },
+            "patch": {
+                "operationId": "accounts_permissions_partial_update",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Permission"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Permission"
+                        }
+                    }
+                },
+                "tags": [
+                    "accounts"
+                ]
+            },
+            "delete": {
+                "operationId": "accounts_permissions_delete",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "accounts"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "A unique integer value identifying this permission.",
+                    "required": true,
+                    "type": "integer"
+                }
+            ]
+        },
+        "/accounts/profiles/": {
+            "get": {
+                "operationId": "accounts_profiles_list",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Profil"
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "accounts"
+                ]
+            },
+            "post": {
+                "operationId": "accounts_profiles_create",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Profil"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Profil"
+                        }
+                    }
+                },
+                "tags": [
+                    "accounts"
+                ]
+            },
+            "parameters": []
+        },
+        "/accounts/profiles/{id}/": {
+            "get": {
+                "operationId": "accounts_profiles_read",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Profil"
+                        }
+                    }
+                },
+                "tags": [
+                    "accounts"
+                ]
+            },
+            "put": {
+                "operationId": "accounts_profiles_update",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Profil"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Profil"
+                        }
+                    }
+                },
+                "tags": [
+                    "accounts"
+                ]
+            },
+            "patch": {
+                "operationId": "accounts_profiles_partial_update",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Profil"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Profil"
+                        }
+                    }
+                },
+                "tags": [
+                    "accounts"
+                ]
+            },
+            "delete": {
+                "operationId": "accounts_profiles_delete",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "accounts"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "A unique integer value identifying this Profils  utilisateur.",
+                    "required": true,
+                    "type": "integer"
+                }
+            ]
+        },
+        "/accounts/users/": {
+            "get": {
+                "operationId": "accounts_users_list",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/User"
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "accounts"
+                ]
+            },
+            "post": {
+                "operationId": "accounts_users_create",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    }
+                },
+                "tags": [
+                    "accounts"
+                ]
+            },
+            "parameters": []
+        },
+        "/accounts/users/{id}/": {
+            "get": {
+                "operationId": "accounts_users_read",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    }
+                },
+                "tags": [
+                    "accounts"
+                ]
+            },
+            "put": {
+                "operationId": "accounts_users_update",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    }
+                },
+                "tags": [
+                    "accounts"
+                ]
+            },
+            "patch": {
+                "operationId": "accounts_users_partial_update",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    }
+                },
+                "tags": [
+                    "accounts"
+                ]
+            },
+            "delete": {
+                "operationId": "accounts_users_delete",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "accounts"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "A unique integer value identifying this utilisateur.",
+                    "required": true,
+                    "type": "integer"
+                }
+            ]
+        },
+        "/auth/login/": {
+            "post": {
+                "operationId": "auth_login_create",
+                "description": "Check the credentials and return the REST Token\nif the credentials are valid and authenticated.\nCalls Django Auth login method to register User ID\nin Django session framework\n\nAccept the following POST parameters: username, password\nReturn the REST Framework Token Object's key.",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Login"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Login"
+                        }
+                    }
+                },
+                "tags": [
+                    "auth"
+                ]
+            },
+            "parameters": []
+        },
+        "/auth/logout/": {
+            "get": {
+                "operationId": "auth_logout_list",
+                "summary": "Calls Django logout method and delete the Token object\nassigned to the current User object.",
+                "description": "Accepts/Returns nothing.",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "auth"
+                ]
+            },
+            "post": {
+                "operationId": "auth_logout_create",
+                "summary": "Calls Django logout method and delete the Token object\nassigned to the current User object.",
+                "description": "Accepts/Returns nothing.",
+                "parameters": [],
+                "responses": {
+                    "201": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "auth"
+                ]
+            },
+            "parameters": []
+        },
+        "/auth/password/change/": {
+            "post": {
+                "operationId": "auth_password_change_create",
+                "summary": "Calls Django Auth SetPasswordForm save method.",
+                "description": "Accepts the following POST parameters: new_password1, new_password2\nReturns the success/fail message.",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/PasswordChange"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/PasswordChange"
+                        }
+                    }
+                },
+                "tags": [
+                    "auth"
+                ]
+            },
+            "parameters": []
+        },
+        "/auth/password/reset/": {
+            "post": {
+                "operationId": "auth_password_reset_create",
+                "summary": "Calls Django Auth PasswordResetForm save method.",
+                "description": "Accepts the following POST parameters: email\nReturns the success/fail message.",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/PasswordReset"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/PasswordReset"
+                        }
+                    }
+                },
+                "tags": [
+                    "auth"
+                ]
+            },
+            "parameters": []
+        },
+        "/auth/password/reset/confirm/": {
+            "post": {
+                "operationId": "auth_password_reset_confirm_create",
+                "summary": "Password reset e-mail link is confirmed, therefore\nthis resets the user's password.",
+                "description": "Accepts the following POST parameters: token, uid,\n    new_password1, new_password2\nReturns the success/fail message.",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/PasswordResetConfirm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/PasswordResetConfirm"
+                        }
+                    }
+                },
+                "tags": [
+                    "auth"
+                ]
+            },
+            "parameters": []
+        },
+        "/auth/registration/": {
+            "post": {
+                "operationId": "auth_registration_create",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Register"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Register"
+                        }
+                    }
+                },
+                "tags": [
+                    "auth"
+                ]
+            },
+            "parameters": []
+        },
+        "/auth/registration/resend-email/": {
+            "post": {
+                "operationId": "auth_registration_resend-email_create",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ResendEmailVerification"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/ResendEmailVerification"
+                        }
+                    }
+                },
+                "tags": [
+                    "auth"
+                ]
+            },
+            "parameters": []
+        },
+        "/auth/registration/verify-email/": {
+            "post": {
+                "operationId": "auth_registration_verify-email_create",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/VerifyEmail"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/VerifyEmail"
+                        }
+                    }
+                },
+                "tags": [
+                    "auth"
+                ]
+            },
+            "parameters": []
+        },
+        "/auth/token/refresh/": {
+            "post": {
+                "operationId": "auth_token_refresh_create",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/CookieTokenRefresh"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/CookieTokenRefresh"
+                        }
+                    }
+                },
+                "tags": [
+                    "auth"
+                ]
+            },
+            "parameters": []
+        },
+        "/auth/token/verify/": {
+            "post": {
+                "operationId": "auth_token_verify_create",
+                "description": "Takes a token and indicates if it is valid.  This view provides no\ninformation about a token's fitness for a particular use.",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/TokenVerify"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/TokenVerify"
+                        }
+                    }
+                },
+                "tags": [
+                    "auth"
+                ]
+            },
+            "parameters": []
+        },
+        "/auth/user/": {
+            "get": {
+                "operationId": "auth_user_read",
+                "summary": "Reads and updates UserModel fields\nAccepts GET, PUT, PATCH methods.",
+                "description": "Default accepted fields: username, first_name, last_name\nDefault display fields: pk, username, email, first_name, last_name\nRead-only fields: pk, email\n\nReturns UserModel fields.",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    }
+                },
+                "tags": [
+                    "auth"
+                ]
+            },
+            "put": {
+                "operationId": "auth_user_update",
+                "summary": "Reads and updates UserModel fields\nAccepts GET, PUT, PATCH methods.",
+                "description": "Default accepted fields: username, first_name, last_name\nDefault display fields: pk, username, email, first_name, last_name\nRead-only fields: pk, email\n\nReturns UserModel fields.",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    }
+                },
+                "tags": [
+                    "auth"
+                ]
+            },
+            "patch": {
+                "operationId": "auth_user_partial_update",
+                "summary": "Reads and updates UserModel fields\nAccepts GET, PUT, PATCH methods.",
+                "description": "Default accepted fields: username, first_name, last_name\nDefault display fields: pk, username, email, first_name, last_name\nRead-only fields: pk, email\n\nReturns UserModel fields.",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    }
+                },
+                "tags": [
+                    "auth"
+                ]
+            },
+            "parameters": []
+        },
+        "/hotel/chambres/": {
+            "get": {
+                "operationId": "hotel_chambres_list",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "number",
+                        "in": "query",
+                        "description": "",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Room"
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "post": {
+                "operationId": "hotel_chambres_create",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Room"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Room"
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "parameters": []
+        },
+        "/hotel/chambres/{id}/": {
+            "get": {
+                "operationId": "hotel_chambres_read",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Room"
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "put": {
+                "operationId": "hotel_chambres_update",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Room"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Room"
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "patch": {
+                "operationId": "hotel_chambres_partial_update",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Room"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Room"
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "delete": {
+                "operationId": "hotel_chambres_delete",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "A unique integer value identifying this Chambre.",
+                    "required": true,
+                    "type": "integer"
+                }
+            ]
+        },
+        "/hotel/coupons/": {
+            "get": {
+                "operationId": "hotel_coupons_list",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Coupon"
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "post": {
+                "operationId": "hotel_coupons_create",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Coupon"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Coupon"
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "parameters": []
+        },
+        "/hotel/coupons/{id}/": {
+            "get": {
+                "operationId": "hotel_coupons_read",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Coupon"
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "put": {
+                "operationId": "hotel_coupons_update",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Coupon"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Coupon"
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "patch": {
+                "operationId": "hotel_coupons_partial_update",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Coupon"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Coupon"
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "delete": {
+                "operationId": "hotel_coupons_delete",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "A unique integer value identifying this Coupon.",
+                    "required": true,
+                    "type": "integer"
+                }
+            ]
+        },
+        "/hotel/depenses/": {
+            "get": {
+                "operationId": "hotel_depenses_list",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Depense"
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "post": {
+                "operationId": "hotel_depenses_create",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Depense"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Depense"
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "parameters": []
+        },
+        "/hotel/depenses/{id}/": {
+            "get": {
+                "operationId": "hotel_depenses_read",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Depense"
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "put": {
+                "operationId": "hotel_depenses_update",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Depense"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Depense"
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "patch": {
+                "operationId": "hotel_depenses_partial_update",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Depense"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Depense"
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "delete": {
+                "operationId": "hotel_depenses_delete",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "A unique integer value identifying this depense.",
+                    "required": true,
+                    "type": "integer"
+                }
+            ]
+        },
+        "/hotel/etages/": {
+            "get": {
+                "operationId": "hotel_etages_list",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Floor"
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "post": {
+                "operationId": "hotel_etages_create",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Floor"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Floor"
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "parameters": []
+        },
+        "/hotel/etages/{id}/": {
+            "get": {
+                "operationId": "hotel_etages_read",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Floor"
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "put": {
+                "operationId": "hotel_etages_update",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Floor"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Floor"
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "patch": {
+                "operationId": "hotel_etages_partial_update",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Floor"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Floor"
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "delete": {
+                "operationId": "hotel_etages_delete",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "A unique integer value identifying this Etage.",
+                    "required": true,
+                    "type": "integer"
+                }
+            ]
+        },
+        "/hotel/factures/": {
+            "get": {
+                "operationId": "hotel_factures_list",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Facture"
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "post": {
+                "operationId": "hotel_factures_create",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Facture"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Facture"
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "parameters": []
+        },
+        "/hotel/factures/{id}/": {
+            "get": {
+                "operationId": "hotel_factures_read",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Facture"
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "put": {
+                "operationId": "hotel_factures_update",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Facture"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Facture"
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "patch": {
+                "operationId": "hotel_factures_partial_update",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Facture"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Facture"
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "delete": {
+                "operationId": "hotel_factures_delete",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "A unique integer value identifying this depense.",
+                    "required": true,
+                    "type": "integer"
+                }
+            ]
+        },
+        "/hotel/locations/": {
+            "get": {
+                "operationId": "hotel_locations_list",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "checkIn_date",
+                        "in": "query",
+                        "description": "",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "checkOut_date",
+                        "in": "query",
+                        "description": "",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Booking"
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "post": {
+                "operationId": "hotel_locations_create",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Booking"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Booking"
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "parameters": []
+        },
+        "/hotel/locations/{id}/": {
+            "get": {
+                "operationId": "hotel_locations_read",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Booking"
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "put": {
+                "operationId": "hotel_locations_update",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Booking"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Booking"
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "patch": {
+                "operationId": "hotel_locations_partial_update",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Booking"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Booking"
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "delete": {
+                "operationId": "hotel_locations_delete",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "A unique integer value identifying this Location.",
+                    "required": true,
+                    "type": "integer"
+                }
+            ]
+        },
+        "/hotel/reservations/": {
+            "get": {
+                "operationId": "hotel_reservations_list",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Reservation"
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "post": {
+                "operationId": "hotel_reservations_create",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Reservation"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Reservation"
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "parameters": []
+        },
+        "/hotel/reservations/{id}/": {
+            "get": {
+                "operationId": "hotel_reservations_read",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Reservation"
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "put": {
+                "operationId": "hotel_reservations_update",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Reservation"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Reservation"
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "patch": {
+                "operationId": "hotel_reservations_partial_update",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Reservation"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/Reservation"
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "delete": {
+                "operationId": "hotel_reservations_delete",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "A unique integer value identifying this Reservation.",
+                    "required": true,
+                    "type": "integer"
+                }
+            ]
+        },
+        "/hotel/types_chambre/": {
+            "get": {
+                "operationId": "hotel_types_chambre_list",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/RoomType"
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "post": {
+                "operationId": "hotel_types_chambre_create",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/RoomType"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/RoomType"
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "parameters": []
+        },
+        "/hotel/types_chambre/{id}/": {
+            "get": {
+                "operationId": "hotel_types_chambre_read",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/RoomType"
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "put": {
+                "operationId": "hotel_types_chambre_update",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/RoomType"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/RoomType"
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "patch": {
+                "operationId": "hotel_types_chambre_partial_update",
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/RoomType"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/RoomType"
+                        }
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "delete": {
+                "operationId": "hotel_types_chambre_delete",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "hotel"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "A unique integer value identifying this Type de Chambre.",
+                    "required": true,
+                    "type": "integer"
+                }
+            ]
+        }
+    },
+    "definitions": {
+        "Profil": {
+            "required": [
+                "name",
+                "firstname",
+                "gender",
+                "phone",
+                "dob",
+                "idType",
+                "idNumber",
+                "id_delivered_at",
+                "id_delivered_place",
+                "id_delivered_by"
+            ],
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "ID",
+                    "type": "integer",
+                    "readOnly": true
+                },
+                "avatar": {
+                    "title": "Avatar",
+                    "type": "string",
+                    "readOnly": true,
+                    "format": "uri"
+                },
+                "name": {
+                    "title": "Name",
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 1
+                },
+                "firstname": {
+                    "title": "Firstname",
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 1
+                },
+                "gender": {
+                    "title": "Gender",
+                    "type": "string",
+                    "enum": [
+                        "homme",
+                        "femme"
+                    ]
+                },
+                "phone": {
+                    "title": "Phone",
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 1
+                },
+                "email": {
+                    "title": "Email",
+                    "type": "string",
+                    "maxLength": 250,
+                    "x-nullable": true
+                },
+                "address": {
+                    "title": "Address",
+                    "type": "string",
+                    "maxLength": 50,
+                    "x-nullable": true
+                },
+                "dob": {
+                    "title": "Dob",
+                    "type": "string",
+                    "format": "date"
+                },
+                "place_of_birth": {
+                    "title": "Place of birth",
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 1,
+                    "x-nullable": true
+                },
+                "department": {
+                    "title": "Department",
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 1,
+                    "x-nullable": true
+                },
+                "nationnalite": {
+                    "title": "Nationnalite",
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 1,
+                    "x-nullable": true
+                },
+                "job": {
+                    "title": "Job",
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 1,
+                    "x-nullable": true
+                },
+                "domicile": {
+                    "title": "Domicile",
+                    "type": "string",
+                    "maxLength": 150,
+                    "minLength": 1,
+                    "x-nullable": true
+                },
+                "idType": {
+                    "title": "IdType",
+                    "type": "string",
+                    "enum": [
+                        "cni",
+                        "passeport",
+                        "attestation"
+                    ]
+                },
+                "idNumber": {
+                    "title": "IdNumber",
+                    "type": "string",
+                    "maxLength": 20,
+                    "minLength": 1
+                },
+                "id_delivered_at": {
+                    "title": "Id delivered at",
+                    "type": "string",
+                    "format": "date"
+                },
+                "id_delivered_place": {
+                    "title": "Id delivered place",
+                    "type": "string",
+                    "maxLength": 150,
+                    "minLength": 1
+                },
+                "id_delivered_by": {
+                    "title": "Id delivered by",
+                    "type": "string",
+                    "maxLength": 150,
+                    "minLength": 1
+                },
+                "father": {
+                    "title": "Father",
+                    "type": "string",
+                    "maxLength": 150,
+                    "x-nullable": true
+                },
+                "mother": {
+                    "title": "Mother",
+                    "type": "string",
+                    "maxLength": 150,
+                    "x-nullable": true
+                },
+                "created_at": {
+                    "title": "Created at",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                },
+                "updated_at": {
+                    "title": "Updated at",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                },
+                "role": {
+                    "title": "Role",
+                    "type": "integer",
+                    "x-nullable": true
+                },
+                "user": {
+                    "title": "User",
+                    "type": "integer",
+                    "x-nullable": true
+                }
+            }
+        },
+        "Permission": {
+            "required": [
+                "name",
+                "codename",
+                "content_type"
+            ],
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "ID",
+                    "type": "integer",
+                    "readOnly": true
+                },
+                "name": {
+                    "title": "Nom",
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 1
+                },
+                "codename": {
+                    "title": "Nom de code",
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 1
+                },
+                "content_type": {
+                    "title": "Type de contenu",
+                    "type": "integer"
+                }
+            }
+        },
+        "Group": {
+            "required": [
+                "name"
+            ],
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "ID",
+                    "type": "integer",
+                    "readOnly": true
+                },
+                "permissions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Permission"
+                    },
+                    "readOnly": true
+                },
+                "name": {
+                    "title": "Nom",
+                    "type": "string",
+                    "maxLength": 150,
+                    "minLength": 1
+                }
+            }
+        },
+        "User": {
+            "required": [
+                "username",
+                "groups",
+                "profil"
+            ],
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "ID",
+                    "type": "integer",
+                    "readOnly": true
+                },
+                "url": {
+                    "title": "Url",
+                    "type": "string",
+                    "format": "uri",
+                    "readOnly": true
+                },
+                "username": {
+                    "title": "Nom d\u2019utilisateur",
+                    "description": "Requis. 150 caract\u00e8res maximum. Uniquement des lettres, nombres et les caract\u00e8res \u00ab\u00a0@\u00a0\u00bb, \u00ab\u00a0.\u00a0\u00bb, \u00ab\u00a0+\u00a0\u00bb, \u00ab\u00a0-\u00a0\u00bb et \u00ab\u00a0_\u00a0\u00bb.",
+                    "type": "string",
+                    "pattern": "^[\\w.@+-]+$",
+                    "maxLength": 150,
+                    "minLength": 1
+                },
+                "email": {
+                    "title": "Adresse \u00e9lectronique",
+                    "type": "string",
+                    "format": "email",
+                    "maxLength": 254
+                },
+                "groups": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Group"
+                    }
+                },
+                "profil": {
+                    "title": "Profil",
+                    "type": "integer"
+                }
+            }
+        },
+        "Login": {
+            "required": [
+                "password"
+            ],
+            "type": "object",
+            "properties": {
+                "username": {
+                    "title": "Username",
+                    "type": "string"
+                },
+                "email": {
+                    "title": "Email",
+                    "type": "string",
+                    "format": "email"
+                },
+                "password": {
+                    "title": "Password",
+                    "type": "string",
+                    "minLength": 1
+                }
+            }
+        },
+        "PasswordChange": {
+            "required": [
+                "new_password1",
+                "new_password2"
+            ],
+            "type": "object",
+            "properties": {
+                "new_password1": {
+                    "title": "New password1",
+                    "type": "string",
+                    "maxLength": 128,
+                    "minLength": 1
+                },
+                "new_password2": {
+                    "title": "New password2",
+                    "type": "string",
+                    "maxLength": 128,
+                    "minLength": 1
+                }
+            }
+        },
+        "PasswordReset": {
+            "required": [
+                "email"
+            ],
+            "type": "object",
+            "properties": {
+                "email": {
+                    "title": "Email",
+                    "type": "string",
+                    "format": "email",
+                    "minLength": 1
+                }
+            }
+        },
+        "PasswordResetConfirm": {
+            "required": [
+                "new_password1",
+                "new_password2",
+                "uid",
+                "token"
+            ],
+            "type": "object",
+            "properties": {
+                "new_password1": {
+                    "title": "New password1",
+                    "type": "string",
+                    "maxLength": 128,
+                    "minLength": 1
+                },
+                "new_password2": {
+                    "title": "New password2",
+                    "type": "string",
+                    "maxLength": 128,
+                    "minLength": 1
+                },
+                "uid": {
+                    "title": "Uid",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "token": {
+                    "title": "Token",
+                    "type": "string",
+                    "minLength": 1
+                }
+            }
+        },
+        "Register": {
+            "required": [
+                "username",
+                "email",
+                "password1",
+                "password2",
+                "groups"
+            ],
+            "type": "object",
+            "properties": {
+                "username": {
+                    "title": "Username",
+                    "type": "string",
+                    "maxLength": 150,
+                    "minLength": 1
+                },
+                "email": {
+                    "title": "Email",
+                    "type": "string",
+                    "format": "email",
+                    "minLength": 1
+                },
+                "password1": {
+                    "title": "Password1",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "password2": {
+                    "title": "Password2",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "groups": {
+                    "title": "Groups",
+                    "type": "string",
+                    "minLength": 1
+                }
+            }
+        },
+        "ResendEmailVerification": {
+            "required": [
+                "email"
+            ],
+            "type": "object",
+            "properties": {
+                "email": {
+                    "title": "Email",
+                    "type": "string",
+                    "format": "email",
+                    "minLength": 1
+                }
+            }
+        },
+        "VerifyEmail": {
+            "required": [
+                "key"
+            ],
+            "type": "object",
+            "properties": {
+                "key": {
+                    "title": "Key",
+                    "type": "string",
+                    "minLength": 1
+                }
+            }
+        },
+        "CookieTokenRefresh": {
+            "type": "object",
+            "properties": {
+                "refresh": {
+                    "title": "Refresh",
+                    "description": "WIll override cookie.",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "access": {
+                    "title": "Access",
+                    "type": "string",
+                    "readOnly": true,
+                    "minLength": 1
+                }
+            }
+        },
+        "TokenVerify": {
+            "required": [
+                "token"
+            ],
+            "type": "object",
+            "properties": {
+                "token": {
+                    "title": "Token",
+                    "type": "string",
+                    "minLength": 1
+                }
+            }
+        },
+        "Room": {
+            "required": [
+                "number",
+                "floor",
+                "type"
+            ],
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "ID",
+                    "type": "integer",
+                    "readOnly": true
+                },
+                "number": {
+                    "title": "Number",
+                    "type": "string",
+                    "maxLength": 5,
+                    "minLength": 1
+                },
+                "status": {
+                    "title": "Status",
+                    "type": "string",
+                    "enum": [
+                        "os",
+                        "og",
+                        "op",
+                        "lp",
+                        "ls",
+                        "nettoyage"
+                    ]
+                },
+                "created_at": {
+                    "title": "Created at",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                },
+                "updated_at": {
+                    "title": "Updated at",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                },
+                "floor": {
+                    "title": "Floor",
+                    "type": "integer"
+                },
+                "type": {
+                    "title": "Type",
+                    "type": "integer"
+                }
+            }
+        },
+        "Coupon": {
+            "required": [
+                "title",
+                "description",
+                "code"
+            ],
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "ID",
+                    "type": "integer",
+                    "readOnly": true
+                },
+                "title": {
+                    "title": "Title",
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 1
+                },
+                "description": {
+                    "title": "Description",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "discount": {
+                    "title": "Discount",
+                    "type": "integer"
+                },
+                "code": {
+                    "title": "Code",
+                    "type": "string",
+                    "maxLength": 10,
+                    "minLength": 1
+                },
+                "created_at": {
+                    "title": "Created at",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                },
+                "updated_at": {
+                    "title": "Updated at",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                }
+            }
+        },
+        "Depense": {
+            "required": [
+                "title",
+                "description",
+                "amount",
+                "date",
+                "spent_by"
+            ],
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "ID",
+                    "type": "integer",
+                    "readOnly": true
+                },
+                "title": {
+                    "title": "Title",
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 1
+                },
+                "description": {
+                    "title": "Description",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "amount": {
+                    "title": "Amount",
+                    "type": "integer"
+                },
+                "date": {
+                    "title": "Date",
+                    "type": "string",
+                    "format": "date"
+                },
+                "created_at": {
+                    "title": "Created at",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                },
+                "updated_at": {
+                    "title": "Updated at",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                },
+                "spent_by": {
+                    "title": "Spent by",
+                    "type": "integer"
+                }
+            }
+        },
+        "Floor": {
+            "required": [
+                "name",
+                "description",
+                "number",
+                "status"
+            ],
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "ID",
+                    "type": "integer",
+                    "readOnly": true
+                },
+                "name": {
+                    "title": "Name",
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 1
+                },
+                "description": {
+                    "title": "Description",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "number": {
+                    "title": "Number",
+                    "type": "integer"
+                },
+                "status": {
+                    "title": "Status",
+                    "type": "string",
+                    "enum": [
+                        "actif",
+                        "inactif"
+                    ]
+                },
+                "created_at": {
+                    "title": "Created at",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                },
+                "updated_at": {
+                    "title": "Updated at",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                }
+            }
+        },
+        "Facture": {
+            "required": [
+                "booking",
+                "status",
+                "amount"
+            ],
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "ID",
+                    "type": "integer",
+                    "readOnly": true
+                },
+                "booking": {
+                    "title": "Booking",
+                    "type": "integer"
+                },
+                "status": {
+                    "title": "Status",
+                    "type": "string",
+                    "enum": [
+                        "pj",
+                        "dj",
+                        "dt",
+                        "dp",
+                        "archive"
+                    ]
+                },
+                "amount": {
+                    "title": "Amount",
+                    "type": "integer"
+                },
+                "created_at": {
+                    "title": "Created at",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                },
+                "updated_at": {
+                    "title": "Updated at",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                },
+                "url": {
+                    "title": "Url",
+                    "type": "string",
+                    "format": "uri",
+                    "readOnly": true
+                }
+            }
+        },
+        "Booking": {
+            "required": [
+                "checkIn",
+                "checkOut",
+                "status",
+                "guest",
+                "room",
+                "recorded_by"
+            ],
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "ID",
+                    "type": "integer",
+                    "readOnly": true
+                },
+                "reference": {
+                    "title": "Reference",
+                    "type": "string",
+                    "maxLength": 10,
+                    "x-nullable": true
+                },
+                "checkIn": {
+                    "title": "CheckIn",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "checkOut": {
+                    "title": "CheckOut",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "status": {
+                    "title": "Status",
+                    "type": "string",
+                    "enum": [
+                        "pj",
+                        "dj",
+                        "dt",
+                        "dp",
+                        "archive"
+                    ]
+                },
+                "totalPrice": {
+                    "title": "TotalPrice",
+                    "type": "integer"
+                },
+                "guest": {
+                    "title": "Guest",
+                    "type": "integer"
+                },
+                "adults": {
+                    "title": "Adults",
+                    "type": "integer"
+                },
+                "children": {
+                    "title": "Children",
+                    "type": "integer"
+                },
+                "room": {
+                    "title": "Room",
+                    "type": "integer"
+                },
+                "coupon": {
+                    "title": "Coupon",
+                    "type": "integer",
+                    "x-nullable": true
+                },
+                "recorded_by": {
+                    "title": "Recorded by",
+                    "type": "integer"
+                },
+                "payment": {
+                    "title": "Payment",
+                    "type": "string",
+                    "enum": [
+                        "espece",
+                        "cheque",
+                        "visa",
+                        "devise"
+                    ]
+                },
+                "created_at": {
+                    "title": "Created at",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                },
+                "updated_at": {
+                    "title": "Updated at",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                },
+                "url": {
+                    "title": "Url",
+                    "type": "string",
+                    "format": "uri",
+                    "readOnly": true
+                }
+            }
+        },
+        "Reservation": {
+            "required": [
+                "checkIn",
+                "checkOut",
+                "guest",
+                "room",
+                "recorded_by"
+            ],
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "ID",
+                    "type": "integer",
+                    "readOnly": true
+                },
+                "reference": {
+                    "title": "Reference",
+                    "type": "string",
+                    "maxLength": 10,
+                    "x-nullable": true
+                },
+                "checkIn": {
+                    "title": "CheckIn",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "checkOut": {
+                    "title": "CheckOut",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "status": {
+                    "title": "Status",
+                    "type": "string",
+                    "enum": [
+                        "en attente",
+                        "confirm\u00e9e",
+                        "annul\u00e9e"
+                    ]
+                },
+                "created_at": {
+                    "title": "Created at",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                },
+                "updated_at": {
+                    "title": "Updated at",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                },
+                "guest": {
+                    "title": "Guest",
+                    "type": "integer"
+                },
+                "room": {
+                    "title": "Room",
+                    "type": "integer"
+                },
+                "recorded_by": {
+                    "title": "Recorded by",
+                    "type": "integer"
+                },
+                "url": {
+                    "title": "Url",
+                    "type": "string",
+                    "format": "uri",
+                    "readOnly": true
+                }
+            }
+        },
+        "RoomType": {
+            "required": [
+                "name",
+                "description",
+                "price"
+            ],
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "ID",
+                    "type": "integer",
+                    "readOnly": true
+                },
+                "name": {
+                    "title": "Name",
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 1
+                },
+                "description": {
+                    "title": "Description",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "numberAdult": {
+                    "title": "NumberAdult",
+                    "type": "integer"
+                },
+                "numberChildren": {
+                    "title": "NumberChildren",
+                    "type": "integer"
+                },
+                "price": {
+                    "title": "Price",
+                    "type": "integer"
+                },
+                "created_at": {
+                    "title": "Created at",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                },
+                "updated_at": {
+                    "title": "Updated at",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                }
+            }
+        }
+    }
+}
