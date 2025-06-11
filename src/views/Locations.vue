@@ -3,8 +3,8 @@
     <!-- Header avec actions -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900">Locations</h1>
-        <p class="text-gray-600 mt-1">Gestion des locations et réservations actives</p>
+        <h1 class="text-2xl font-bold text-gray-900">Locations Actives</h1>
+        <p class="text-gray-600 mt-1">Gestion des clients actuellement présents dans l'hôtel</p>
       </div>
       <div class="mt-4 sm:mt-0 flex items-center space-x-3">
         <button @click="exportData" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200">
@@ -34,24 +34,24 @@
       
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div class="flex items-center">
-          <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-            <Clock class="w-6 h-6 text-yellow-600" />
+          <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+            <CheckCircle class="w-6 h-6 text-green-600" />
           </div>
           <div class="ml-4">
-            <p class="text-sm font-medium text-gray-600">En attente</p>
-            <p class="text-2xl font-bold text-gray-900">{{ pendingLocations }}</p>
+            <p class="text-sm font-medium text-gray-600">Payées</p>
+            <p class="text-2xl font-bold text-gray-900">{{ paidLocations }}</p>
           </div>
         </div>
       </div>
       
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div class="flex items-center">
-          <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-            <CheckCircle class="w-6 h-6 text-green-600" />
+          <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+            <Clock class="w-6 h-6 text-yellow-600" />
           </div>
           <div class="ml-4">
-            <p class="text-sm font-medium text-gray-600">Confirmées</p>
-            <p class="text-2xl font-bold text-gray-900">{{ confirmedLocations }}</p>
+            <p class="text-sm font-medium text-gray-600">Avec dettes</p>
+            <p class="text-2xl font-bold text-gray-900">{{ debtLocations }}</p>
           </div>
         </div>
       </div>
@@ -89,11 +89,11 @@
           <label class="block text-sm font-medium text-gray-700 mb-2">Statut</label>
           <select v-model="filters.status" @change="loadLocations" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
             <option value="">Tous les statuts</option>
-            <option value="pj">En attente</option>
-            <option value="dj">Confirmée</option>
-            <option value="dt">Arrivée</option>
-            <option value="dp">Départ</option>
-            <option value="archive">Annulée</option>
+            <option value="pj">Payé jour</option>
+            <option value="dj">Dette jour</option>
+            <option value="dt">Dette totale</option>
+            <option value="dp">Dette payée</option>
+            <option value="archive">Archivée</option>
           </select>
         </div>
         
@@ -128,11 +128,14 @@
         
         <div v-if="selectedLocations.length > 0" class="flex items-center space-x-2">
           <span class="text-sm text-gray-500">{{ selectedLocations.length }} sélectionné(s)</span>
-          <button @click="bulkAction('dj')" class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium text-white bg-green-600 hover:bg-green-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200">
-            Confirmer
+          <button @click="bulkAction('pj')" class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium text-white bg-green-600 hover:bg-green-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200">
+            Marquer payé
+          </button>
+          <button @click="bulkAction('dj')" class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium text-white bg-yellow-600 hover:bg-yellow-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-all duration-200">
+            Dette jour
           </button>
           <button @click="bulkAction('archive')" class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium text-white bg-red-600 hover:bg-red-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-200">
-            Annuler
+            Archiver
           </button>
         </div>
       </div>
@@ -470,6 +473,19 @@
                 <option value="devise">Devise</option>
               </select>
             </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Statut de paiement</label>
+              <select
+                v-model="form.status"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              >
+                <option value="pj">Payé jour</option>
+                <option value="dj">Dette jour</option>
+                <option value="dt">Dette totale</option>
+                <option value="dp">Dette payée</option>
+              </select>
+            </div>
           </div>
           
           <div class="flex items-center justify-end space-x-3 pt-6 border-t border-gray-200">
@@ -493,6 +509,10 @@ import {
   Plus, Search, Download, Grid, List, User, Eye, Edit, Trash2, X, Calendar, Clock, CheckCircle, DollarSign
 } from 'lucide-vue-next'
 import { locationsAPI, roomsAPI, roomTypesAPI, clientsAPI, mapStatusFromAPI } from '../services/api.js'
+import { useAuthStore } from '../stores/auth.js'
+
+// Store d'authentification
+const authStore = useAuthStore()
 
 // État
 const showModal = ref(false)
@@ -585,16 +605,16 @@ const availableRooms = computed(() => {
 const todayArrivals = computed(() => {
   const today = new Date().toISOString().split('T')[0]
   return locations.value.filter(location => {
-    return location.checkIn?.startsWith(today) && (location.status === 'dt' || location.status === 'dj')
+    return location.checkIn?.startsWith(today)
   }).length
 })
 
-const pendingLocations = computed(() => {
-  return locations.value.filter(location => location.status === 'pj').length
+const paidLocations = computed(() => {
+  return locations.value.filter(location => location.status === 'pj' || location.status === 'dp').length
 })
 
-const confirmedLocations = computed(() => {
-  return locations.value.filter(location => location.status === 'dj').length
+const debtLocations = computed(() => {
+  return locations.value.filter(location => location.status === 'dj' || location.status === 'dt').length
 })
 
 const totalLocations = computed(() => {
@@ -618,22 +638,22 @@ const formatCurrency = (amount) => {
 
 const getStatusColor = (status) => {
   const colors = {
-    'pj': 'bg-yellow-100 text-yellow-800',
-    'dj': 'bg-blue-100 text-blue-800',
-    'dt': 'bg-green-100 text-green-800',
-    'dp': 'bg-gray-100 text-gray-800',
-    'archive': 'bg-red-100 text-red-800'
+    'pj': 'bg-green-100 text-green-800',    // Payé jour
+    'dj': 'bg-yellow-100 text-yellow-800',  // Dette jour
+    'dt': 'bg-orange-100 text-orange-800',  // Dette totale
+    'dp': 'bg-blue-100 text-blue-800',      // Dette payée
+    'archive': 'bg-red-100 text-red-800'    // Archivée
   }
   return colors[status] || colors['pj']
 }
 
 const getStatusLabel = (status) => {
   const labels = {
-    'pj': 'En attente',
-    'dj': 'Confirmée',
-    'dt': 'Arrivée',
-    'dp': 'Départ',
-    'archive': 'Annulée'
+    'pj': 'Payé jour',
+    'dj': 'Dette jour',
+    'dt': 'Dette totale',
+    'dp': 'Dette payée',
+    'archive': 'Archivée'
   }
   return labels[status] || status
 }
@@ -787,16 +807,29 @@ const saveLocation = async () => {
       totalPrice: form.value.totalPrice,
       payment: form.value.payment,
       status: form.value.status,
-      recorded_by: 1 // TODO: récupérer l'ID de l'utilisateur connecté
+      recorded_by: authStore.profile?.id || 1 // Utiliser l'ID de l'utilisateur connecté
     }
     
     if (isEditing.value) {
       await locationsAPI.updateLocation(form.value.id, locationData)
     } else {
+      // Créer la nouvelle location
       await locationsAPI.createLocation(locationData)
+      
+      // Mettre à jour automatiquement le statut de la chambre à "Occupée Propre"
+      if (form.value.room) {
+        try {
+          await roomsAPI.updateRoom(form.value.room, { status: 'op' })
+          console.log(`✅ Chambre ${form.value.room} mise à jour vers "Occupée Propre"`)
+        } catch (roomError) {
+          console.error('❌ Erreur lors de la mise à jour du statut de chambre:', roomError)
+          // Ne pas bloquer la création de location si la mise à jour de chambre échoue
+        }
+      }
     }
     
     await loadLocations()
+    await loadRooms() // Recharger les chambres pour refléter le changement de statut
     closeModal()
     
   } catch (error) {

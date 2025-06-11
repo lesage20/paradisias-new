@@ -384,6 +384,10 @@ import {
 } from 'lucide-vue-next'
 import { reservationsAPI, locationsAPI, roomsAPI, roomTypesAPI, clientsAPI } from '../services/api.js'
 
+import { useAuthStore } from '../stores/auth.js'
+
+// Store d'authentification
+const authStore = useAuthStore()
 // État
 const showModal = ref(false)
 const isEditing = ref(false)
@@ -639,7 +643,7 @@ const saveReservation = async () => {
       checkIn: form.value.checkIn,
       checkOut: form.value.checkOut,
       status: form.value.status,
-      recorded_by: 1 // TODO: récupérer l'ID de l'utilisateur connecté
+      recorded_by: authStore.profile?.id // TODO: récupérer l'ID de l'utilisateur connecté
     }
     
     if (isEditing.value) {
@@ -674,11 +678,11 @@ const convertToLocation = async (reservation) => {
         checkIn: reservation.checkIn,
         checkOut: reservation.checkOut,
         status: 'pj', // En attente
-        recorded_by: 1, // TODO: récupérer l'ID de l'utilisateur connecté
-        adults: 1,
-        children: 0,
-        totalPrice: 0,
-        payment: 'espece'
+        recorded_by: authStore.profile?.id, // TODO: récupérer l'ID de l'utilisateur connecté
+        adults: reservation.adults,
+        children: reservation.children,
+        totalPrice: reservation.totalPrice,
+        payment: reservation.payment
       }
       
       await locationsAPI.createLocation(locationData)
