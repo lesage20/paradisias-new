@@ -1,5 +1,10 @@
+import { useAuthStore } from '@/stores/auth'
+
 // Configuration de base pour l'API
 const API_BASE_URL = 'http://localhost:9001'
+
+// Mode développement - pour tester sans authentification (à désactiver en production)
+const DEV_MODE = process.env.NODE_ENV === 'development'
 
 // Helper pour les requêtes HTTP
 const apiRequest = async (endpoint, options = {}) => {
@@ -12,9 +17,28 @@ const apiRequest = async (endpoint, options = {}) => {
   }
 
   // Ajouter l'authentification si disponible
-  const token = localStorage.getItem('auth_token')
+  let token = null
+  try {
+    // Essayer d'utiliser le store auth directement
+    try {
+      const authStore = useAuthStore()
+      token = authStore.token
+    } catch (error) {
+      // Si le store n'est pas disponible, récupérer depuis localStorage
+      const authStoreData = localStorage.getItem('auth')
+      if (authStoreData) {
+        const parsedStore = JSON.parse(authStoreData)
+        token = parsedStore.token
+      }
+    }
+  } catch (error) {
+    console.warn('Erreur lors de la récupération du token:', error)
+  }
+
   if (token) {
     defaultOptions.headers['Authorization'] = `Bearer ${token}`
+  } else if (DEV_MODE) {
+    console.warn('⚠️ Mode développement: Aucun token d\'authentification trouvé')
   }
 
   const config = {
@@ -30,7 +54,23 @@ const apiRequest = async (endpoint, options = {}) => {
     const response = await fetch(url, config)
     
     if (!response.ok) {
-      throw new Error(`Erreur HTTP: ${response.status}`)
+      if (response.status === 401) {
+        console.error('❌ Erreur 401: Non authentifié. Redirection vers la page de connexion recommandée.')
+        
+        // Si on est dans un composant Vue, on peut rediriger
+        if (typeof window !== 'undefined' && window.location) {
+          // Éviter les redirections infinies
+          if (!window.location.pathname.includes('/login')) {
+            window.location.href = '/login'
+          }
+        }
+        
+        throw new Error('Authentification requise. Veuillez vous reconnecter.')
+      }
+      
+      // Autres erreurs HTTP
+      const errorData = await response.text()
+      throw new Error(`Erreur HTTP ${response.status}: ${errorData}`)
     }
 
     // Retourner la réponse vide pour les DELETE
@@ -40,7 +80,9 @@ const apiRequest = async (endpoint, options = {}) => {
 
     return await response.json()
   } catch (error) {
-    console.error(`Erreur API sur ${endpoint}:`, error)
+    console.error(`❌ Erreur API sur ${endpoint}:`, error.message)
+    
+    // Re-lancer l'erreur pour que les composants puissent la gérer
     throw error
   }
 }

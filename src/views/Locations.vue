@@ -18,6 +18,57 @@
       </div>
     </div>
 
+    <!-- Statistiques rapides -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div class="flex items-center">
+          <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+            <Calendar class="w-6 h-6 text-blue-600" />
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-600">Arrivées aujourd'hui</p>
+            <p class="text-2xl font-bold text-gray-900">{{ todayArrivals }}</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div class="flex items-center">
+          <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+            <Clock class="w-6 h-6 text-yellow-600" />
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-600">En attente</p>
+            <p class="text-2xl font-bold text-gray-900">{{ pendingLocations }}</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div class="flex items-center">
+          <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+            <CheckCircle class="w-6 h-6 text-green-600" />
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-600">Confirmées</p>
+            <p class="text-2xl font-bold text-gray-900">{{ confirmedLocations }}</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div class="flex items-center">
+          <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+            <DollarSign class="w-6 h-6 text-purple-600" />
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-600">Total locations</p>
+            <p class="text-2xl font-bold text-gray-900">{{ totalLocations }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Filtres et recherche -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -439,7 +490,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import {
-  Plus, Search, Download, Grid, List, User, Eye, Edit, Trash2, X
+  Plus, Search, Download, Grid, List, User, Eye, Edit, Trash2, X, Calendar, Clock, CheckCircle, DollarSign
 } from 'lucide-vue-next'
 import { locationsAPI, roomsAPI, roomTypesAPI, clientsAPI, mapStatusFromAPI } from '../services/api.js'
 
@@ -528,6 +579,26 @@ const visiblePages = computed(() => {
 const availableRooms = computed(() => {
   // Filtrer les chambres disponibles
   return rooms.value.filter(room => room.status === 'libre' || room.status === 'lp')
+})
+
+// Computed - Statistiques
+const todayArrivals = computed(() => {
+  const today = new Date().toISOString().split('T')[0]
+  return locations.value.filter(location => {
+    return location.checkIn?.startsWith(today) && (location.status === 'dt' || location.status === 'dj')
+  }).length
+})
+
+const pendingLocations = computed(() => {
+  return locations.value.filter(location => location.status === 'pj').length
+})
+
+const confirmedLocations = computed(() => {
+  return locations.value.filter(location => location.status === 'dj').length
+})
+
+const totalLocations = computed(() => {
+  return locations.value.length
 })
 
 // Méthodes utilitaires
