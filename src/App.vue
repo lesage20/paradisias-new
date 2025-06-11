@@ -16,7 +16,7 @@ onMounted(() => {
 <template>
   <div id="app">
     <RouterView />
-  </div>
+    </div>
 </template>
 
 <style>
