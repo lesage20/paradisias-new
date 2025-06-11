@@ -36,13 +36,13 @@
         
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">Statut</label>
-          <select v-model="filters.status" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+          <select v-model="filters.status" @change="loadLocations" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
             <option value="">Tous les statuts</option>
-            <option value="confirmed">Confirmée</option>
-            <option value="pending">En attente</option>
-            <option value="checked_in">Arrivée</option>
-            <option value="checked_out">Départ</option>
-            <option value="cancelled">Annulée</option>
+            <option value="pj">En attente</option>
+            <option value="dj">Confirmée</option>
+            <option value="dt">Arrivée</option>
+            <option value="dp">Départ</option>
+            <option value="archive">Annulée</option>
           </select>
         </div>
         
@@ -51,6 +51,7 @@
           <input
             v-model="filters.dateFrom"
             type="date"
+            @change="loadLocations"
             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           />
         </div>
@@ -60,6 +61,7 @@
           <input
             v-model="filters.dateTo"
             type="date"
+            @change="loadLocations"
             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           />
         </div>
@@ -75,18 +77,23 @@
         
         <div v-if="selectedLocations.length > 0" class="flex items-center space-x-2">
           <span class="text-sm text-gray-500">{{ selectedLocations.length }} sélectionné(s)</span>
-          <button @click="bulkAction('confirm')" class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium text-white bg-green-600 hover:bg-green-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200">
+          <button @click="bulkAction('dj')" class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium text-white bg-green-600 hover:bg-green-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200">
             Confirmer
           </button>
-          <button @click="bulkAction('cancel')" class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium text-white bg-red-600 hover:bg-red-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-200">
+          <button @click="bulkAction('archive')" class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium text-white bg-red-600 hover:bg-red-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-200">
             Annuler
           </button>
         </div>
       </div>
     </div>
 
+    <!-- Loading spinner -->
+    <div v-if="isLoading && !locations.length" class="flex justify-center items-center py-12">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+    </div>
+
     <!-- Tableau des locations -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+    <div v-else class="bg-white rounded-lg shadow-sm border border-gray-200">
       <div class="px-6 py-4 border-b border-gray-200">
         <div class="flex items-center justify-between">
           <h3 class="text-lg font-medium text-gray-900">Liste des locations</h3>
@@ -114,11 +121,12 @@
               <th class="px-6 py-3 text-left">
                 <input
                   type="checkbox"
-                  :checked="selectedLocations.length === filteredLocations.length"
+                  :checked="selectedLocations.length === filteredLocations.length && filteredLocations.length > 0"
                   @change="toggleSelectAll"
                   class="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                 />
               </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Référence</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Chambre</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dates</th>
@@ -138,26 +146,30 @@
                 />
               </td>
               <td class="px-6 py-4">
+                <div class="text-sm font-medium text-gray-900">{{ location.reference || `LOC-${location.id}` }}</div>
+                <div class="text-sm text-gray-500">{{ formatDate(location.created_at) }}</div>
+              </td>
+              <td class="px-6 py-4">
                 <div class="flex items-center">
                   <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
                     <User class="w-5 h-5 text-purple-600" />
                   </div>
                   <div class="ml-3">
-                    <div class="text-sm font-medium text-gray-900">{{ location.client.name }}</div>
-                    <div class="text-sm text-gray-500">{{ location.client.email }}</div>
+                    <div class="text-sm font-medium text-gray-900">{{ getGuestName(location.guest) }}</div>
+                    <div class="text-sm text-gray-500">{{ getGuestEmail(location.guest) }}</div>
                   </div>
                 </div>
               </td>
               <td class="px-6 py-4">
-                <div class="text-sm font-medium text-gray-900">{{ location.room.number }}</div>
-                <div class="text-sm text-gray-500">{{ location.room.type }}</div>
+                <div class="text-sm font-medium text-gray-900">{{ getRoomNumber(location.room) }}</div>
+                <div class="text-sm text-gray-500">{{ getRoomType(location.room) }}</div>
               </td>
               <td class="px-6 py-4">
                 <div class="text-sm text-gray-900">{{ formatDate(location.checkIn) }}</div>
                 <div class="text-sm text-gray-500">{{ formatDate(location.checkOut) }}</div>
               </td>
               <td class="px-6 py-4">
-                <div class="text-sm font-medium text-gray-900">{{ formatCurrency(location.totalAmount) }}</div>
+                <div class="text-sm font-medium text-gray-900">{{ formatCurrency(location.totalPrice) }}</div>
               </td>
               <td class="px-6 py-4">
                 <span :class="[
@@ -199,8 +211,8 @@
                   <User class="w-5 h-5 text-purple-600" />
                 </div>
                 <div>
-                  <h4 class="text-sm font-medium text-gray-900">{{ location.client.name }}</h4>
-                  <p class="text-xs text-gray-500">{{ location.client.email }}</p>
+                  <h4 class="text-sm font-medium text-gray-900">{{ getGuestName(location.guest) }}</h4>
+                  <p class="text-xs text-gray-500">{{ location.reference || `LOC-${location.id}` }}</p>
                 </div>
               </div>
               <span :class="[
@@ -214,7 +226,7 @@
             <div class="space-y-2 mb-4">
               <div class="flex items-center justify-between text-sm">
                 <span class="text-gray-500">Chambre</span>
-                <span class="font-medium">{{ location.room.number }} - {{ location.room.type }}</span>
+                <span class="font-medium">{{ getRoomNumber(location.room) }} - {{ getRoomType(location.room) }}</span>
               </div>
               <div class="flex items-center justify-between text-sm">
                 <span class="text-gray-500">Arrivée</span>
@@ -226,7 +238,7 @@
               </div>
               <div class="flex items-center justify-between text-sm">
                 <span class="text-gray-500">Montant</span>
-                <span class="font-medium text-purple-600">{{ formatCurrency(location.totalAmount) }}</span>
+                <span class="font-medium text-purple-600">{{ formatCurrency(location.totalPrice) }}</span>
               </div>
             </div>
             
@@ -299,7 +311,7 @@
     <!-- Modal de création/édition -->
     <div
       v-if="showModal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
       @click="closeModal"
     >
       <div
@@ -319,47 +331,29 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Client *</label>
-              <input
-                v-model="form.clientName"
-                type="text"
-                required
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                placeholder="Nom du client"
-              />
-            </div>
-            
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-              <input
-                v-model="form.clientEmail"
-                type="email"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                placeholder="email@example.com"
-              />
-            </div>
-            
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Téléphone</label>
-              <input
-                v-model="form.clientPhone"
-                type="tel"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                placeholder="+225 XX XX XX XX"
-              />
-            </div>
-            
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Type de chambre *</label>
               <select
-                v-model="form.roomType"
+                v-model="form.guest"
                 required
                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               >
-                <option value="">Sélectionner un type</option>
-                <option value="standard">Standard</option>
-                <option value="deluxe">Deluxe</option>
-                <option value="suite">Suite</option>
-                <option value="vip">VIP</option>
+                <option value="">Sélectionner un client</option>
+                <option v-for="client in clients" :key="client.id" :value="client.id">
+                  {{ client.name }} {{ client.firstname }}
+                </option>
+              </select>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Chambre *</label>
+              <select
+                v-model="form.room"
+                required
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              >
+                <option value="">Sélectionner une chambre</option>
+                <option v-for="room in availableRooms" :key="room.id" :value="room.id">
+                  Chambre {{ room.number }} - {{ getRoomTypeName(room.type) }}
+                </option>
               </select>
             </div>
             
@@ -367,7 +361,7 @@
               <label class="block text-sm font-medium text-gray-700 mb-2">Date d'arrivée *</label>
               <input
                 v-model="form.checkIn"
-                type="date"
+                type="datetime-local"
                 required
                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               />
@@ -377,10 +371,53 @@
               <label class="block text-sm font-medium text-gray-700 mb-2">Date de départ *</label>
               <input
                 v-model="form.checkOut"
-                type="date"
+                type="datetime-local"
                 required
                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Nombre d'adultes</label>
+              <input
+                v-model.number="form.adults"
+                type="number"
+                min="1"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Nombre d'enfants</label>
+              <input
+                v-model.number="form.children"
+                type="number"
+                min="0"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Prix total</label>
+              <input
+                v-model.number="form.totalPrice"
+                type="number"
+                min="0"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Mode de paiement</label>
+              <select
+                v-model="form.payment"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              >
+                <option value="espece">Espèces</option>
+                <option value="cheque">Chèque</option>
+                <option value="visa">Carte bancaire</option>
+                <option value="devise">Devise</option>
+              </select>
             </div>
           </div>
           
@@ -388,8 +425,8 @@
             <button type="button" @click="closeModal" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200">
               Annuler
             </button>
-            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200" :disabled="isLoading">
-              <span v-if="isLoading">Enregistrement...</span>
+            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200" :disabled="isSaving">
+              <span v-if="isSaving">Enregistrement...</span>
               <span v-else>{{ isEditing ? 'Mettre à jour' : 'Créer la location' }}</span>
             </button>
           </div>
@@ -400,19 +437,27 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import {
   Plus, Search, Download, Grid, List, User, Eye, Edit, Trash2, X
 } from 'lucide-vue-next'
+import { locationsAPI, roomsAPI, roomTypesAPI, clientsAPI, mapStatusFromAPI } from '../services/api.js'
 
 // État
 const showModal = ref(false)
 const isEditing = ref(false)
 const isLoading = ref(false)
+const isSaving = ref(false)
 const currentView = ref('list')
 const currentPage = ref(1)
 const itemsPerPage = ref(25)
 const selectedLocations = ref([])
+
+// Données
+const locations = ref([])
+const clients = ref([])
+const rooms = ref([])
+const roomTypes = ref([])
 
 // Filtres
 const filters = ref({
@@ -424,49 +469,16 @@ const filters = ref({
 
 // Formulaire
 const form = ref({
-  clientName: '',
-  clientEmail: '',
-  clientPhone: '',
-  roomType: '',
+  guest: '',
+  room: '',
   checkIn: '',
-  checkOut: ''
+  checkOut: '',
+  adults: 1,
+  children: 0,
+  totalPrice: 0,
+  payment: 'espece',
+  status: 'pj'
 })
-
-// Données mockées
-const locations = ref([
-  {
-    id: 1,
-    client: {
-      name: 'Jean Kouadio',
-      email: 'jean.kouadio@gmail.com',
-      phone: '+225 07 12 34 56'
-    },
-    room: {
-      number: '205',
-      type: 'Deluxe'
-    },
-    checkIn: '2024-01-15',
-    checkOut: '2024-01-18',
-    totalAmount: 180000,
-    status: 'confirmed'
-  },
-  {
-    id: 2,
-    client: {
-      name: 'Marie Diallo',
-      email: 'marie.diallo@yahoo.fr',
-      phone: '+225 05 98 76 54'
-    },
-    room: {
-      number: '101',
-      type: 'Standard'
-    },
-    checkIn: '2024-01-12',
-    checkOut: '2024-01-15',
-    totalAmount: 120000,
-    status: 'checked_in'
-  }
-])
 
 // Computed
 const filteredLocations = computed(() => {
@@ -474,11 +486,15 @@ const filteredLocations = computed(() => {
 
   if (filters.value.search) {
     const search = filters.value.search.toLowerCase()
-    filtered = filtered.filter(location =>
-      location.client.name.toLowerCase().includes(search) ||
-      location.client.email.toLowerCase().includes(search) ||
-      location.room.number.includes(search)
-    )
+    filtered = filtered.filter(location => {
+      const guestName = getGuestName(location.guest).toLowerCase()
+      const roomNumber = getRoomNumber(location.room).toLowerCase()
+      const reference = (location.reference || `LOC-${location.id}`).toLowerCase()
+      
+      return guestName.includes(search) || 
+             roomNumber.includes(search) || 
+             reference.includes(search)
+    })
   }
 
   if (filters.value.status) {
@@ -509,12 +525,19 @@ const visiblePages = computed(() => {
   return pages
 })
 
-// Méthodes
+const availableRooms = computed(() => {
+  // Filtrer les chambres disponibles
+  return rooms.value.filter(room => room.status === 'libre' || room.status === 'lp')
+})
+
+// Méthodes utilitaires
 const formatDate = (date) => {
+  if (!date) return 'N/A'
   return new Date(date).toLocaleDateString('fr-FR')
 }
 
 const formatCurrency = (amount) => {
+  if (!amount) return '0 FCFA'
   return new Intl.NumberFormat('fr-CI', {
     style: 'currency',
     currency: 'XOF',
@@ -524,26 +547,105 @@ const formatCurrency = (amount) => {
 
 const getStatusColor = (status) => {
   const colors = {
-    pending: 'bg-yellow-100 text-yellow-800',
-    confirmed: 'bg-blue-100 text-blue-800',
-    checked_in: 'bg-green-100 text-green-800',
-    checked_out: 'bg-gray-100 text-gray-800',
-    cancelled: 'bg-red-100 text-red-800'
+    'pj': 'bg-yellow-100 text-yellow-800',
+    'dj': 'bg-blue-100 text-blue-800',
+    'dt': 'bg-green-100 text-green-800',
+    'dp': 'bg-gray-100 text-gray-800',
+    'archive': 'bg-red-100 text-red-800'
   }
-  return colors[status] || colors.pending
+  return colors[status] || colors['pj']
 }
 
 const getStatusLabel = (status) => {
   const labels = {
-    pending: 'En attente',
-    confirmed: 'Confirmée',
-    checked_in: 'Arrivée',
-    checked_out: 'Départ',
-    cancelled: 'Annulée'
+    'pj': 'En attente',
+    'dj': 'Confirmée',
+    'dt': 'Arrivée',
+    'dp': 'Départ',
+    'archive': 'Annulée'
   }
   return labels[status] || status
 }
 
+const getGuestName = (guestId) => {
+  const client = clients.value.find(c => c.id === guestId)
+  return client ? `${client.name} ${client.firstname}` : 'Client inconnu'
+}
+
+const getGuestEmail = (guestId) => {
+  const client = clients.value.find(c => c.id === guestId)
+  return client?.email || 'N/A'
+}
+
+const getRoomNumber = (roomId) => {
+  const room = rooms.value.find(r => r.id === roomId)
+  return room?.number || 'N/A'
+}
+
+const getRoomType = (roomId) => {
+  const room = rooms.value.find(r => r.id === roomId)
+  if (!room) return 'N/A'
+  
+  const roomType = roomTypes.value.find(rt => rt.id === room.type)
+  return roomType?.name || 'Standard'
+}
+
+const getRoomTypeName = (typeId) => {
+  const roomType = roomTypes.value.find(rt => rt.id === typeId)
+  return roomType?.name || 'Standard'
+}
+
+// Méthodes de chargement des données
+const loadLocations = async () => {
+  try {
+    isLoading.value = true
+    
+    const apiFilters = {}
+    if (filters.value.dateFrom) {
+      apiFilters.checkIn_date = filters.value.dateFrom
+    }
+    if (filters.value.dateTo) {
+      apiFilters.checkOut_date = filters.value.dateTo
+    }
+    
+    const response = await locationsAPI.getLocations(apiFilters)
+    locations.value = response || []
+  } catch (error) {
+    console.error('Erreur lors du chargement des locations:', error)
+    // Optionnel: afficher une notification d'erreur
+  } finally {
+    isLoading.value = false
+  }
+}
+
+const loadClients = async () => {
+  try {
+    const response = await clientsAPI.getClients()
+    clients.value = response || []
+  } catch (error) {
+    console.error('Erreur lors du chargement des clients:', error)
+  }
+}
+
+const loadRooms = async () => {
+  try {
+    const response = await roomsAPI.getRooms()
+    rooms.value = response || []
+  } catch (error) {
+    console.error('Erreur lors du chargement des chambres:', error)
+  }
+}
+
+const loadRoomTypes = async () => {
+  try {
+    const response = await roomTypesAPI.getRoomTypes()
+    roomTypes.value = response || []
+  } catch (error) {
+    console.error('Erreur lors du chargement des types de chambres:', error)
+  }
+}
+
+// Méthodes d'actions
 const resetFilters = () => {
   filters.value = {
     search: '',
@@ -551,6 +653,7 @@ const resetFilters = () => {
     dateFrom: '',
     dateTo: ''
   }
+  loadLocations()
 }
 
 const toggleSelectAll = () => {
@@ -564,12 +667,15 @@ const toggleSelectAll = () => {
 const openCreateModal = () => {
   isEditing.value = false
   form.value = {
-    clientName: '',
-    clientEmail: '',
-    clientPhone: '',
-    roomType: '',
+    guest: '',
+    room: '',
     checkIn: '',
-    checkOut: ''
+    checkOut: '',
+    adults: 1,
+    children: 0,
+    totalPrice: 0,
+    payment: 'espece',
+    status: 'pj'
   }
   showModal.value = true
 }
@@ -578,12 +684,15 @@ const editLocation = (location) => {
   isEditing.value = true
   form.value = {
     id: location.id,
-    clientName: location.client.name,
-    clientEmail: location.client.email,
-    clientPhone: location.client.phone,
-    roomType: location.room.type.toLowerCase(),
+    guest: location.guest,
+    room: location.room,
     checkIn: location.checkIn,
-    checkOut: location.checkOut
+    checkOut: location.checkOut,
+    adults: location.adults || 1,
+    children: location.children || 0,
+    totalPrice: location.totalPrice || 0,
+    payment: location.payment || 'espece',
+    status: location.status
   }
   showModal.value = true
 }
@@ -594,42 +703,88 @@ const closeModal = () => {
 }
 
 const saveLocation = async () => {
-  isLoading.value = true
-  
   try {
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    isSaving.value = true
+    
+    const locationData = {
+      guest: form.value.guest,
+      room: form.value.room,
+      checkIn: form.value.checkIn,
+      checkOut: form.value.checkOut,
+      adults: form.value.adults,
+      children: form.value.children,
+      totalPrice: form.value.totalPrice,
+      payment: form.value.payment,
+      status: form.value.status,
+      recorded_by: 1 // TODO: récupérer l'ID de l'utilisateur connecté
+    }
+    
+    if (isEditing.value) {
+      await locationsAPI.updateLocation(form.value.id, locationData)
+    } else {
+      await locationsAPI.createLocation(locationData)
+    }
+    
+    await loadLocations()
     closeModal()
+    
   } catch (error) {
     console.error('Erreur lors de la sauvegarde:', error)
+    // TODO: afficher une notification d'erreur
   } finally {
-    isLoading.value = false
+    isSaving.value = false
   }
 }
 
 const viewLocation = (location) => {
   console.log('Voir détails:', location)
+  // TODO: implémenter la vue détaillée
 }
 
 const deleteLocation = async (location) => {
-  if (confirm(`Êtes-vous sûr de vouloir supprimer la location de ${location.client.name} ?`)) {
-    const index = locations.value.findIndex(l => l.id === location.id)
-    if (index !== -1) {
-      locations.value.splice(index, 1)
+  if (confirm(`Êtes-vous sûr de vouloir supprimer la location ${location.reference || `LOC-${location.id}`} ?`)) {
+    try {
+      await locationsAPI.deleteLocation(location.id)
+      await loadLocations()
+    } catch (error) {
+      console.error('Erreur lors de la suppression:', error)
     }
   }
 }
 
 const bulkAction = async (action) => {
-  if (confirm(`Appliquer l'action "${action}" aux ${selectedLocations.value.length} locations sélectionnées ?`)) {
-    selectedLocations.value = []
+  if (confirm(`Appliquer l'action "${getStatusLabel(action)}" aux ${selectedLocations.value.length} locations sélectionnées ?`)) {
+    try {
+      // Effectuer l'action en masse
+      for (const locationId of selectedLocations.value) {
+        await locationsAPI.patchLocation(locationId, { status: action })
+      }
+      
+      selectedLocations.value = []
+      await loadLocations()
+    } catch (error) {
+      console.error('Erreur lors de l\'action en masse:', error)
+    }
   }
 }
 
 const exportData = () => {
   console.log('Export des données')
+  // TODO: implémenter l'export
 }
 
-onMounted(() => {
-  // Charger les données initiales
+// Surveillance des filtres de recherche
+watch(() => filters.value.search, () => {
+  currentPage.value = 1
+})
+
+// Chargement initial
+onMounted(async () => {
+  await Promise.all([
+    loadLocations(),
+    loadClients(),
+    loadRooms(),
+    loadRoomTypes()
+  ])
 })
 </script> 

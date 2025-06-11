@@ -152,7 +152,7 @@
 
     <!-- Overlay pour mobile -->
     <div v-if="sidebarOpen" @click="sidebarOpen = false"
-         class="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden transition-opacity"></div>
+         class="fixed inset-0 z-40 bg-black/50 lg:hidden transition-opacity"></div>
   </div>
 </template>
 
@@ -190,7 +190,7 @@ const pageTitle = computed(() => {
     'Dashboard': 'Tableau de bord',
     'Locations': 'Locations',
     'Reservations': 'Réservations', 
-    'Guests': 'Clients',
+    'Clients': 'Clients',
     'Calendar': 'Calendrier',
     'Reports': 'Rapports',
     'BookedRooms': 'Chambres occupées',
@@ -260,8 +260,8 @@ const navigationItems = computed(() => {
     {
       name: 'Clients',
       icon: Users,
-      to: '/guests',
-      routeName: 'Guests'
+      to: '/clients',
+      routeName: 'Clients'
     },
     {
       name: 'Chambres occupées',
@@ -322,8 +322,8 @@ const navigationItems = computed(() => {
     {
       name: 'Clients',
       icon: Users,
-      to: '/guests',
-      routeName: 'Guests'
+      to: '/clients',
+      routeName: 'Clients'
     },
     {
       name: 'Chambres occupées',

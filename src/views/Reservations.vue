@@ -62,8 +62,8 @@
             <DollarSign class="w-6 h-6 text-purple-600" />
           </div>
           <div class="ml-4">
-            <p class="text-sm font-medium text-gray-600">Revenus prévisionnels</p>
-            <p class="text-2xl font-bold text-gray-900">{{ formatCurrency(expectedRevenue) }}</p>
+            <p class="text-sm font-medium text-gray-600">Réservations totales</p>
+            <p class="text-2xl font-bold text-gray-900">{{ totalReservations }}</p>
           </div>
         </div>
       </div>
@@ -89,10 +89,9 @@
           <label class="block text-sm font-medium text-gray-700 mb-2">Statut</label>
           <select v-model="filters.status" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
             <option value="">Tous les statuts</option>
-            <option value="pending">En attente</option>
-            <option value="confirmed">Confirmée</option>
-            <option value="cancelled">Annulée</option>
-            <option value="completed">Terminée</option>
+            <option value="en attente">En attente</option>
+            <option value="confirmée">Confirmée</option>
+            <option value="annulée">Annulée</option>
           </select>
         </div>
         
@@ -111,10 +110,9 @@
           <label class="block text-sm font-medium text-gray-700 mb-2">Type de chambre</label>
           <select v-model="filters.roomType" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
             <option value="">Tous les types</option>
-            <option value="standard">Standard</option>
-            <option value="deluxe">Deluxe</option>
-            <option value="suite">Suite</option>
-            <option value="vip">VIP</option>
+            <option v-for="roomType in roomTypes" :key="roomType.id" :value="roomType.id">
+              {{ roomType.name }}
+            </option>
           </select>
         </div>
       </div>
@@ -129,18 +127,23 @@
         
         <div v-if="selectedReservations.length > 0" class="flex items-center space-x-2">
           <span class="text-sm text-gray-500">{{ selectedReservations.length }} sélectionné(s)</span>
-          <button @click="bulkAction('confirm')" class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium text-white bg-green-600 hover:bg-green-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200">
+          <button @click="bulkAction('confirmée')" class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium text-white bg-green-600 hover:bg-green-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200">
             Confirmer
           </button>
-          <button @click="bulkAction('cancel')" class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium text-white bg-red-600 hover:bg-red-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-200">
+          <button @click="bulkAction('annulée')" class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium text-white bg-red-600 hover:bg-red-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-200">
             Annuler
           </button>
         </div>
       </div>
     </div>
 
+    <!-- Loading spinner -->
+    <div v-if="isLoading && !reservations.length" class="flex justify-center items-center py-12">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+    </div>
+
     <!-- Tableau des réservations -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+    <div v-else class="bg-white rounded-lg shadow-sm border border-gray-200">
       <div class="px-6 py-4 border-b border-gray-200">
         <h3 class="text-lg font-medium text-gray-900">Liste des réservations</h3>
       </div>
@@ -152,7 +155,7 @@
               <th class="px-6 py-3 text-left">
                 <input
                   type="checkbox"
-                  :checked="selectedReservations.length === filteredReservations.length"
+                  :checked="selectedReservations.length === filteredReservations.length && filteredReservations.length > 0"
                   @change="toggleSelectAll"
                   class="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                 />
@@ -161,7 +164,6 @@
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dates séjour</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Chambre demandée</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prix estimé</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
@@ -177,8 +179,8 @@
                 />
               </td>
               <td class="px-6 py-4">
-                <div class="text-sm font-medium text-gray-900">{{ reservation.reference }}</div>
-                <div class="text-sm text-gray-500">{{ formatDate(reservation.createdAt) }}</div>
+                <div class="text-sm font-medium text-gray-900">{{ reservation.reference || `RES-${reservation.id}` }}</div>
+                <div class="text-sm text-gray-500">{{ formatDate(reservation.created_at) }}</div>
               </td>
               <td class="px-6 py-4">
                 <div class="flex items-center">
@@ -186,8 +188,8 @@
                     <User class="w-5 h-5 text-purple-600" />
                   </div>
                   <div class="ml-3">
-                    <div class="text-sm font-medium text-gray-900">{{ reservation.client.name }}</div>
-                    <div class="text-sm text-gray-500">{{ reservation.client.phone }}</div>
+                    <div class="text-sm font-medium text-gray-900">{{ getGuestName(reservation.guest) }}</div>
+                    <div class="text-sm text-gray-500">{{ getGuestPhone(reservation.guest) }}</div>
                   </div>
                 </div>
               </td>
@@ -197,11 +199,7 @@
                 <div class="text-xs text-gray-400">{{ calculateNights(reservation.checkIn, reservation.checkOut) }} nuit(s)</div>
               </td>
               <td class="px-6 py-4">
-                <div class="text-sm font-medium text-gray-900">{{ reservation.roomType }}</div>
-                <div class="text-sm text-gray-500">{{ reservation.occupants }} personne(s)</div>
-              </td>
-              <td class="px-6 py-4">
-                <div class="text-sm font-medium text-gray-900">{{ formatCurrency(reservation.estimatedPrice) }}</div>
+                <div class="text-sm font-medium text-gray-900">{{ getRoomInfo(reservation.room) }}</div>
               </td>
               <td class="px-6 py-4">
                 <span :class="[
@@ -284,7 +282,7 @@
     <!-- Modal de création/édition -->
     <div
       v-if="showModal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
       @click="closeModal"
     >
       <div
@@ -303,32 +301,38 @@
         <form @submit.prevent="saveReservation" class="p-6 space-y-6">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Nom du client *</label>
-              <input
-                v-model="form.clientName"
-                type="text"
+              <label class="block text-sm font-medium text-gray-700 mb-2">Client *</label>
+              <select
+                v-model="form.guest"
                 required
                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                placeholder="Nom complet"
-              />
+              >
+                <option value="">Sélectionner un client</option>
+                <option v-for="client in clients" :key="client.id" :value="client.id">
+                  {{ client.name }} {{ client.firstname }} - {{ client.phone }}
+                </option>
+              </select>
             </div>
             
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Téléphone *</label>
-              <input
-                v-model="form.clientPhone"
-                type="tel"
+              <label class="block text-sm font-medium text-gray-700 mb-2">Chambre souhaitée *</label>
+              <select
+                v-model="form.room"
                 required
                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                placeholder="+225 XX XX XX XX"
-              />
+              >
+                <option value="">Sélectionner une chambre</option>
+                <option v-for="room in rooms" :key="room.id" :value="room.id">
+                  Chambre {{ room.number }} - {{ getRoomTypeName(room.type) }}
+                </option>
+              </select>
             </div>
             
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Date d'arrivée souhaitée *</label>
               <input
                 v-model="form.checkIn"
-                type="date"
+                type="datetime-local"
                 required
                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               />
@@ -338,10 +342,22 @@
               <label class="block text-sm font-medium text-gray-700 mb-2">Date de départ souhaitée *</label>
               <input
                 v-model="form.checkOut"
-                type="date"
+                type="datetime-local"
                 required
                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Statut</label>
+              <select
+                v-model="form.status"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              >
+                <option value="en attente">En attente</option>
+                <option value="confirmée">Confirmée</option>
+                <option value="annulée">Annulée</option>
+              </select>
             </div>
           </div>
           
@@ -349,8 +365,8 @@
             <button type="button" @click="closeModal" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200">
               Annuler
             </button>
-            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200" :disabled="isLoading">
-              <span v-if="isLoading">Enregistrement...</span>
+            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200" :disabled="isSaving">
+              <span v-if="isSaving">Enregistrement...</span>
               <span v-else>{{ isEditing ? 'Mettre à jour' : 'Créer la réservation' }}</span>
             </button>
           </div>
@@ -361,19 +377,27 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import {
   Plus, Search, Download, Calendar, User, Eye, Edit, Trash2, X,
   Clock, CheckCircle, DollarSign, ArrowRight
 } from 'lucide-vue-next'
+import { reservationsAPI, locationsAPI, roomsAPI, roomTypesAPI, clientsAPI } from '../services/api.js'
 
 // État
 const showModal = ref(false)
 const isEditing = ref(false)
 const isLoading = ref(false)
+const isSaving = ref(false)
 const currentPage = ref(1)
 const itemsPerPage = ref(25)
 const selectedReservations = ref([])
+
+// Données
+const reservations = ref([])
+const clients = ref([])
+const rooms = ref([])
+const roomTypes = ref([])
 
 // Filtres
 const filters = ref({
@@ -385,68 +409,29 @@ const filters = ref({
 
 // Formulaire
 const form = ref({
-  clientName: '',
-  clientPhone: '',
+  guest: '',
+  room: '',
   checkIn: '',
-  checkOut: ''
+  checkOut: '',
+  status: 'en attente'
 })
-
-// Données mockées
-const reservations = ref([
-  {
-    id: 1,
-    reference: 'RES-2024-001',
-    client: {
-      name: 'Aminata Traoré',
-      phone: '+225 07 88 99 00',
-      email: 'aminata.traore@gmail.com'
-    },
-    checkIn: '2024-01-20',
-    checkOut: '2024-01-23',
-    roomType: 'Deluxe',
-    occupants: 2,
-    estimatedPrice: 180000,
-    status: 'pending',
-    specialRequests: 'Vue mer si possible',
-    createdAt: '2024-01-10'
-  },
-  {
-    id: 2,
-    reference: 'RES-2024-002',
-    client: {
-      name: 'Koffi Yao',
-      phone: '+225 05 44 55 66',
-      email: 'koffi.yao@yahoo.fr'
-    },
-    checkIn: '2024-01-25',
-    checkOut: '2024-01-28',
-    roomType: 'Suite',
-    occupants: 4,
-    estimatedPrice: 300000,
-    status: 'confirmed',
-    specialRequests: 'Lit bébé requis',
-    createdAt: '2024-01-11'
-  }
-])
 
 // Computed - Statistiques
 const todayReservations = computed(() => {
   const today = new Date().toISOString().split('T')[0]
-  return reservations.value.filter(r => r.checkIn === today).length
+  return reservations.value.filter(r => r.checkIn?.startsWith(today)).length
 })
 
 const pendingReservations = computed(() => {
-  return reservations.value.filter(r => r.status === 'pending').length
+  return reservations.value.filter(r => r.status === 'en attente').length
 })
 
 const confirmedReservations = computed(() => {
-  return reservations.value.filter(r => r.status === 'confirmed').length
+  return reservations.value.filter(r => r.status === 'confirmée').length
 })
 
-const expectedRevenue = computed(() => {
-  return reservations.value
-    .filter(r => ['pending', 'confirmed'].includes(r.status))
-    .reduce((sum, r) => sum + r.estimatedPrice, 0)
+const totalReservations = computed(() => {
+  return reservations.value.length
 })
 
 // Computed - Filtrage et pagination
@@ -455,15 +440,26 @@ const filteredReservations = computed(() => {
 
   if (filters.value.search) {
     const search = filters.value.search.toLowerCase()
-    filtered = filtered.filter(reservation =>
-      reservation.client.name.toLowerCase().includes(search) ||
-      reservation.client.phone.includes(search) ||
-      reservation.reference.toLowerCase().includes(search)
-    )
+    filtered = filtered.filter(reservation => {
+      const guestName = getGuestName(reservation.guest).toLowerCase()
+      const guestPhone = getGuestPhone(reservation.guest).toLowerCase()
+      const reference = (reservation.reference || `RES-${reservation.id}`).toLowerCase()
+      
+      return guestName.includes(search) ||
+             guestPhone.includes(search) ||
+             reference.includes(search)
+    })
   }
 
   if (filters.value.status) {
     filtered = filtered.filter(reservation => reservation.status === filters.value.status)
+  }
+
+  if (filters.value.roomType) {
+    filtered = filtered.filter(reservation => {
+      const room = rooms.value.find(r => r.id === reservation.room)
+      return room?.type === parseInt(filters.value.roomType)
+    })
   }
 
   return filtered
@@ -490,20 +486,14 @@ const visiblePages = computed(() => {
   return pages
 })
 
-// Méthodes
+// Méthodes utilitaires
 const formatDate = (date) => {
+  if (!date) return 'N/A'
   return new Date(date).toLocaleDateString('fr-FR')
 }
 
-const formatCurrency = (amount) => {
-  return new Intl.NumberFormat('fr-CI', {
-    style: 'currency',
-    currency: 'XOF',
-    minimumFractionDigits: 0
-  }).format(amount)
-}
-
 const calculateNights = (checkIn, checkOut) => {
+  if (!checkIn || !checkOut) return 0
   const start = new Date(checkIn)
   const end = new Date(checkOut)
   const diffTime = Math.abs(end - start)
@@ -512,24 +502,86 @@ const calculateNights = (checkIn, checkOut) => {
 
 const getStatusColor = (status) => {
   const colors = {
-    pending: 'bg-yellow-100 text-yellow-800',
-    confirmed: 'bg-blue-100 text-blue-800',
-    cancelled: 'bg-red-100 text-red-800',
-    completed: 'bg-green-100 text-green-800'
+    'en attente': 'bg-yellow-100 text-yellow-800',
+    'confirmée': 'bg-blue-100 text-blue-800',
+    'annulée': 'bg-red-100 text-red-800'
   }
-  return colors[status] || colors.pending
+  return colors[status] || colors['en attente']
 }
 
 const getStatusLabel = (status) => {
   const labels = {
-    pending: 'En attente',
-    confirmed: 'Confirmée',
-    cancelled: 'Annulée',
-    completed: 'Terminée'
+    'en attente': 'En attente',
+    'confirmée': 'Confirmée',
+    'annulée': 'Annulée'
   }
   return labels[status] || status
 }
 
+const getGuestName = (guestId) => {
+  const client = clients.value.find(c => c.id === guestId)
+  return client ? `${client.name} ${client.firstname}` : 'Client inconnu'
+}
+
+const getGuestPhone = (guestId) => {
+  const client = clients.value.find(c => c.id === guestId)
+  return client?.phone || 'N/A'
+}
+
+const getRoomInfo = (roomId) => {
+  const room = rooms.value.find(r => r.id === roomId)
+  if (!room) return 'Chambre non spécifiée'
+  
+  const roomType = roomTypes.value.find(rt => rt.id === room.type)
+  return `Chambre ${room.number} - ${roomType?.name || 'Standard'}`
+}
+
+const getRoomTypeName = (typeId) => {
+  const roomType = roomTypes.value.find(rt => rt.id === typeId)
+  return roomType?.name || 'Standard'
+}
+
+// Méthodes de chargement des données
+const loadReservations = async () => {
+  try {
+    isLoading.value = true
+    const response = await reservationsAPI.getReservations()
+    reservations.value = response || []
+  } catch (error) {
+    console.error('Erreur lors du chargement des réservations:', error)
+  } finally {
+    isLoading.value = false
+  }
+}
+
+const loadClients = async () => {
+  try {
+    const response = await clientsAPI.getClients()
+    clients.value = response || []
+  } catch (error) {
+    console.error('Erreur lors du chargement des clients:', error)
+  }
+}
+
+const loadRooms = async () => {
+  try {
+    const response = await roomsAPI.getRooms()
+    rooms.value = response || []
+  } catch (error) {
+    console.error('Erreur lors du chargement des chambres:', error)
+  }
+}
+
+const loadRoomTypes = async () => {
+  try {
+    const response = await roomTypesAPI.getRoomTypes()
+    roomTypes.value = response || []
+  } catch (error) {
+    console.error('Erreur lors du chargement des types de chambres:', error)
+  }
+}
+
+// Méthodes d'actions
 const resetFilters = () => {
   filters.value = {
     search: '',
@@ -550,10 +602,11 @@ const toggleSelectAll = () => {
 const openCreateModal = () => {
   isEditing.value = false
   form.value = {
-    clientName: '',
-    clientPhone: '',
+    guest: '',
+    room: '',
     checkIn: '',
-    checkOut: ''
+    checkOut: '',
+    status: 'en attente'
   }
   showModal.value = true
 }
@@ -562,10 +615,11 @@ const editReservation = (reservation) => {
   isEditing.value = true
   form.value = {
     id: reservation.id,
-    clientName: reservation.client.name,
-    clientPhone: reservation.client.phone,
+    guest: reservation.guest,
+    room: reservation.room,
     checkIn: reservation.checkIn,
-    checkOut: reservation.checkOut
+    checkOut: reservation.checkOut,
+    status: reservation.status
   }
   showModal.value = true
 }
@@ -576,46 +630,118 @@ const closeModal = () => {
 }
 
 const saveReservation = async () => {
-  isLoading.value = true
-  
   try {
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    isSaving.value = true
+    
+    const reservationData = {
+      guest: form.value.guest,
+      room: form.value.room,
+      checkIn: form.value.checkIn,
+      checkOut: form.value.checkOut,
+      status: form.value.status,
+      recorded_by: 1 // TODO: récupérer l'ID de l'utilisateur connecté
+    }
+    
+    if (isEditing.value) {
+      await reservationsAPI.updateReservation(form.value.id, reservationData)
+    } else {
+      await reservationsAPI.createReservation(reservationData)
+    }
+    
+    await loadReservations()
     closeModal()
+    
   } catch (error) {
     console.error('Erreur lors de la sauvegarde:', error)
+    // TODO: afficher une notification d'erreur
   } finally {
-    isLoading.value = false
+    isSaving.value = false
   }
 }
 
 const viewReservation = (reservation) => {
   console.log('Voir détails de la réservation:', reservation)
+  // TODO: implémenter la vue détaillée
 }
 
-const convertToLocation = (reservation) => {
-  console.log('Convertir en location:', reservation)
+const convertToLocation = async (reservation) => {
+  if (confirm(`Convertir la réservation ${reservation.reference || `RES-${reservation.id}`} en location ?`)) {
+    try {
+      // Créer une location basée sur la réservation
+      const locationData = {
+        guest: reservation.guest,
+        room: reservation.room,
+        checkIn: reservation.checkIn,
+        checkOut: reservation.checkOut,
+        status: 'pj', // En attente
+        recorded_by: 1, // TODO: récupérer l'ID de l'utilisateur connecté
+        adults: 1,
+        children: 0,
+        totalPrice: 0,
+        payment: 'espece'
+      }
+      
+      await locationsAPI.createLocation(locationData)
+      
+      // Optionnel: Supprimer ou marquer la réservation comme convertie
+      await reservationsAPI.patchReservation(reservation.id, { status: 'confirmée' })
+      
+      await loadReservations()
+      
+      // TODO: afficher une notification de succès
+      console.log('Réservation convertie en location avec succès')
+      
+    } catch (error) {
+      console.error('Erreur lors de la conversion:', error)
+      // TODO: afficher une notification d'erreur
+    }
+  }
 }
 
 const deleteReservation = async (reservation) => {
-  if (confirm(`Êtes-vous sûr de vouloir supprimer la réservation ${reservation.reference} ?`)) {
-    const index = reservations.value.findIndex(r => r.id === reservation.id)
-    if (index !== -1) {
-      reservations.value.splice(index, 1)
+  if (confirm(`Êtes-vous sûr de vouloir supprimer la réservation ${reservation.reference || `RES-${reservation.id}`} ?`)) {
+    try {
+      await reservationsAPI.deleteReservation(reservation.id)
+      await loadReservations()
+    } catch (error) {
+      console.error('Erreur lors de la suppression:', error)
     }
   }
 }
 
 const bulkAction = async (action) => {
-  if (confirm(`Appliquer l'action "${action}" aux ${selectedReservations.value.length} réservations sélectionnées ?`)) {
-    selectedReservations.value = []
+  if (confirm(`Appliquer l'action "${getStatusLabel(action)}" aux ${selectedReservations.value.length} réservations sélectionnées ?`)) {
+    try {
+      // Effectuer l'action en masse
+      for (const reservationId of selectedReservations.value) {
+        await reservationsAPI.patchReservation(reservationId, { status: action })
+      }
+      
+      selectedReservations.value = []
+      await loadReservations()
+    } catch (error) {
+      console.error('Erreur lors de l\'action en masse:', error)
+    }
   }
 }
 
 const exportData = () => {
   console.log('Export des données de réservations')
+  // TODO: implémenter l'export
 }
 
-onMounted(() => {
-  // Charger les données initiales
+// Surveillance des filtres de recherche
+watch(() => filters.value.search, () => {
+  currentPage.value = 1
+})
+
+// Chargement initial
+onMounted(async () => {
+  await Promise.all([
+    loadReservations(),
+    loadClients(),
+    loadRooms(),
+    loadRoomTypes()
+  ])
 })
 </script> 

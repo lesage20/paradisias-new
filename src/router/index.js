@@ -10,7 +10,7 @@ import AuthLayout from '@/layouts/AuthLayout.vue'
 const Dashboard = () => import('@/views/Dashboard.vue')
 const Locations = () => import('@/views/Locations.vue')
 const Reservations = () => import('@/views/Reservations.vue')
-const Guests = () => import('@/views/Guests.vue')
+const Clients = () => import('@/views/Clients.vue')
 const Calendar = () => import('@/views/Calendar.vue')
 const Reports = () => import('@/views/Reports.vue')
 
@@ -100,9 +100,9 @@ const routes = [
         }
       },
       {
-        path: '/guests',
-        name: 'Guests',
-        component: Guests,
+        path: '/clients',
+        name: 'Clients',
+        component: Clients,
         meta: { 
           title: 'Clients',
           breadcrumb: [
