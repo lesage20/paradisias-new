@@ -148,9 +148,10 @@ const routes = [
         }
       },
 
-      // Structure hôtel
+      // Structure hôtel - Page principale
       {
-        path: '/hotel-structure',
+        path: '/structure',
+        name: 'HotelStructure',
         component: HotelStructure,
         meta: { 
           title: 'Structure Hôtel',
@@ -167,45 +168,141 @@ const routes = [
           } else {
             next()
           }
+        }
+      },
+
+      // Structure hôtel - Sous-pages
+      {
+        path: '/structure/room-types',
+        name: 'RoomTypes',
+        component: RoomTypes,
+        meta: { 
+          title: 'Types de chambres',
+          breadcrumb: [
+            { text: 'Accueil', to: '/' },
+            { text: 'Structure', to: '/structure' },
+            { text: 'Types de chambres', active: true }
+          ],
+          adminOnly: true
         },
-        children: [
-          {
-            path: '',
-            name: 'RoomTypes',
-            component: RoomTypes,
-            meta: { title: 'Types de chambres' }
-          },
-          {
-            path: 'floors',
-            name: 'Floors',
-            component: Floors,
-            meta: { title: 'Étages' }
-          },
-          {
-            path: 'rooms',
-            name: 'Rooms',
-            component: Rooms,
-            meta: { title: 'Chambres' }
-          },
-          {
-            path: 'price-manager',
-            name: 'PriceManager',
-            component: PriceManager,
-            meta: { title: 'Gestionnaire de prix' }
-          },
-          {
-            path: 'coupons',
-            name: 'Coupons',
-            component: Coupons,
-            meta: { title: 'Coupons' }
-          },
-          {
-            path: 'housekeeping',
-            name: 'Housekeeping',
-            component: Housekeeping,
-            meta: { title: 'Entretien' }
+        beforeEnter: (to, from, next) => {
+          const authStore = useAuthStore()
+          if (!authStore.isAdmin) {
+            next({ name: 'Locations' })
+          } else {
+            next()
           }
-        ]
+        }
+      },
+      {
+        path: '/structure/floors',
+        name: 'Floors',
+        component: Floors,
+        meta: { 
+          title: 'Étages',
+          breadcrumb: [
+            { text: 'Accueil', to: '/' },
+            { text: 'Structure', to: '/structure' },
+            { text: 'Étages', active: true }
+          ],
+          adminOnly: true
+        },
+        beforeEnter: (to, from, next) => {
+          const authStore = useAuthStore()
+          if (!authStore.isAdmin) {
+            next({ name: 'Locations' })
+          } else {
+            next()
+          }
+        }
+      },
+      {
+        path: '/structure/rooms',
+        name: 'Rooms',
+        component: Rooms,
+        meta: { 
+          title: 'Chambres',
+          breadcrumb: [
+            { text: 'Accueil', to: '/' },
+            { text: 'Structure', to: '/structure' },
+            { text: 'Chambres', active: true }
+          ],
+          adminOnly: true
+        },
+        beforeEnter: (to, from, next) => {
+          const authStore = useAuthStore()
+          if (!authStore.isAdmin) {
+            next({ name: 'Locations' })
+          } else {
+            next()
+          }
+        }
+      },
+      {
+        path: '/structure/price-manager',
+        name: 'PriceManager',
+        component: PriceManager,
+        meta: { 
+          title: 'Gestionnaire de prix',
+          breadcrumb: [
+            { text: 'Accueil', to: '/' },
+            { text: 'Structure', to: '/structure' },
+            { text: 'Gestionnaire de prix', active: true }
+          ],
+          adminOnly: true
+        },
+        beforeEnter: (to, from, next) => {
+          const authStore = useAuthStore()
+          if (!authStore.isAdmin) {
+            next({ name: 'Locations' })
+          } else {
+            next()
+          }
+        }
+      },
+      {
+        path: '/structure/coupons',
+        name: 'Coupons',
+        component: Coupons,
+        meta: { 
+          title: 'Coupons',
+          breadcrumb: [
+            { text: 'Accueil', to: '/' },
+            { text: 'Structure', to: '/structure' },
+            { text: 'Coupons', active: true }
+          ],
+          adminOnly: true
+        },
+        beforeEnter: (to, from, next) => {
+          const authStore = useAuthStore()
+          if (!authStore.isAdmin) {
+            next({ name: 'Locations' })
+          } else {
+            next()
+          }
+        }
+      },
+      {
+        path: '/structure/housekeeping',
+        name: 'Housekeeping',
+        component: Housekeeping,
+        meta: { 
+          title: 'Entretien',
+          breadcrumb: [
+            { text: 'Accueil', to: '/' },
+            { text: 'Structure', to: '/structure' },
+            { text: 'Entretien', active: true }
+          ],
+          adminOnly: true
+        },
+        beforeEnter: (to, from, next) => {
+          const authStore = useAuthStore()
+          if (!authStore.isAdmin) {
+            next({ name: 'Locations' })
+          } else {
+            next()
+          }
+        }
       },
 
       // Administration

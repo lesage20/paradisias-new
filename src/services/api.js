@@ -87,6 +87,176 @@ const apiRequest = async (endpoint, options = {}) => {
   }
 }
 
+// ========================================
+// APIS POUR LA STRUCTURE HÔTELIÈRE
+// ========================================
+
+// Service pour les types de chambres
+export const roomTypesAPI = {
+  async getRoomTypes() {
+    return await apiRequest('/hotel/types_chambre/')
+  },
+
+  async getRoomType(id) {
+    return await apiRequest(`/hotel/types_chambre/${id}/`)
+  },
+
+  async createRoomType(roomTypeData) {
+    return await apiRequest('/hotel/types_chambre/', {
+      method: 'POST',
+      body: JSON.stringify(roomTypeData),
+    })
+  },
+
+  async updateRoomType(id, roomTypeData) {
+    return await apiRequest(`/hotel/types_chambre/${id}/`, {
+      method: 'PUT',
+      body: JSON.stringify(roomTypeData),
+    })
+  },
+
+  async patchRoomType(id, partialData) {
+    return await apiRequest(`/hotel/types_chambre/${id}/`, {
+      method: 'PATCH',
+      body: JSON.stringify(partialData),
+    })
+  },
+
+  async deleteRoomType(id) {
+    return await apiRequest(`/hotel/types_chambre/${id}/`, {
+      method: 'DELETE',
+    })
+  },
+}
+
+// Service pour les étages
+export const floorsAPI = {
+  async getFloors() {
+    return await apiRequest('/hotel/etages/')
+  },
+
+  async getFloor(id) {
+    return await apiRequest(`/hotel/etages/${id}/`)
+  },
+
+  async createFloor(floorData) {
+    return await apiRequest('/hotel/etages/', {
+      method: 'POST',
+      body: JSON.stringify(floorData),
+    })
+  },
+
+  async updateFloor(id, floorData) {
+    return await apiRequest(`/hotel/etages/${id}/`, {
+      method: 'PUT',
+      body: JSON.stringify(floorData),
+    })
+  },
+
+  async patchFloor(id, partialData) {
+    return await apiRequest(`/hotel/etages/${id}/`, {
+      method: 'PATCH',
+      body: JSON.stringify(partialData),
+    })
+  },
+
+  async deleteFloor(id) {
+    return await apiRequest(`/hotel/etages/${id}/`, {
+      method: 'DELETE',
+    })
+  },
+}
+
+// Service pour les chambres
+export const roomsAPI = {
+  async getRooms(filters = {}) {
+    const params = new URLSearchParams()
+    
+    if (filters.number) {
+      params.append('number', filters.number)
+    }
+    if (filters.type) {
+      params.append('type', filters.type)
+    }
+
+    const endpoint = `/hotel/chambres/${params.toString() ? '?' + params.toString() : ''}`
+    return await apiRequest(endpoint)
+  },
+
+  async getRoom(id) {
+    return await apiRequest(`/hotel/chambres/${id}/`)
+  },
+
+  async createRoom(roomData) {
+    return await apiRequest('/hotel/chambres/', {
+      method: 'POST',
+      body: JSON.stringify(roomData),
+    })
+  },
+
+  async updateRoom(id, roomData) {
+    return await apiRequest(`/hotel/chambres/${id}/`, {
+      method: 'PUT',
+      body: JSON.stringify(roomData),
+    })
+  },
+
+  async patchRoom(id, partialData) {
+    return await apiRequest(`/hotel/chambres/${id}/`, {
+      method: 'PATCH',
+      body: JSON.stringify(partialData),
+    })
+  },
+
+  async deleteRoom(id) {
+    return await apiRequest(`/hotel/chambres/${id}/`, {
+      method: 'DELETE',
+    })
+  },
+}
+
+// Service pour les coupons
+export const couponsAPI = {
+  async getCoupons() {
+    return await apiRequest('/hotel/coupons/')
+  },
+
+  async getCoupon(id) {
+    return await apiRequest(`/hotel/coupons/${id}/`)
+  },
+
+  async createCoupon(couponData) {
+    return await apiRequest('/hotel/coupons/', {
+      method: 'POST',
+      body: JSON.stringify(couponData),
+    })
+  },
+
+  async updateCoupon(id, couponData) {
+    return await apiRequest(`/hotel/coupons/${id}/`, {
+      method: 'PUT',
+      body: JSON.stringify(couponData),
+    })
+  },
+
+  async patchCoupon(id, partialData) {
+    return await apiRequest(`/hotel/coupons/${id}/`, {
+      method: 'PATCH',
+      body: JSON.stringify(partialData),
+    })
+  },
+
+  async deleteCoupon(id) {
+    return await apiRequest(`/hotel/coupons/${id}/`, {
+      method: 'DELETE',
+    })
+  },
+}
+
+// ========================================
+// APIS PRINCIPALES (LOCATIONS/RÉSERVATIONS)
+// ========================================
+
 // Service pour les locations
 export const locationsAPI = {
   // Lister les locations avec filtres optionnels
@@ -185,32 +355,9 @@ export const reservationsAPI = {
   },
 }
 
-// Services pour les autres entités nécessaires
-export const roomsAPI = {
-  async getRooms(filters = {}) {
-    const params = new URLSearchParams()
-    
-    if (filters.number) {
-      params.append('number', filters.number)
-    }
-    if (filters.type) {
-      params.append('type', filters.type)
-    }
-
-    const endpoint = `/hotel/chambres/${params.toString() ? '?' + params.toString() : ''}`
-    return await apiRequest(endpoint)
-  },
-
-  async getRoom(id) {
-    return await apiRequest(`/hotel/chambres/${id}/`)
-  },
-}
-
-export const roomTypesAPI = {
-  async getRoomTypes() {
-    return await apiRequest('/hotel/types_chambre/')
-  },
-}
+// ========================================
+// APIS CLIENTS
+// ========================================
 
 export const clientsAPI = {
   async getClients() {
@@ -249,6 +396,10 @@ export const clientsAPI = {
   },
 }
 
+// ========================================
+// HELPERS POUR MAPPING DES STATUTS
+// ========================================
+
 // Helpers pour le mapping des statuts
 export const statusMapping = {
   locations: {
@@ -262,6 +413,18 @@ export const statusMapping = {
     'en attente': 'pending',
     'confirmée': 'confirmed',
     'annulée': 'cancelled'
+  },
+  rooms: {
+    'os': 'occupied_dirty',
+    'og': 'occupied_clean', 
+    'op': 'occupied_paid',
+    'lp': 'free_dirty',
+    'ls': 'free_clean',
+    'nettoyage': 'cleaning'
+  },
+  floors: {
+    'actif': 'active',
+    'inactif': 'inactive'
   }
 }
 
@@ -281,4 +444,4 @@ export const mapStatusToAPI = (status, type = 'locations') => {
     if (uiStatus === status) return apiStatus
   }
   return status
-} 
+}
