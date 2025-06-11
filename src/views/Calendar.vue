@@ -149,7 +149,7 @@
 
                 <!-- Grille du calendrier -->
                 <div class="calendar-content">
-                    <div v-for="room in filteredRooms" :key="room.id" class="border-b border-gray-200 last:border-b-0">
+                    <div v-for="room in filteredRooms" :key="room.id" class="border-b border-gray-200 last:border-b-0 relative">
                         <div class="calendar-grid">
                             <!-- Colonne chambre -->
                             <div class="p-4 border-r border-gray-200 bg-gray-50 flex items-center calendar-room-cell">
@@ -170,24 +170,23 @@
                                     'bg-blue-25': isToday(day.date),
                                     'bg-gray-50': !day.isCurrentMonth
                                 }">
-                                <!-- Locations pour ce jour et cette chambre -->
-                                <div v-for="(location, index) in getLocationsForDay(room.id, day.date)" 
-                                     :key="`${location.id}-${index}`"
-                                     class="absolute rounded cursor-pointer transition-all duration-200 hover:shadow-md"
-                                     :class="getLocationStyle(location)"
-                                     :style="getLocationPositionStyle(index, getLocationsForDay(room.id, day.date).length)"
-                                     @mouseenter="showTooltip($event, location)"
-                                     @mouseleave="hideTooltip">
-                                    <div class="p-1 h-full flex flex-col justify-center">
-                                        <div class="text-xs font-medium text-white truncate">
-                                            {{ getClientName(location.guest) }}
-                                        </div>
-                                        <!-- Afficher l'heure si disponible et plusieurs locations -->
-                                        <div v-if="getLocationsForDay(room.id, day.date).length > 1" 
-                                             class="text-xs text-white opacity-80">
-                                            {{ getLocationTime(location) }}
-                                        </div>
-                                    </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Locations positionnées au-dessus de la grille -->
+                        <div v-for="location in getRoomLocations(room.id)" :key="location.id"
+                             class="absolute rounded cursor-pointer transition-all duration-200 hover:shadow-md z-10"
+                             :class="getLocationStyle(location)"
+                             :style="getLocationAbsoluteStyle(location, room.id)"
+                             @mouseenter="showTooltip($event, location)"
+                             @mouseleave="hideTooltip">
+                            <div class="p-1 h-full flex flex-col justify-center text-center">
+                                <div class="text-xs font-medium text-white truncate">
+                                    {{ getClientName(location.guest) }}
+                                </div>
+                                <!-- Afficher l'heure et la durée -->
+                                <div class="text-xs text-white opacity-80">
+                                    {{ getLocationTimeAndDuration(location) }}
                                 </div>
                             </div>
                         </div>
@@ -521,73 +520,6 @@ const getLocationStyle = (location) => {
     return statusColors[location.status] || 'bg-gray-400'
 }
 
-const getLocationPositionStyle = (index, totalLocations) => {
-    if (totalLocations === 1) {
-        // Une seule location : occupe toute la cellule
-        return {
-            width: 'calc(100% - 8px)',
-            height: 'calc(100% - 8px)',
-            top: '4px',
-            left: '4px'
-        }
-    } else {
-        // Plusieurs locations : partage horizontal
-        const baseWidth = 100 / totalLocations
-        const position = index * baseWidth
-        return {
-            width: `calc(${baseWidth}% - 4px)`,
-            height: 'calc(100% - 8px)',
-            top: '4px',
-            left: `calc(${position}% + 2px)`
-        }
-    }
-}
-
-const getLocationTime = (location) => {
-    if (!location) return ''
-    
-    // CORRECTION: supporter les deux formats de champs de dates
-    const checkInField = location.checkIn_date || location.checkIn
-    const checkOutField = location.checkOut_date || location.checkOut
-    
-    if (!checkInField || !checkOutField) return ''
-    
-    try {
-        let checkInTime = '', checkOutTime = ''
-        
-        // Extraire l'heure si disponible dans le format ISO
-        if (checkInField.includes('T')) {
-            const timepart = checkInField.split('T')[1]
-            if (timepart) {
-                const time = timepart.replace('Z', '').substring(0, 5) // HH:MM
-                checkInTime = time
-            }
-        }
-        
-        if (checkOutField.includes('T')) {
-            const timepart = checkOutField.split('T')[1]
-            if (timepart) {
-                const time = timepart.replace('Z', '').substring(0, 5) // HH:MM
-                checkOutTime = time
-            }
-        }
-        
-        // Retourner l'heure ou une indication courte
-        if (checkInTime && checkOutTime) {
-            return `${checkInTime}-${checkOutTime}`
-        } else if (checkInTime) {
-            return `dès ${checkInTime}`
-        } else if (checkOutTime) {
-            return `→ ${checkOutTime}`
-        }
-        
-        return '' // Pas d'heure disponible
-    } catch (error) {
-        console.warn('⚠️ Erreur lors de l\'extraction de l\'heure:', location.id, error)
-        return ''
-    }
-}
-
 // Méthodes de navigation
 const goToPreviousWeek = () => {
     currentDate.value = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth(), currentDate.value.getDate() - 7)
@@ -674,24 +606,80 @@ const getLocationsForDay = (roomId, dateString) => {
     return results
 }
 
-// Fonction de compatibilité pour l'ancienne logique (retourne la première location)
-const getLocationForDay = (roomId, dateString) => {
-    const locations = getLocationsForDay(roomId, dateString)
-    return locations.length > 0 ? locations[0] : null
-}
+// Nouvelle fonction pour calculer la largeur et position des locations
+const getLocationSpanStyle = (location, roomId, startDate) => {
+    if (!location) return {}
 
-// Méthodes pour le tooltip
-const showTooltip = (event, location) => {
-    tooltip.value = {
-        show: true,
-        x: event.clientX + 10,
-        y: event.clientY + 10,
-        location
+    const checkInField = location.checkIn_date || location.checkIn
+    const checkOutField = location.checkOut_date || location.checkOut
+    
+    if (!checkInField || !checkOutField) return {}
+
+    try {
+        let checkInDate, checkOutDate
+        
+        if (checkInField.includes('T')) {
+            checkInDate = new Date(checkInField.split('T')[0])
+        } else {
+            checkInDate = new Date(checkInField)
+        }
+        
+        if (checkOutField.includes('T')) {
+            checkOutDate = new Date(checkOutField.split('T')[0])
+        } else {
+            checkOutDate = new Date(checkOutField)
+        }
+        
+        if (isNaN(checkInDate.getTime()) || isNaN(checkOutDate.getTime())) return {}
+
+        const checkIn = checkInDate.toISOString().split('T')[0]
+        const checkOut = checkOutDate.toISOString().split('T')[0]
+        
+        // Calculer les limites de la semaine visible
+        const weekStart = weekDays.value[0]?.date
+        const weekEnd = weekDays.value[6]?.date
+        
+        if (!weekStart || !weekEnd) return {}
+        
+        // Déterminer le début et la fin de la location dans la semaine visible
+        const locationStart = checkIn >= weekStart ? checkIn : weekStart
+        const locationEnd = checkOut <= weekEnd ? checkOut : weekEnd
+        
+        // Calculer la position et la largeur
+        const startIndex = weekDays.value.findIndex(day => day.date === locationStart)
+        const endIndex = weekDays.value.findIndex(day => day.date === locationEnd)
+        
+        if (startIndex === -1) return {}
+        
+        // Si la location ne se termine pas dans la semaine, prendre la fin de la semaine
+        const actualEndIndex = endIndex === -1 ? 6 : endIndex
+        const spanDays = actualEndIndex - startIndex + 1
+        
+        // Calculer le pourcentage de largeur (chaque jour = 1/7 de l'espace disponible)
+        const dayWidthPercent = 100 / 7
+        const widthPercent = dayWidthPercent * spanDays
+        
+        console.log('🎯 Location span:', {
+            locationId: location.id,
+            checkIn,
+            checkOut,
+            locationStart,
+            locationEnd,
+            startIndex,
+            actualEndIndex,
+            spanDays,
+            widthPercent
+        })
+        
+        return {
+            width: `${widthPercent}%`,
+            position: 'relative',
+            zIndex: '10'
+        }
+    } catch (error) {
+        console.warn('⚠️ Erreur lors du calcul du span:', location.id, error)
+        return {}
     }
-}
-
-const hideTooltip = () => {
-    tooltip.value.show = false
 }
 
 // Méthodes de chargement des données
@@ -822,6 +810,238 @@ const filteredRooms = computed(() => {
 
 const clearRoomSearch = () => {
     roomSearchQuery.value = ''
+}
+
+// Nouvelle fonction pour obtenir la location qui COMMENCE ce jour (s'étend sur plusieurs jours)
+const getLocationForDay = (roomId, dateString) => {
+    // Trouve la location qui COMMENCE ce jour-là pour cette chambre
+    const location = locations.value.find(location => {
+        if (location.room !== roomId) return false
+
+        const checkInField = location.checkIn_date || location.checkIn
+        if (!checkInField) return false
+
+        try {
+            let checkInDate
+            if (checkInField.includes('T')) {
+                checkInDate = new Date(checkInField.split('T')[0])
+            } else {
+                checkInDate = new Date(checkInField)
+            }
+            
+            if (isNaN(checkInDate.getTime())) return false
+
+            const checkIn = checkInDate.toISOString().split('T')[0]
+            
+            // Retourner true seulement si c'est le PREMIER jour de la location
+            return dateString === checkIn
+        } catch (error) {
+            return false
+        }
+    })
+    
+    return location
+}
+
+// Nouvelle fonction pour obtenir l'heure et la durée d'une location
+const getLocationTimeAndDuration = (location) => {
+    if (!location) return ''
+    
+    // CORRECTION: supporter les deux formats de champs de dates
+    const checkInField = location.checkIn_date || location.checkIn
+    const checkOutField = location.checkOut_date || location.checkOut
+    
+    if (!checkInField || !checkOutField) return ''
+    
+    try {
+        let checkInDate, checkOutDate
+        
+        // Parser les dates complètes (avec ou sans heure)
+        if (checkInField.includes('T')) {
+            checkInDate = new Date(checkInField)
+        } else {
+            checkInDate = new Date(checkInField + 'T00:00:00')
+        }
+        
+        if (checkOutField.includes('T')) {
+            checkOutDate = new Date(checkOutField)
+        } else {
+            checkOutDate = new Date(checkOutField + 'T00:00:00')
+        }
+        
+        if (isNaN(checkInDate.getTime()) || isNaN(checkOutDate.getTime())) {
+            return ''
+        }
+        
+        // Formater les dates au format français DD/MM/YYYY
+        const formatDate = (date) => {
+            return date.toLocaleDateString('fr-FR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            })
+        }
+        
+        // Formater les heures au format Hh (ex: 12h, 09h)
+        const formatTime = (date) => {
+            const hours = date.getHours()
+            return `${hours.toString().padStart(2, '0')}h`
+        }
+        
+        const checkInDateStr = formatDate(checkInDate)
+        const checkInTimeStr = formatTime(checkInDate)
+        const checkOutDateStr = formatDate(checkOutDate)
+        const checkOutTimeStr = formatTime(checkOutDate)
+        
+        // Retourner au format demandé : "du 10/06/2025 à 12h au 11/06/2025 à 13h"
+        return `du ${checkInDateStr} à ${checkInTimeStr} au ${checkOutDateStr} à ${checkOutTimeStr}`
+        
+    } catch (error) {
+        console.warn('⚠️ Erreur lors du formatage des dates et heures:', location.id, error)
+        return ''
+    }
+}
+
+// Méthodes pour le tooltip
+const showTooltip = (event, location) => {
+    tooltip.value.show = true
+    tooltip.value.x = event.clientX
+    tooltip.value.y = event.clientY
+    tooltip.value.location = location
+}
+
+const hideTooltip = () => {
+    tooltip.value.show = false
+    tooltip.value.location = null
+}
+
+// Nouvelle fonction pour obtenir toutes les locations d'une chambre qui sont visibles cette semaine
+const getRoomLocations = (roomId) => {
+    const weekStart = weekDays.value[0]?.date
+    const weekEnd = weekDays.value[6]?.date
+    
+    if (!weekStart || !weekEnd) return []
+    
+    return locations.value.filter(location => {
+        if (location.room !== roomId) return false
+
+        const checkInField = location.checkIn_date || location.checkIn
+        const checkOutField = location.checkOut_date || location.checkOut
+        
+        if (!checkInField || !checkOutField) return false
+
+        try {
+            let checkInDate, checkOutDate
+            
+            if (checkInField.includes('T')) {
+                checkInDate = new Date(checkInField.split('T')[0])
+            } else {
+                checkInDate = new Date(checkInField)
+            }
+            
+            if (checkOutField.includes('T')) {
+                checkOutDate = new Date(checkOutField.split('T')[0])
+            } else {
+                checkOutDate = new Date(checkOutField)
+            }
+            
+            if (isNaN(checkInDate.getTime()) || isNaN(checkOutDate.getTime())) return false
+
+            const checkIn = checkInDate.toISOString().split('T')[0]
+            const checkOut = checkOutDate.toISOString().split('T')[0]
+            
+            // Location visible si elle chevauche avec la semaine
+            return checkIn <= weekEnd && checkOut >= weekStart
+        } catch (error) {
+            return false
+        }
+    })
+}
+
+// Nouvelle fonction pour calculer le style absolu des locations
+const getLocationAbsoluteStyle = (location, roomId) => {
+    if (!location) return {}
+
+    const checkInField = location.checkIn_date || location.checkIn
+    const checkOutField = location.checkOut_date || location.checkOut
+    
+    if (!checkInField || !checkOutField) return {}
+
+    try {
+        let checkInDate, checkOutDate
+        
+        if (checkInField.includes('T')) {
+            checkInDate = new Date(checkInField.split('T')[0])
+        } else {
+            checkInDate = new Date(checkInField)
+        }
+        
+        if (checkOutField.includes('T')) {
+            checkOutDate = new Date(checkOutField.split('T')[0])
+        } else {
+            checkOutDate = new Date(checkOutField)
+        }
+        
+        if (isNaN(checkInDate.getTime()) || isNaN(checkOutDate.getTime())) return {}
+
+        const checkIn = checkInDate.toISOString().split('T')[0]
+        const checkOut = checkOutDate.toISOString().split('T')[0]
+        
+        // Calculer les limites de la semaine visible
+        const weekStart = weekDays.value[0]?.date
+        const weekEnd = weekDays.value[6]?.date
+        
+        if (!weekStart || !weekEnd) return {}
+        
+        // Déterminer le début et la fin de la location dans la semaine visible
+        const locationStart = checkIn >= weekStart ? checkIn : weekStart
+        const locationEnd = checkOut <= weekEnd ? checkOut : weekEnd
+        
+        // Calculer les index des jours
+        const startIndex = weekDays.value.findIndex(day => day.date === locationStart)
+        const endIndex = weekDays.value.findIndex(day => day.date === locationEnd)
+        
+        if (startIndex === -1) return {}
+        
+        const actualEndIndex = endIndex === -1 ? 6 : endIndex
+        const spanDays = actualEndIndex - startIndex + 1
+        
+        // Calculer la position et la largeur
+        // La colonne des chambres prend 200px, le reste est divisé en 7 jours
+        const roomColumnWidth = 200 // 200px pour la colonne des chambres
+        const dayWidth = `calc((100% - 200px) / 7)` // Largeur d'un jour
+        
+        // Position left : après la colonne chambre + (index * largeur d'un jour)
+        const leftPosition = `calc(200px + (100% - 200px) * ${startIndex} / 7)`
+        
+        // Largeur : nombre de jours * largeur d'un jour
+        const width = `calc((100% - 200px) * ${spanDays} / 7)`
+        
+        console.log('🎯 Location absolue:', {
+            locationId: location.id,
+            roomId,
+            checkIn,
+            checkOut,
+            locationStart,
+            locationEnd,
+            startIndex,
+            actualEndIndex,
+            spanDays,
+            leftPosition,
+            width
+        })
+        
+        return {
+            left: leftPosition,
+            width: width,
+            top: '4px',
+            height: 'calc(100% - 8px)', // 4px padding top et bottom
+            zIndex: '10'
+        }
+    } catch (error) {
+        console.warn('⚠️ Erreur lors du calcul du style absolu:', location.id, error)
+        return {}
+    }
 }
 </script>
 
