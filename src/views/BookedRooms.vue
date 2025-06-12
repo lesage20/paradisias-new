@@ -127,13 +127,13 @@
               <div class="flex items-center space-x-3 mb-2">
                 <Calendar class="w-4 h-4 text-gray-500" />
                 <span class="text-sm text-gray-600">
-                  Du {{ formatDateTime(room.currentLocation.checkIn) }}
+                  Du {{ formatDateTime(room.currentLocation.checkIn_date || room.currentLocation.checkIn) }}
                 </span>
               </div>
               <div class="flex items-center space-x-3">
                 <LogOut class="w-4 h-4 text-gray-500" />
                 <span class="text-sm text-gray-600">
-                  Au {{ formatDateTime(room.currentLocation.checkOut) }}
+                  Au {{ formatDateTime(room.currentLocation.checkOut_date || room.currentLocation.checkOut) }}
                 </span>
               </div>
             </div>
@@ -142,18 +142,18 @@
             <div class="text-center p-4 bg-white rounded-lg border">
               <p class="text-xs text-gray-500 mb-2">Temps restant avant libération</p>
               <div class="text-2xl font-bold text-red-600 font-mono">
-                {{ getTimeRemaining(room.currentLocation.checkOut) }}
+                {{ getTimeRemaining(room.currentLocation.checkOut_date || room.currentLocation.checkOut) }}
               </div>
               <div class="mt-2">
                 <div class="w-full bg-gray-200 rounded-full h-2">
                   <div 
                     class="bg-red-500 h-2 rounded-full transition-all duration-1000"
-                    :style="{ width: getProgressPercentage(room.currentLocation.checkIn, room.currentLocation.checkOut) + '%' }"
+                    :style="{ width: getProgressPercentage(room.currentLocation.checkIn_date || room.currentLocation.checkIn, room.currentLocation.checkOut_date || room.currentLocation.checkOut) + '%' }"
                   ></div>
                 </div>
               </div>
               <p class="text-xs text-gray-500 mt-2">
-                {{ getTimeElapsed(room.currentLocation.checkIn) }} écoulé
+                {{ getTimeElapsed(room.currentLocation.checkIn_date || room.currentLocation.checkIn) }} écoulé
               </p>
             </div>
 
@@ -265,18 +265,32 @@ const occupiedRooms = computed(() => {
     const currentLocation = getCurrentLocationForRoom(room.id)
     if (!currentLocation) return false
     
-    const now = new Date()
-    const checkIn = new Date(currentLocation.checkIn)
-    const checkOut = new Date(currentLocation.checkOut)
+    // CORRECTION: supporter les deux formats de champs de dates
+    const checkInField = currentLocation.checkIn_date || currentLocation.checkIn
+    const checkOutField = currentLocation.checkOut_date || currentLocation.checkOut
     
-    // La chambre est occupée si on est entre checkIn et checkOut et le statut est valide
-    const isInPeriod = now >= checkIn && now < checkOut
-    const validStatus = ['dj', 'dt'].includes(currentLocation.status) // confirmée ou arrivée
+    if (!checkInField || !checkOutField) return false
     
-    if (isInPeriod && validStatus) {
-      room.currentLocation = currentLocation
-      return true
+    try {
+      const now = new Date()
+      const checkIn = new Date(checkInField)
+      const checkOut = new Date(checkOutField)
+      
+      // Vérifier que les dates sont valides
+      if (isNaN(checkIn.getTime()) || isNaN(checkOut.getTime())) return false
+      
+      // La chambre est occupée si on est entre checkIn et checkOut et le statut est valide
+      const isInPeriod = now >= checkIn && now < checkOut
+      const validStatus = ['pj', 'dj', 'dt', 'dp'].includes(currentLocation.status) // Tous les statuts actifs sauf archive
+      
+      if (isInPeriod && validStatus) {
+        room.currentLocation = currentLocation
+        return true
+      }
+    } catch (error) {
+      console.warn('⚠️ Erreur lors du traitement des dates pour la chambre:', room.id, error)
     }
+    
     return false
   })
 })
@@ -291,7 +305,8 @@ const freeRooms = computed(() => {
 const departuresToday = computed(() => {
   const today = new Date().toISOString().split('T')[0]
   return occupiedRooms.value.filter(room => {
-    return room.currentLocation.checkOut.startsWith(today)
+    const checkOutField = room.currentLocation.checkOut_date || room.currentLocation.checkOut
+    return checkOutField && checkOutField.startsWith(today)
   }).length
 })
 
@@ -305,15 +320,29 @@ const getCurrentLocationForRoom = (roomId) => {
   return locations.value.find(location => {
     if (location.room !== roomId) return false
     
-    const now = new Date()
-    const checkIn = new Date(location.checkIn)
-    const checkOut = new Date(location.checkOut)
+    // CORRECTION: supporter les deux formats de champs de dates
+    const checkInField = location.checkIn_date || location.checkIn
+    const checkOutField = location.checkOut_date || location.checkOut
     
-    // Vérifier si la location est active
-    const isActive = now >= checkIn && now < checkOut
-    const validStatus = ['dj', 'dt'].includes(location.status)
+    if (!checkInField || !checkOutField) return false
     
-    return isActive && validStatus
+    try {
+      const now = new Date()
+      const checkIn = new Date(checkInField)
+      const checkOut = new Date(checkOutField)
+      
+      // Vérifier que les dates sont valides
+      if (isNaN(checkIn.getTime()) || isNaN(checkOut.getTime())) return false
+      
+      // Vérifier si la location est active
+      const isActive = now >= checkIn && now < checkOut
+      const validStatus = ['pj', 'dj', 'dt', 'dp'].includes(location.status) // Tous les statuts actifs
+      
+      return isActive && validStatus
+    } catch (error) {
+      console.warn('⚠️ Erreur lors du traitement des dates pour la location:', location.id, error)
+      return false
+    }
   })
 }
 
@@ -331,6 +360,10 @@ const getTimeRemaining = (checkOutString) => {
   
   const checkOut = new Date(checkOutString)
   const now = currentTime.value
+  
+  // Vérifier que la date est valide
+  if (isNaN(checkOut.getTime())) return 'Date invalide'
+  
   const diff = checkOut - now
   
   if (diff <= 0) return 'Expiré'
@@ -343,7 +376,7 @@ const getTimeRemaining = (checkOutString) => {
   if (days > 0) {
     return `${days}j ${hours}h ${minutes}m`
   } else {
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+    return `${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`
   }
 }
 
@@ -352,6 +385,10 @@ const getTimeElapsed = (checkInString) => {
   
   const checkIn = new Date(checkInString)
   const now = currentTime.value
+  
+  // Vérifier que la date est valide
+  if (isNaN(checkIn.getTime())) return 'Date invalide'
+  
   const diff = now - checkIn
   
   if (diff <= 0) return '0 min'
@@ -375,6 +412,9 @@ const getProgressPercentage = (checkInString, checkOutString) => {
   const checkIn = new Date(checkInString)
   const checkOut = new Date(checkOutString)
   const now = currentTime.value
+  
+  // Vérifier que les dates sont valides
+  if (isNaN(checkIn.getTime()) || isNaN(checkOut.getTime())) return 0
   
   if (now <= checkIn) return 0
   if (now >= checkOut) return 100

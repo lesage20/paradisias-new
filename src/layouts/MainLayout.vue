@@ -5,14 +5,14 @@
            :class="{ '-translate-x-full': !sidebarOpen }">
       
       <!-- Logo/Header Section -->
-      <div class="flex items-center justify-center h-16 px-6 bg-gradient-to-r from-purple-600 to-pink-600 flex-shrink-0">
+      <!-- <div class="flex items-center justify-center h-16 px-6 bg-gradient-to-r from-purple-600 to-pink-600 flex-shrink-0">
         <div class="flex items-center space-x-3">
           <div class="w-8 h-8 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
             <Building2 class="w-5 h-5 text-white" />
           </div>
           <span class="text-white font-bold text-lg">Paradisias</span>
         </div>
-      </div>
+      </div> -->
 
       <!-- User Profile Section -->
       <div class="p-6 border-b border-gray-200 flex-shrink-0">
