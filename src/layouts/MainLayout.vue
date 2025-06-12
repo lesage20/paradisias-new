@@ -5,34 +5,18 @@
            :class="{ '-translate-x-full': !sidebarOpen }">
       
       <!-- Logo/Header Section -->
-      <!-- <div class="flex items-center justify-center h-16 px-6 bg-gradient-to-r from-purple-600 to-pink-600 flex-shrink-0">
-        <div class="flex items-center space-x-3">
-          <div class="w-8 h-8 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
-            <Building2 class="w-5 h-5 text-white" />
-          </div>
-          <span class="text-white font-bold text-lg">Paradisias</span>
-        </div>
-      </div> -->
-
-      <!-- User Profile Section -->
-      <div class="p-6 border-b border-gray-200 flex-shrink-0">
-        <div class="flex items-center space-x-3">
-          <div class="relative">
-            <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-              <component :is="isAdmin ? Shield : User" class="w-6 h-6 text-white" />
-            </div>
-            <!-- Status en ligne -->
-            <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
-          </div>
-          <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium text-gray-900 truncate">{{ authStore.user.username }}</p>
-            <p class="text-xs text-gray-500">{{ userRole }}</p>
+      <div class="flex items-center justify-center h-32  px-6 bg-white   flex-shrink-0">
+        <div class="flex items-center pt-9">
+          <div class="w-50 h-50 flex items-center justify-center rounded-lg overflow-hidden">
+            <img src="@/assets/images/logo2.png" alt="Logo Paradisias" class="w-full h-full object-cover">
           </div>
         </div>
       </div>
 
+     
+
       <!-- Navigation Menu avec scroll -->
-      <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+      <nav class="flex-1 px-4 pb-6 pt-3 space-y-2 overflow-y-auto">
         <div v-for="item in navigationItems" :key="item.name" class="space-y-1">
           <!-- Menu avec sous-items -->
           <div v-if="item.children && item.children.length > 0">
@@ -79,7 +63,25 @@
       </nav>
 
       <!-- Footer du sidebar -->
-      <div class="p-4 border-t border-gray-200 flex-shrink-0">
+       
+      <div class="px-4 py-2 border-t border-gray-200 flex-shrink-0">
+        <!-- User Profile Section -->
+       <div class="pb-2 border-b border-gray-200 flex-shrink-0">
+        <div class="flex items-center space-x-3">
+          <div class="relative">
+            <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+              <component :is="isAdmin ? Shield : User" class="w-6 h-6 text-white" />
+              <!-- <img src="@/assets/images/logo3.png" alt="logo" class="w-12 h-12 rounded-full"> -->
+            </div>
+            <!-- Status en ligne -->
+            <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-gray-900 truncate">{{ authStore.user.username }}</p>
+            <p class="text-xs text-gray-500">{{ userRole }}</p>
+          </div>
+        </div>
+      </div>
         <button @click="logout"
                 class="w-full flex items-center space-x-3 px-3 py-2 text-sm font-medium text-red-600 rounded-lg hover:bg-red-50 transition-colors">
           <LogOut class="w-5 h-5" />
