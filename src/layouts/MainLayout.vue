@@ -194,6 +194,7 @@ const pageTitle = computed(() => {
     'Calendar': 'Calendrier',
     'Reports': 'Rapports',
     'BookedRooms': 'Chambres occupées',
+    'PriceManagement': 'Gestion des Prix',
     'HotelStructure': 'Structure hôtelière',
     'RoomTypes': 'Types de chambres',
     'Floors': 'Étages',
@@ -268,6 +269,12 @@ const navigationItems = computed(() => {
       icon: Bed,
       to: '/booked-rooms',
       routeName: 'BookedRooms'
+    },
+    {
+      name: 'Gestion des Prix',
+      icon: DollarSign,
+      to: '/price-management',
+      routeName: 'PriceManagement'
     },
     {
       name: 'Calendrier',

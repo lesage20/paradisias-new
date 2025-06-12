@@ -13,6 +13,7 @@ const Reservations = () => import('@/views/Reservations.vue')
 const Clients = () => import('@/views/Clients.vue')
 const Calendar = () => import('@/views/Calendar.vue')
 const Reports = () => import('@/views/Reports.vue')
+const PriceManagement = () => import('@/views/PriceManagement.vue')
 
 // Structure hôtelière
 const HotelStructure = () => import('@/views/hotel-structure/HotelStructure.vue')
@@ -144,6 +145,18 @@ const routes = [
           breadcrumb: [
             { text: 'Accueil', to: '/' },
             { text: 'Chambres occupées', active: true }
+          ]
+        }
+      },
+      {
+        path: '/price-management',
+        name: 'PriceManagement',
+        component: PriceManagement,
+        meta: { 
+          title: 'Gestion des Prix',
+          breadcrumb: [
+            { text: 'Accueil', to: '/' },
+            { text: 'Gestion des Prix', active: true }
           ]
         }
       },
