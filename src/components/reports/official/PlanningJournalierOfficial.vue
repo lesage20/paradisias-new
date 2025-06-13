@@ -66,11 +66,11 @@
           <thead>
             <tr class="bg-gray-100">
               <th class="border border-gray-300 px-3 py-2 text-center font-medium text-xs">Chambre</th>
-              <th class="border border-gray-300 px-3 py-2 text-center font-medium text-xs">Type</th>
-              <th class="border border-gray-300 px-3 py-2 text-center font-medium text-xs">Statut</th>
+              <!-- <th class="border border-gray-300 px-3 py-2 text-center font-medium text-xs">Type</th> -->
+              <!-- <th class="border border-gray-300 px-3 py-2 text-center font-medium text-xs">Statut</th> -->
               <th class="border border-gray-300 px-3 py-2 text-center font-medium text-xs">Client</th>
-              <th class="border border-gray-300 px-3 py-2 text-center font-medium text-xs">Check-in</th>
-              <th class="border border-gray-300 px-3 py-2 text-center font-medium text-xs">Check-out</th>
+              <th class="border border-gray-300 px-3 py-2 text-center font-medium text-xs">Entrée</th>
+              <th class="border border-gray-300 px-3 py-2 text-center font-medium text-xs">Sortie</th>
               <th class="border border-gray-300 px-3 py-2 text-center font-medium text-xs">Observations</th>
             </tr>
           </thead>
@@ -79,14 +79,14 @@
               <td class="border border-gray-300 px-3 py-2 text-center text-xs font-medium">
                 {{ chamber.numero || chamber.number }}
               </td>
-              <td class="border border-gray-300 px-3 py-2 text-center text-xs">
+              <!-- <td class="border border-gray-300 px-3 py-2 text-center text-xs">
                 {{ chamber.type || 'Standard' }}
-              </td>
-              <td class="border border-gray-300 px-3 py-2 text-center text-xs">
+              </td> -->
+              <!-- <td class="border border-gray-300 px-3 py-2 text-center text-xs">
                 <span :class="getStatusClass(chamber.status)">
                   {{ chamber.status }}
                 </span>
-              </td>
+              </td> -->
               <td class="border border-gray-300 px-3 py-2 text-center text-xs">
                 {{ chamber.clientName || '-' }}
               </td>

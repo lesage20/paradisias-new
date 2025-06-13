@@ -20,7 +20,7 @@
         <!-- Footer minimal -->
         <div class="text-center mt-4">
           <p class="text-purple-200 text-sm opacity-75">
-            © 2024 Paradisias Hotel - Man, Côte d'Ivoire
+            © {{ new Date().getFullYear() }} Paradisias Hotel - Man, Côte d'Ivoire
           </p>
         </div>
       </div>

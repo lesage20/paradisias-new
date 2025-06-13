@@ -190,7 +190,7 @@ const userRole = computed(() => authStore.userRole || 'Personnel')
 const pageTitle = computed(() => {
   const titles = {
     'Dashboard': 'Tableau de bord',
-    'Locations': 'Locations',
+    'Locations': 'Séjour',
     'Reservations': 'Réservations', 
     'Clients': 'Clients',
     'Calendar': 'Calendrier',
@@ -249,7 +249,7 @@ const navigationItems = computed(() => {
       routeName: 'Dashboard'
     },
     {
-      name: 'Locations',
+      name: 'Séjours',
       icon: MapPin,
       to: '/locations',
       routeName: 'Locations'
@@ -273,7 +273,7 @@ const navigationItems = computed(() => {
       routeName: 'BookedRooms'
     },
     {
-      name: 'Gestion des Prix',
+      name: 'Paiements',
       icon: DollarSign,
       to: '/price-management',
       routeName: 'PriceManagement'
@@ -298,9 +298,8 @@ const navigationItems = computed(() => {
         { name: 'Types de chambres', to: '/structure/room-types', routeName: 'RoomTypes' },
         { name: 'Étages', to: '/structure/floors', routeName: 'Floors' },
         { name: 'Chambres', to: '/structure/rooms', routeName: 'Rooms' },
-        { name: 'Gestionnaire de prix', to: '/structure/price-manager', routeName: 'PriceManager' },
         { name: 'Coupons', to: '/structure/coupons', routeName: 'Coupons' },
-        { name: 'Ménage', to: '/structure/housekeeping', routeName: 'Housekeeping' }
+        // { name: 'Ménage', to: '/structure/housekeeping', routeName: 'Housekeeping' }
       ]
     },
     {

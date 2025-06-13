@@ -259,7 +259,6 @@ export const couponsAPI = {
 
 // Service pour les locations
 export const locationsAPI = {
-  // Lister les locations avec filtres optionnels
   async getLocations(filters = {}) {
     const params = new URLSearchParams()
     
@@ -274,12 +273,10 @@ export const locationsAPI = {
     return await apiRequest(endpoint)
   },
 
-  // Obtenir une location spécifique
   async getLocation(id) {
     return await apiRequest(`/hotel/locations/${id}/`)
   },
 
-  // Créer une nouvelle location
   async createLocation(locationData) {
     return await apiRequest('/hotel/locations/', {
       method: 'POST',
@@ -287,7 +284,6 @@ export const locationsAPI = {
     })
   },
 
-  // Mettre à jour une location
   async updateLocation(id, locationData) {
     return await apiRequest(`/hotel/locations/${id}/`, {
       method: 'PUT',
@@ -295,7 +291,6 @@ export const locationsAPI = {
     })
   },
 
-  // Mise à jour partielle d'une location
   async patchLocation(id, partialData) {
     return await apiRequest(`/hotel/locations/${id}/`, {
       method: 'PATCH',
@@ -303,12 +298,63 @@ export const locationsAPI = {
     })
   },
 
-  // Supprimer une location
   async deleteLocation(id) {
     return await apiRequest(`/hotel/locations/${id}/`, {
       method: 'DELETE',
     })
   },
+}
+
+// Service pour les paiements
+export const paymentsAPI = {
+  async getPayments(filters = {}) {
+    const params = new URLSearchParams()
+    
+    if (filters.locationId) {
+      params.append('locationId', filters.locationId)
+    }
+    if (filters.type) {
+      params.append('type', filters.type)
+    }
+    if (filters.date) {
+      params.append('date', filters.date)
+    }
+
+    const endpoint = `/hotel/paiements/${params.toString() ? '?' + params.toString() : ''}`
+    return await apiRequest(endpoint)
+  },
+
+  async getPayment(id) {
+    return await apiRequest(`/hotel/paiements/${id}/`)
+  },
+
+  async createPayment(paymentData) {
+    return await apiRequest('/hotel/paiements/', {
+      method: 'POST',
+      body: JSON.stringify(paymentData),
+    })
+  },
+
+  async updatePayment(id, paymentData) {
+    return await apiRequest(`/hotel/paiements/${id}/`, {
+      method: 'PUT',
+      body: JSON.stringify(paymentData),
+    })
+  },
+
+  async patchPayment(id, partialData) {
+    return await apiRequest(`/hotel/paiements/${id}/`, {
+      method: 'PATCH',
+      body: JSON.stringify(partialData),
+    })
+  },
+
+  async deletePayment(id) {
+    return await apiRequest(`/hotel/paiements/${id}/`, {
+      method: 'DELETE',
+    })
+  },
+
 }
 
 // Service pour les réservations
