@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import axios from 'axios'
+import LandingPage from '../views/LandingPage.vue'
 
 // Layouts
 import MainLayout from '@/layouts/MainLayout.vue'
@@ -36,6 +37,17 @@ const Login = () => import('@/views/Login.vue')
 const NotFound = () => import('@/views/NotFound.vue')
 
 const routes = [
+  // Landing page (publique)
+  {
+    path: '/',
+    name: 'landing',
+    component: LandingPage,
+    meta: { 
+      title: 'Accueil',
+      public: true
+    }
+  },
+
   // Route de connexion
   {
     path: '/login',
@@ -55,7 +67,7 @@ const routes = [
 
   // Routes principales (protégées)
   {
-    path: '/',
+    path: '/dashboard',
     component: MainLayout,
     children: [
       {
@@ -371,11 +383,11 @@ const routes = [
       title: 'Page non trouvée',
       public: true
     }
-  }
+  },
 ]
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes,
   scrollBehavior(to, from, savedPosition) {
     return savedPosition || { top: 0 }

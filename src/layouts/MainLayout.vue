@@ -114,7 +114,7 @@
       <!-- Zone de contenu principal -->
       <main class="min-h-screen">
         <!-- Header de page avec breadcrumbs -->
-        <div class="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+        <div class="sticky top-0 z-30 bg-white shadow-sm border-b border-gray-200 px-6 py-4">
           <div class="flex items-center justify-between">
             <div>
               <h1 class="text-2xl font-bold text-gray-900">{{ pageTitle }}</h1>
