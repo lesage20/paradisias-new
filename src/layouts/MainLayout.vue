@@ -41,8 +41,12 @@
             >
               <div v-show="expandedItems[item.key]" class="ml-6 mt-2 space-y-1 overflow-hidden">
                 <router-link v-for="child in item.children" :key="child.name" :to="child.to"
-                            class="block px-3 py-2 text-sm text-gray-600 rounded-lg hover:bg-gray-100 hover:text-purple-600 transition-colors"
-                            :class="{ 'bg-purple-50 text-purple-600 font-medium': $route.name === child.routeName }">
+                            class="block px-3 py-2 text-sm text-gray-600 rounded-lg hover:bg-gray-100 transition-colors"
+                            :class="[
+                              $route.name === child.routeName 
+                                ? `${themeClasses.bgPrimaryLight} ${themeClasses.textPrimary} font-medium`
+                                : `${themeClasses.hoverPrimary}`
+                            ]">
                   {{ child.name }}
                 </router-link>
               </div>
@@ -53,7 +57,7 @@
           <router-link v-else :to="item.to"
                       class="flex items-center space-x-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors"
                       :class="{ 
-                        'bg-purple-600 text-white': $route.name === item.routeName,
+                        [themeClasses.activePrimary]: $route.name === item.routeName,
                         'text-gray-700 hover:bg-gray-100': $route.name !== item.routeName 
                       }">
             <component :is="item.icon" class="w-5 h-5" />
@@ -69,7 +73,10 @@
        <div class="pb-2 border-b border-gray-200 flex-shrink-0">
         <div class="flex items-center space-x-3">
           <div class="relative">
-            <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+            <div :class="[
+              'w-12 h-12 rounded-full flex items-center justify-center',
+              isAdmin ? themeClasses.bgPrimary : themeClasses.bgSecondary
+            ]">
               <component :is="isAdmin ? Shield : User" class="w-6 h-6 text-white" />
               <!-- <img src="@/assets/images/logo3.png" alt="logo" class="w-12 h-12 rounded-full"> -->
             </div>
@@ -101,7 +108,10 @@
           </button>
           
           <div class="flex items-center space-x-3">
-            <div class="w-8 h-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
+            <div :class="[
+              'w-8 h-8 rounded-lg flex items-center justify-center',
+              themeClasses.bgPrimary
+            ]">
               <Building2 class="w-5 h-5 text-white" />
             </div>
             <span class="font-bold text-gray-900">Paradisias</span>
@@ -121,7 +131,11 @@
               <nav class="flex mt-1" aria-label="Breadcrumb">
                 <ol class="flex items-center space-x-2">
                   <li>
-                    <router-link to="/" class="text-gray-500 hover:text-purple-600 transition-colors">
+                    <router-link to="/" :class="[
+                      'transition-colors',
+                      themeClasses.hoverPrimary,
+                      'text-gray-500'
+                    ]">
                       <Home class="w-4 h-4" />
                     </router-link>
                   </li>
@@ -138,7 +152,12 @@
               <button class="p-2 text-gray-400 hover:text-gray-600 transition-colors">
                 <Bell class="w-5 h-5" />
               </button>
-              <button class="p-2 text-gray-400 hover:text-gray-600 transition-colors">
+              <button @click="showThemeSettings = true" 
+                      :class="[
+                        'p-2 transition-colors',
+                        themeClasses.hoverPrimary,
+                        'text-gray-400'
+                      ]">
                 <Settings class="w-5 h-5" />
               </button>
             </div>
@@ -155,6 +174,12 @@
     <!-- Overlay pour mobile -->
     <div v-if="sidebarOpen" @click="sidebarOpen = false"
          class="fixed inset-0 z-40 bg-black/50 lg:hidden transition-opacity"></div>
+
+    <!-- Panneau de paramètres de thème -->
+    <ThemeSettings 
+      :is-open="showThemeSettings" 
+      @close="showThemeSettings = false" 
+    />
   </div>
 </template>
 
@@ -162,6 +187,8 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useThemeStore } from '@/stores/theme'
+import ThemeSettings from '@/components/ThemeSettings.vue'
 import { 
   Building2, User, Shield, Menu, LogOut, Home, ChevronRight, ChevronDown,
   LayoutDashboard, MapPin, Users, Calendar, FileText, Bed, Settings, Bell,
@@ -170,11 +197,13 @@ import {
 
 // Stores et router
 const authStore = useAuthStore()
+const themeStore = useThemeStore()
 const route = useRoute()
 const router = useRouter()
 
 // État local
 const sidebarOpen = ref(false)
+const showThemeSettings = ref(false)
 
 // État pour gérer les menus expandables
 const expandedItems = ref({
@@ -185,6 +214,7 @@ const expandedItems = ref({
 // Computed
 const isAdmin = computed(() => authStore.isAdmin)
 const userRole = computed(() => authStore.userRole || 'Personnel')
+const themeClasses = computed(() => themeStore.themeClasses)
 
 // Titre de la page basé sur la route
 const pageTitle = computed(() => {

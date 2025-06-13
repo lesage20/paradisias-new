@@ -7,6 +7,7 @@ import { MotionPlugin } from '@vueuse/motion'
 
 import App from './App.vue'
 import router from './router'
+import { useThemeStore } from './stores/theme'
 
 const app = createApp(App)
 
@@ -17,6 +18,10 @@ pinia.use(piniaPluginPersistedState)
 app.use(pinia)
 app.use(router)
 app.use(MotionPlugin)
+
+// Initialisation du thème
+const themeStore = useThemeStore()
+themeStore.initTheme()
 
 // Variables globales
 app.config.globalProperties.$formatCurrency = (amount) => {
