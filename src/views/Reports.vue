@@ -117,209 +117,184 @@
       </div>
 
       <!-- Onglets de navigation -->
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div class="border-b border-gray-200">
-          <nav class="-mb-px flex">
-            <button
-              @click="activeTab = 'official'"
-              :class="[
-                'w-1/2 py-4 px-6 text-center border-b-2 font-medium text-sm',
-                activeTab === 'official'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              ]"
-            >
-              <FileText class="w-4 h-4 inline mr-2" />
-              Rapport Officiel PDF
-            </button>
-            <button
-              @click="activeTab = 'advanced'"
-              :class="[
-                'w-1/2 py-4 px-6 text-center border-b-2 font-medium text-sm',
-                activeTab === 'advanced'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              ]"
-            >
-              <BarChart3 class="w-4 h-4 inline mr-2" />
-              Analyse Avancée
-            </button>
-          </nav>
-        </div>
-      </div>
-
-      <!-- Contenu de l'onglet actif -->
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-        <!-- Onglet Rapport Officiel PDF -->
-        <div v-if="activeTab === 'official'" class="p-6">
-          <div class="mb-6">
-            <div class="flex items-center justify-between">
-              <h3 class="text-lg font-medium text-gray-900">Rapport Officiel - Format PDF</h3>
-              <div class="flex items-center space-x-2">
-                <span class="text-sm text-green-600 bg-green-100 px-2 py-1 rounded-full">
-                  Format utilisé par l'entreprise
-                </span>
+      <Tabs 
+        v-model="activeTab" 
+        :tabs="reportTabs"
+        full-width
+        @tab-change="handleTabChange"
+      >
+        <template #default="{ activeTab: currentTab }">
+          <!-- Onglet Rapport Officiel PDF -->
+          <div v-if="currentTab === 'official'" class="space-y-6">
+            <div class="mb-6">
+              <div class="flex items-center justify-between">
+                <h3 class="text-lg font-medium text-gray-900">Rapport Officiel - Format PDF</h3>
+                <div class="flex items-center space-x-2">
+                  <span class="text-sm text-green-600 bg-green-100 px-2 py-1 rounded-full">
+                    Format utilisé par l'entreprise
+                  </span>
+                </div>
               </div>
-            </div>
-            <p class="text-sm text-gray-600 mt-2">
-              Ce rapport utilise le format officiel de l'entreprise pour la génération PDF directe.
-            </p>
-          </div>
-
-          <!-- Filtres de période pour l'onglet officiel -->
-          <div class="mb-6">
-            <h4 class="text-md font-medium text-gray-900 mb-4">Période de génération</h4>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <button 
-                @click="reportPeriod = 'today'"
-                :class="reportPeriod === 'today' ? 'bg-blue-100 text-blue-700 border-blue-300' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
-                class="inline-flex items-center justify-center px-4 py-2 border rounded-lg text-sm font-medium"
-              >
-                <Calendar class="w-4 h-4 mr-2" />
-                Aujourd'hui
-              </button>
-              <button 
-                @click="reportPeriod = 'week'"
-                :class="reportPeriod === 'week' ? 'bg-orange-100 text-orange-700 border-orange-300' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
-                class="inline-flex items-center justify-center px-4 py-2 border rounded-lg text-sm font-medium"
-              >
-                <Calendar class="w-4 h-4 mr-2" />
-                Cette semaine
-              </button>
-              <button 
-                @click="reportPeriod = 'month'"
-                :class="reportPeriod === 'month' ? 'bg-purple-100 text-purple-700 border-purple-300' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
-                class="inline-flex items-center justify-center px-4 py-2 border rounded-lg text-sm font-medium"
-              >
-                <Calendar class="w-4 h-4 mr-2" />
-                Ce mois
-              </button>
-              <div class="relative">
-                <input 
-                  v-model="customDate"
-                  type="date"
-                  :class="reportPeriod === 'custom' ? 'bg-green-100 text-green-700 border-green-300' : 'bg-white text-gray-700 border-gray-300'"
-                  class="w-full px-4 py-2 border rounded-lg text-sm"
-                  @change="reportPeriod = 'custom'"
-                />
-              </div>
-            </div>
-            <!-- <div class="mt-4">
-              <button 
-                @click="generateOfficialReport"
-                :disabled="isGenerating"
-                class="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-sm font-medium rounded-lg hover:from-blue-700 hover:to-blue-800 disabled:opacity-50"
-              >
-                <Download class="w-4 h-4 mr-2" />
-                <span v-if="isGenerating">Génération...</span>
-                <span v-else>Générer PDF Officiel</span>
-              </button>
-            </div> -->
-          </div>
-
-          <!-- Composant du rapport officiel -->
-          <div v-if="getOfficialReportComponent(selectedReport.id) === 'div'" class="border border-gray-200 rounded-lg p-4 bg-gray-50">
-            <div class="text-center py-8">
-              <FileText class="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <p class="text-gray-600 mb-2">Rapport officiel prêt à être généré</p>
-              <p class="text-sm text-gray-500">
-                Le rapport sera généré au format PDF avec la mise en page officielle de l'entreprise.
+              <p class="text-sm text-gray-600 mt-2">
+                Ce rapport utilise le format officiel de l'entreprise pour la génération PDF directe.
               </p>
             </div>
-          </div>
-          
-          <!-- Composant spécifique du rapport officiel -->
-          <component 
-            v-else
-            :is="getOfficialReportComponent(selectedReport.id)"
-            :data="reportData"
-            :period="reportPeriod"
-            :custom-date="customDate"
-          />
-        </div>
 
-        <!-- Onglet Analyse Avancée -->
-        <div v-if="activeTab === 'advanced'" class="p-6">
-          <div class="mb-6">
-            <div class="flex items-center justify-between">
-              <h3 class="text-lg font-medium text-gray-900">Analyse Avancée</h3>
-              <div class="flex items-center space-x-2">
-                <span class="text-sm text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
-                  Version améliorée avec graphiques
-                </span>
+            <!-- Filtres de période pour l'onglet officiel -->
+            <div class="mb-6">
+              <h4 class="text-md font-medium text-gray-900 mb-4">Période de génération</h4>
+              <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <button 
+                  @click="reportPeriod = 'today'"
+                  :class="reportPeriod === 'today' ? 'bg-blue-100 text-blue-700 border-blue-300' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
+                  class="inline-flex items-center justify-center px-4 py-2 border rounded-lg text-sm font-medium"
+                >
+                  <Calendar class="w-4 h-4 mr-2" />
+                  Aujourd'hui
+                </button>
+                <button 
+                  @click="reportPeriod = 'week'"
+                  :class="reportPeriod === 'week' ? 'bg-orange-100 text-orange-700 border-orange-300' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
+                  class="inline-flex items-center justify-center px-4 py-2 border rounded-lg text-sm font-medium"
+                >
+                  <Calendar class="w-4 h-4 mr-2" />
+                  Cette semaine
+                </button>
+                <button 
+                  @click="reportPeriod = 'month'"
+                  :class="reportPeriod === 'month' ? 'bg-purple-100 text-purple-700 border-purple-300' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
+                  class="inline-flex items-center justify-center px-4 py-2 border rounded-lg text-sm font-medium"
+                >
+                  <Calendar class="w-4 h-4 mr-2" />
+                  Ce mois
+                </button>
+                <div class="relative">
+                  <input 
+                    v-model="customDate"
+                    type="date"
+                    :class="reportPeriod === 'custom' ? 'bg-green-100 text-green-700 border-green-300' : 'bg-white text-gray-700 border-gray-300'"
+                    class="w-full px-4 py-2 border rounded-lg text-sm"
+                    @change="reportPeriod = 'custom'"
+                  />
+                </div>
+              </div>
+              <!-- <div class="mt-4">
+                <button 
+                  @click="generateOfficialReport"
+                  :disabled="isGenerating"
+                  class="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-sm font-medium rounded-lg hover:from-blue-700 hover:to-blue-800 disabled:opacity-50"
+                >
+                  <Download class="w-4 h-4 mr-2" />
+                  <span v-if="isGenerating">Génération...</span>
+                  <span v-else>Générer PDF Officiel</span>
+                </button>
+              </div> -->
+            </div>
+
+            <!-- Composant du rapport officiel -->
+            <div v-if="getOfficialReportComponent(selectedReport.id) === 'div'" class="border border-gray-200 rounded-lg p-4 bg-gray-50">
+              <div class="text-center py-8">
+                <FileText class="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <p class="text-gray-600 mb-2">Rapport officiel prêt à être généré</p>
+                <p class="text-sm text-gray-500">
+                  Le rapport sera généré au format PDF avec la mise en page officielle de l'entreprise.
+                </p>
               </div>
             </div>
-            <p class="text-sm text-gray-600 mt-2">
-              Version enrichie avec visualisations, graphiques et analyses détaillées.
-            </p>
+            
+            <!-- Composant spécifique du rapport officiel -->
+            <component 
+              v-else
+              :is="getOfficialReportComponent(selectedReport.id)"
+              :data="reportData"
+              :period="reportPeriod"
+              :custom-date="customDate"
+            />
           </div>
 
-          <!-- Filtres de période pour l'onglet avancé -->
-          <div class="mb-6">
-            <h4 class="text-md font-medium text-gray-900 mb-4">Période d'analyse</h4>
-            <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-              <button 
-                @click="reportPeriod = 'today'"
-                :class="reportPeriod === 'today' ? 'bg-blue-100 text-blue-700 border-blue-300' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
-                class="inline-flex items-center justify-center px-4 py-2 border rounded-lg text-sm font-medium"
-              >
-                <Calendar class="w-4 h-4 mr-2" />
-                Aujourd'hui
-              </button>
-              <button 
-                @click="reportPeriod = 'week'"
-                :class="reportPeriod === 'week' ? 'bg-orange-100 text-orange-700 border-orange-300' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
-                class="inline-flex items-center justify-center px-4 py-2 border rounded-lg text-sm font-medium"
-              >
-                <Calendar class="w-4 h-4 mr-2" />
-                Cette semaine
-              </button>
-              <button 
-                @click="reportPeriod = 'month'"
-                :class="reportPeriod === 'month' ? 'bg-purple-100 text-purple-700 border-purple-300' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
-                class="inline-flex items-center justify-center px-4 py-2 border rounded-lg text-sm font-medium"
-              >
-                <Calendar class="w-4 h-4 mr-2" />
-                Ce mois
-              </button>
-              <div class="relative">
-                <input 
-                  v-model="customDate"
-                  type="date"
-                  :class="reportPeriod === 'custom' ? 'bg-green-100 text-green-700 border-green-300' : 'bg-white text-gray-700 border-gray-300'"
-                  class="w-full px-4 py-2 border rounded-lg text-sm"
-                  @change="reportPeriod = 'custom'"
-                />
+          <!-- Onglet Analyse Avancée -->
+          <div v-if="currentTab === 'advanced'" class="space-y-6">
+            <div class="mb-6">
+              <div class="flex items-center justify-between">
+                <h3 class="text-lg font-medium text-gray-900">Analyse Avancée</h3>
+                <div class="flex items-center space-x-2">
+                  <span class="text-sm text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
+                    Version améliorée avec graphiques
+                  </span>
+                </div>
               </div>
-              <button 
-                @click="generateAdvancedReport"
-                :disabled="isGenerating"
-                class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 text-white text-sm font-medium rounded-lg hover:from-green-700 hover:to-green-800 disabled:opacity-50"
-              >
-                <BarChart3 class="w-4 h-4 mr-2" />
-                <span v-if="isGenerating">Analyse...</span>
-                <span v-else>Analyser</span>
-              </button>
+              <p class="text-sm text-gray-600 mt-2">
+                Version enrichie avec visualisations, graphiques et analyses détaillées.
+              </p>
             </div>
-          </div>
 
-          <!-- Aperçu du rapport avancé -->
-          <div v-if="!reportData" class="text-center py-12">
-            <BarChart3 class="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <p class="text-gray-600">Sélectionnez une période pour voir l'analyse avancée</p>
+            <!-- Filtres de période pour l'onglet avancé -->
+            <div class="mb-6">
+              <h4 class="text-md font-medium text-gray-900 mb-4">Période d'analyse</h4>
+              <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                <button 
+                  @click="reportPeriod = 'today'"
+                  :class="reportPeriod === 'today' ? 'bg-blue-100 text-blue-700 border-blue-300' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
+                  class="inline-flex items-center justify-center px-4 py-2 border rounded-lg text-sm font-medium"
+                >
+                  <Calendar class="w-4 h-4 mr-2" />
+                  Aujourd'hui
+                </button>
+                <button 
+                  @click="reportPeriod = 'week'"
+                  :class="reportPeriod === 'week' ? 'bg-orange-100 text-orange-700 border-orange-300' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
+                  class="inline-flex items-center justify-center px-4 py-2 border rounded-lg text-sm font-medium"
+                >
+                  <Calendar class="w-4 h-4 mr-2" />
+                  Cette semaine
+                </button>
+                <button 
+                  @click="reportPeriod = 'month'"
+                  :class="reportPeriod === 'month' ? 'bg-purple-100 text-purple-700 border-purple-300' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
+                  class="inline-flex items-center justify-center px-4 py-2 border rounded-lg text-sm font-medium"
+                >
+                  <Calendar class="w-4 h-4 mr-2" />
+                  Ce mois
+                </button>
+                <div class="relative">
+                  <input 
+                    v-model="customDate"
+                    type="date"
+                    :class="reportPeriod === 'custom' ? 'bg-green-100 text-green-700 border-green-300' : 'bg-white text-gray-700 border-gray-300'"
+                    class="w-full px-4 py-2 border rounded-lg text-sm"
+                    @change="reportPeriod = 'custom'"
+                  />
+                </div>
+                <button 
+                  @click="generateAdvancedReport"
+                  :disabled="isGenerating"
+                  class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 text-white text-sm font-medium rounded-lg hover:from-green-700 hover:to-green-800 disabled:opacity-50"
+                >
+                  <BarChart3 class="w-4 h-4 mr-2" />
+                  <span v-if="isGenerating">Analyse...</span>
+                  <span v-else>Analyser</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Aperçu du rapport avancé -->
+            <div v-if="!reportData" class="text-center py-12">
+              <BarChart3 class="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <p class="text-gray-600">Sélectionnez une période pour voir l'analyse avancée</p>
+            </div>
+            
+            <!-- Composant spécifique selon le type de rapport -->
+            <component 
+              v-else
+              :is="getReportComponent(selectedReport.id)"
+              :data="reportData"
+              :period="reportPeriod"
+              :custom-date="customDate"
+              @generate="generateAdvancedPdf"
+            />
           </div>
-          
-          <!-- Composant spécifique selon le type de rapport -->
-          <component 
-            v-else
-            :is="getReportComponent(selectedReport.id)"
-            :data="reportData"
-            :period="reportPeriod"
-            :custom-date="customDate"
-            @generate="generateAdvancedPdf"
-          />
-        </div>
-      </div>
+        </template>
+      </Tabs>
     </div>
 
     <!-- Modal d'aperçu PDF -->
@@ -362,6 +337,7 @@ import {
   FileText, Calendar, TrendingUp, Bed, RefreshCw, ChevronRight, ArrowLeft,
   Download, X, Building, Users, DollarSign, ClipboardList, BarChart3, MapPin
 } from 'lucide-vue-next'
+import Tabs from '@/components/ui/Tabs.vue'
 
 // Import des composants de rapports
 import DailyPlanningReport from '@/components/reports/DailyPlanningReport.vue'
@@ -470,6 +446,20 @@ const reportsList = ref([
     icon: Download,
     iconBg: 'bg-gray-100',
     iconColor: 'text-gray-600'
+  }
+])
+
+// Tabs pour les rapports
+const reportTabs = computed(() => [
+  {
+    id: 'official',
+    label: 'Rapport Officiel PDF',
+    icon: FileText
+  },
+  {
+    id: 'advanced',
+    label: 'Analyse Avancée',
+    icon: BarChart3
   }
 ])
 
@@ -815,6 +805,10 @@ const closePdfPreview = () => {
   showPdfPreview.value = false
   pdfPreviewContent.value = ''
   isGenerating.value = false
+}
+
+const handleTabChange = (tabId) => {
+  activeTab.value = tabId
 }
 
 // Lifecycle

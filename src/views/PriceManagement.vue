@@ -119,223 +119,200 @@
     </div>
 
     <!-- Onglets -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-      <div class="border-b border-gray-200">
-        <nav class="-mb-px flex space-x-8 px-6">
-          <button
-            v-for="tab in tabs"
-            :key="tab.id"
-            @click="activeTab = tab.id"
-            :class="[
-              'py-4 px-1 border-b-2 font-medium text-sm',
-              activeTab === tab.id
-                ? 'border-purple-500 text-purple-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            ]"
-          >
-            <component :is="tab.icon" class="w-4 h-4 mr-2 inline" />
-            {{ tab.name }}
-            <span v-if="tab.count" class="ml-2 bg-gray-100 text-gray-900 py-0.5 px-2.5 rounded-full text-xs">
-              {{ tab.count }}
-            </span>
-          </button>
-        </nav>
-      </div>
-
-      <!-- Contenu des onglets -->
-      <div class="p-6">
+    <Tabs 
+      v-model="activeTab" 
+      :tabs="tabs"
+      @tab-change="handleTabChange"
+    >
+      <template #default="{ activeTab: currentTab }">
         <!-- Onglet Locations Actives -->
-        <div v-if="activeTab === 'active'" class="space-y-4">
-          <div class="overflow-x-auto">
-            <table class="w-full">
-              <thead class="bg-gray-50">
-                <tr>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Chambre</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dates</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prix</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                </tr>
-              </thead>
-              <tbody class="bg-white divide-y divide-gray-200">
-                <tr v-for="location in activeLocations" :key="location.id" class="hover:bg-gray-50">
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="flex items-center">
-                      <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                        <Bed class="w-5 h-5 text-purple-600" />
-                      </div>
-                      <div class="ml-4">
-                        <div class="text-sm font-medium text-gray-900">{{ location.guestName }}</div>
-                        <div class="text-sm text-gray-500">{{ location.booking }}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm text-gray-900">Chambre {{ location.room_details?.room_number }}</div>
-                    <div class="text-sm text-gray-500">{{ location.room_details?.room_type }}</div>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm text-gray-900">{{ formatDate(location.checkIn) }} </div>
-                    <div class="text-sm text-gray-500">{{ formatDate(location.checkOut) }}</div>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm font-medium text-gray-900">{{ formatCurrency(location.totalPrice) }}</div>
-                    <!-- <div class="text-sm text-gray-500">{{ formatCurrency(location.dailyRate) }}/jour</div> -->
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <!-- <span :class="getPaymentStatusClass(location.paymentStatus)" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium">
-                      {{ getPaymentStatusLabel(location.paymentStatus) }}
-                    </span> -->
-                    <div class="text-sm text-gray-500">
-                      Payé: {{ formatCurrency(location.amountPaid) }}
-                    </div>
-                    <div class="text-sm text-red-500">
-                      Dette: {{ formatCurrency(location.amountDue) }}
-                    </div>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                    <button 
-                      @click="openPaymentModal(location)"
-                      class="inline-flex items-center px-3 py-2 border border-transparent rounded-lg text-sm font-medium text-white bg-purple-600 hover:bg-green-700"
-                    >
-                      <CreditCard class="w-4 h-4 mr-1" />
-                      Paiement
-                    </button>
-                    <button 
-                      @click="viewPaymentHistory(location)"
-                      class="inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-                    >
-                      <History class="w-4 h-4 mr-1" />
-                      Historique
-                    </button>
-                    <button 
-                      v-if="location.depositAmount > 0"
-                      @click="viewDepositDetails(location)"
-                      class="inline-flex items-center px-3 py-2 border border-blue-300 rounded-lg text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100"
-                    >
-                      <Wallet class="w-4 h-4 mr-1" />
-                      Deposit
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+        <div v-if="currentTab === 'active'" class="space-y-4">
+          <DataTable
+            title="Locations Actives"
+            subtitle="Gérez les paiements des séjours en cours"
+            :items="activeLocations"
+            :columns="activeLocationsColumns"
+            :empty-title="'Aucune location active'"
+            :empty-message="'Aucune location active pour le moment.'"
+          >
+            <!-- Colonne personnalisée pour le client avec icône -->
+            <template #column-guestName="{ item, themeClasses }">
+              <div class="flex items-center">
+                <div :class="[
+                  'w-10 h-10 rounded-full flex items-center justify-center',
+                  themeClasses.bgPrimary
+                ]">
+                  <User class="w-5 h-5 text-white" />
+                </div>
+                <div class="ml-3">
+                  <div class="text-sm font-medium text-gray-900">{{ item.guest_details?.name }} {{ item.guest_details?.firstname }}</div>
+                  <div class="text-sm text-gray-500">{{ item.guest_details?.phone }}</div>
+                </div>
+              </div>
+            </template>
+            
+            <template #column-paymentStatus="{ item }">
+              <div class="space-y-1">
+                <div class="text-sm text-gray-500">
+                  Payé: {{ formatCurrency(item.amountPaid) }}
+                </div>
+                <div class="text-sm text-red-500">
+                  Dette: {{ formatCurrency(item.amountDue) }}
+                </div>
+              </div>
+            </template>
+            
+            <template #column-dates="{ item }">
+              <div class="space-y-1">
+                <div class="text-sm text-gray-900">{{ formatDate(item.checkIn) }}</div>
+                <div class="text-sm text-gray-500">{{ formatDate(item.checkOut) }}</div>
+              </div>
+            </template>
+            
+            <template #column-roomNumber="{ item }">
+              <div class="space-y-1">
+                <div class="text-sm text-gray-900">Chambre {{ item.room_details?.room_number }}</div>
+                <div class="text-sm text-gray-500">{{ item.room_details?.room_type }}</div>
+              </div>
+            </template>
+            
+            <template #actions="{ item }">
+              <div class="flex items-center space-x-2">
+                <button 
+                  @click="openPaymentModal(item)"
+                  class="inline-flex items-center px-3 py-2 border border-transparent rounded-lg text-sm font-medium text-white bg-purple-600 hover:bg-green-700"
+                >
+                  <CreditCard class="w-4 h-4 mr-1" />
+                  Paiement
+                </button>
+                <button 
+                  @click="viewPaymentHistory(item)"
+                  class="inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                >
+                  <History class="w-4 h-4 mr-1" />
+                  Historique
+                </button>
+                <button 
+                  v-if="item.depositAmount > 0"
+                  @click="viewDepositDetails(item)"
+                  class="inline-flex items-center px-3 py-2 border border-blue-300 rounded-lg text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100"
+                >
+                  <Wallet class="w-4 h-4 mr-1" />
+                  Deposit
+                </button>
+              </div>
+            </template>
+          </DataTable>
         </div>
 
         <!-- Onglet Locations Passées -->
-        <div v-if="activeTab === 'past'" class="space-y-4">
-          <div class="overflow-x-auto">
-            <table class="w-full">
-              <thead class="bg-gray-50">
-                <tr>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Chambre</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dates</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prix Total</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Montant Payé</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Montant Restant</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                </tr>
-              </thead>
-              <tbody class="bg-white divide-y divide-gray-200">
-                <tr v-for="location in pastLocations" :key="location.id" class="hover:bg-gray-50">
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="flex items-center">
-                      <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                        <User class="w-5 h-5 text-purple-600" />
-                      </div>
-                      <div class="ml-4">
-                        <div class="text-sm font-medium text-gray-900">{{ location.guest_details?.name + ' ' + location.guest_details?.firstname }}</div>
-                        <div class="text-sm text-gray-500">{{ location.guest_details?.phone }}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm text-gray-900">Chambre {{ location.room_details?.number }}</div>
-                    <div class="text-sm text-gray-500">{{ location.room_details?.type }}</div>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm text-gray-900">{{ formatDate(location.checkIn) }} </div>
-                    <div class="text-sm text-gray-500">{{ formatDate(location.checkOut) }}</div>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm font-medium text-gray-900">{{ formatCurrency(location.totalPrice) }}</div>
-                    <!-- <div class="text-sm text-gray-500">{{ formatCurrency(location.dailyRate) }}/jour</div> -->
-                  </td>
-                  <td class="px-6 py-4 text-green-700 whitespace-nowrap">
-                      {{ formatCurrency(location.amountPaid) }}
-                  </td>
-                  <td class="px-6 py-4 text-red-700 whitespace-nowrap">
-                      {{ formatCurrency(location.amountDue) }}
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                    <button 
-                      @click="openPaymentModal(location)"
-                      class="inline-flex items-center px-3 py-2 border border-transparent rounded-lg text-sm font-medium text-purple-700 bg-purple-50 hover:bg-purple-100"
-                    >
-                      <Plus class="w-4 h-4 mr-1" />
-                      Ajouter Paiement
-                    </button>
-                    <button 
-                      title="Historique des paiements"
-                      @click="viewPaymentHistory(location)"
-                      class="inline-flex items-center px-3 py-2 border border-transparent rounded-lg text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-50"
-                    >
-                      <History class="w-4 h-4 mr-1" />
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+        <div v-if="currentTab === 'past'" class="space-y-4">
+          <DataTable
+            title="Locations Passées"
+            subtitle="Historique des séjours terminés"
+            :items="pastLocations"
+            :columns="pastLocationsColumns"
+            :empty-title="'Aucune location passée'"
+            :empty-message="'Aucune location passée pour le moment.'"
+          >
+            <!-- Colonne personnalisée pour le client avec icône -->
+            <template #column-guestName="{ item, themeClasses }">
+              <div class="flex items-center">
+                <div :class="[
+                  'w-10 h-10 rounded-full flex items-center justify-center',
+                  themeClasses.bgPrimary
+                ]">
+                  <User class="w-5 h-5 text-white" />
+                </div>
+                <div class="ml-3">
+                  <div class="text-sm font-medium text-gray-900">{{ item.guest_details?.name }} {{ item.guest_details?.firstname }}</div>
+                  <div class="text-sm text-gray-500">{{ item.guest_details?.phone }}</div>
+                </div>
+              </div>
+            </template>
+            
+            <template #column-roomNumber="{ item }">
+              <div class="space-y-1">
+                <div class="text-sm text-gray-900">Chambre {{ item.room_details?.number }}</div>
+                <div class="text-sm text-gray-500">{{ item.room_details?.type }}</div>
+              </div>
+            </template>
+            
+            <template #column-dates="{ item }">
+              <div class="space-y-1">
+                <div class="text-sm text-gray-900">{{ formatDate(item.checkIn) }}</div>
+                <div class="text-sm text-gray-500">{{ formatDate(item.checkOut) }}</div>
+              </div>
+            </template>
+            
+            <template #actions="{ item }">
+              <div class="flex items-center space-x-2">
+                <button 
+                  @click="openPaymentModal(item)"
+                  class="inline-flex items-center px-3 py-2 border border-transparent rounded-lg text-sm font-medium text-purple-700 bg-purple-50 hover:bg-purple-100"
+                >
+                  <Plus class="w-4 h-4 mr-1" />
+                  Ajouter Paiement
+                </button>
+                <button 
+                  title="Historique des paiements"
+                  @click="viewPaymentHistory(item)"
+                  class="inline-flex items-center px-3 py-2 border border-transparent rounded-lg text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-50"
+                >
+                  <History class="w-4 h-4 mr-1" />
+                </button>
+              </div>
+            </template>
+          </DataTable>
         </div>
 
         <!-- Onglet Historique des Paiements -->
-        <div v-if="activeTab === 'payments'" class="space-y-4">
-          <div class="overflow-x-auto">
-            <table class="w-full">
-              <thead class="bg-gray-50">
-                <tr>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Chambre</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Montant</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Méthode</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                </tr>
-              </thead>
-              <tbody class="bg-white divide-y divide-gray-200">
-                <tr v-for="payment in filteredPayments" :key="payment.id" class="hover:bg-gray-50">
-                  
-                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {{ payment.booking_details?.guest_name }}
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {{ payment.booking_details?.room_number }}
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                    {{ formatCurrency(payment.amount) }}
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <span :class="getPaymentTypeClass(payment.status)" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium">
-                      {{ getPaymentTypeLabel(payment.status) }}
-                    </span>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {{ getPaymentMethodLabel(payment.type) }}
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {{ formatDateTime(payment.created_at) }}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+        <div v-if="currentTab === 'payments'" class="space-y-4">
+          <DataTable
+            title="Historique des Paiements"
+            subtitle="Tous les paiements effectués"
+            :items="filteredPayments"
+            :columns="paymentsColumns"
+            :empty-title="'Aucun paiement'"
+            :empty-message="'Aucun paiement enregistré pour le moment.'"
+          >
+            <!-- Colonne personnalisée pour le client avec icône -->
+            <template #column-guestName="{ item, themeClasses }">
+              <div class="flex items-center">
+                <div :class="[
+                  'w-10 h-10 rounded-full flex items-center justify-center',
+                  themeClasses.bgPrimary
+                ]">
+                  <User class="w-5 h-5 text-white" />
+                </div>
+                <div class="ml-3">
+                  <div class="text-sm font-medium text-gray-900">{{ item.booking_details?.guest_name }}</div>
+                  <div class="text-sm text-gray-500">{{ item.booking_details?.guest_phone }}</div>
+                </div>
+              </div>
+            </template>
+            
+            <template #column-roomNumber="{ item }">
+              <div class="text-sm text-gray-900">
+                {{ item.booking_details?.room_number }}
+              </div>
+            </template>
+            
+            <template #column-status="{ item }">
+              <span :class="getPaymentTypeClass(item.status)" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium">
+                {{ getPaymentTypeLabel(item.status) }}
+              </span>
+            </template>
+            
+            <template #column-type="{ item }">
+              <div class="text-sm text-gray-900">
+                {{ getPaymentMethodLabel(item.type) }}
+              </div>
+            </template>
+          </DataTable>
         </div>
-      </div>
-    </div>
+      </template>
+    </Tabs>
 
     <!-- Modal de Paiement -->
     <div v-if="showPaymentModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" @click="closePaymentModal">
@@ -426,9 +403,11 @@
 import { ref, computed, onMounted } from 'vue'
 import { locationsAPI, paymentsAPI } from '@/services/api'
 import {
-  CreditCard, RefreshCw, TrendingUp, AlertTriangle, Wallet, DollarSign,
-  Search, Bed, History, X,User, Plus, Calendar, Clock, CheckCircle, ChevronUp, ChevronDown
+  RefreshCw, TrendingUp, AlertTriangle, Wallet, DollarSign,
+  Search, Bed, History, X, User, Plus, Calendar, Clock, CheckCircle, ChevronUp, ChevronDown, CreditCard
 } from 'lucide-vue-next'
+import Tabs from '@/components/ui/Tabs.vue'
+import DataTable from '@/components/ui/DataTable.vue'
 
 // État
 const isLoading = ref(false)
@@ -463,21 +442,119 @@ const paymentForm = ref({
 const tabs = computed(() => [
   {
     id: 'active',
-    name: 'Locations Actives',
+    label: 'Locations Actives',
     icon: Bed,
     count: activeLocations.value.length
   },
   {
     id: 'past',
-    name: 'Locations Passées',
+    label: 'Locations Passées',
     icon: History,
     count: pastLocations.value.length
   },
   {
     id: 'payments',
-    name: 'Historique Paiements',
+    label: 'Historique Paiements',
     icon: CreditCard,
     count: payments.value.length
+  }
+])
+
+// Colonnes pour les DataTables
+const activeLocationsColumns = computed(() => [
+  {
+    key: 'guestName',
+    label: 'Client',
+    sortable: true
+  },
+  {
+    key: 'roomNumber',
+    label: 'Chambre',
+    sortable: true
+  },
+  {
+    key: 'dates',
+    label: 'Dates'
+  },
+  {
+    key: 'totalPrice',
+    label: 'Prix',
+    type: 'currency',
+    sortable: true
+  },
+  {
+    key: 'paymentStatus',
+    label: 'Statut'
+  }
+])
+
+const pastLocationsColumns = computed(() => [
+  {
+    key: 'guestName',
+    label: 'Client',
+    sortable: true
+  },
+  {
+    key: 'roomNumber',
+    label: 'Chambre',
+    sortable: true
+  },
+  {
+    key: 'dates',
+    label: 'Dates'
+  },
+  {
+    key: 'totalPrice',
+    label: 'Prix Total',
+    type: 'currency',
+    sortable: true
+  },
+  {
+    key: 'amountPaid',
+    label: 'Montant Payé',
+    type: 'currency',
+    class: 'text-green-600 font-medium'
+  },
+  {
+    key: 'amountDue',
+    label: 'Montant Restant',
+    type: 'currency',
+    class: 'text-red-600 font-medium'
+  }
+])
+
+const paymentsColumns = computed(() => [
+  {
+    key: 'guestName',
+    label: 'Client',
+    sortable: true
+  },
+  {
+    key: 'roomNumber',
+    label: 'Chambre',
+    sortable: true
+  },
+  {
+    key: 'amount',
+    label: 'Montant',
+    type: 'currency',
+    sortable: true
+  },
+  {
+    key: 'status',
+    label: 'Statut',
+    sortable: true
+  },
+  {
+    key: 'type',
+    label: 'Méthode',
+    sortable: true
+  },
+  {
+    key: 'created_at',
+    label: 'Date',
+    type: 'date',
+    sortable: true
   }
 ])
 
@@ -741,6 +818,10 @@ const viewPaymentHistory = (location) => {
 const viewDepositDetails = (location) => {
   activeTab.value = 'payments'
   filters.value.search = location.booking
+}
+
+const handleTabChange = (newTab) => {
+  activeTab.value = newTab
 }
 
 // Lifecycle

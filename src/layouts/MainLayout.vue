@@ -275,7 +275,7 @@ const navigationItems = computed(() => {
     {
       name: 'Tableau de bord',
       icon: LayoutDashboard,
-      to: '/',
+      to: '/dashboard',
       routeName: 'Dashboard'
     },
     {

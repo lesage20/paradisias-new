@@ -6,19 +6,19 @@
     
     <!-- Panneau de paramètres -->
     <div :class="[
-      'fixed top-0 right-0 h-full w-80 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-50',
+      'fixed top-0 right-0 h-full w-80 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-50 flex flex-col',
       isOpen ? 'translate-x-0' : 'translate-x-full'
     ]">
-      <!-- Header -->
-      <div class="flex items-center justify-between p-6 border-b border-gray-200">
+      <!-- Header fixe -->
+      <div class="flex items-center justify-between p-6 border-b border-gray-200 flex-shrink-0">
         <h2 class="text-xl font-bold text-gray-900">Paramètres</h2>
         <button @click="close" class="p-2 text-gray-400 hover:text-gray-600 transition-colors">
           <X class="w-5 h-5" />
         </button>
       </div>
 
-      <!-- Contenu -->
-      <div class="p-6">
+      <!-- Contenu scrollable -->
+      <div class="flex-1 overflow-y-auto p-6">
         <!-- Section Thèmes -->
         <div class="mb-8">
           <h3 class="text-lg font-semibold text-gray-900 mb-4">Thèmes de couleur</h3>
@@ -85,7 +85,7 @@
         <div class="border-t border-gray-200 pt-6">
           <button @click="resetToDefault" 
                   class="w-full py-2 px-4 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
-            Réinitialiser au thème par défaut
+            Réinitialiser au thème Violet
           </button>
         </div>
       </div>
@@ -127,17 +127,47 @@ const selectTheme = (themeName) => {
 }
 
 const resetToDefault = () => {
-  themeStore.setTheme('default')
+  themeStore.setTheme('violet')
 }
 
 const getColorPreview = (theme, colorType) => {
   const color = theme.colors[colorType]
   
-  // Gestion des couleurs personnalisées avec crochets
+  // Mapping des couleurs personnalisées vers leurs équivalents CSS
+  const colorMapping = {
+    // Couleurs Paradisias
+    'theme-green-paradisias': 'bg-[#09402C]',
+    'theme-salmon-paradisias': 'bg-[#c88a85]',
+    'theme-salmon-primary': 'bg-[#c88a85]',
+    'theme-green-secondary': 'bg-[#09402C]',
+    
+    // Couleurs standards Tailwind
+    'purple-600': 'bg-purple-600',
+    'pink-600': 'bg-pink-600',
+    'blue-600': 'bg-blue-600',
+    'cyan-600': 'bg-cyan-600',
+    'indigo-600': 'bg-indigo-600',
+    'emerald-600': 'bg-emerald-600',
+    'teal-600': 'bg-teal-600',
+    'red-600': 'bg-red-600',
+    'orange-600': 'bg-orange-600',
+    'amber-600': 'bg-amber-600',
+    'rose-600': 'bg-rose-600',
+    'slate-600': 'bg-slate-600',
+    'gray-600': 'bg-gray-600'
+  }
+  
+  // Vérifier si on a un mapping pour cette couleur
+  if (colorMapping[color]) {
+    return colorMapping[color]
+  }
+  
+  // Gestion des couleurs personnalisées avec crochets (ancien système)
   if (color.startsWith('[') && color.endsWith(']')) {
     return `bg-${color}`
   }
   
+  // Par défaut, essayer d'utiliser la couleur telle quelle
   return `bg-${color}`
 }
 </script> 

@@ -20,7 +20,10 @@
         </select>
         
         <button @click="refreshData" :disabled="isLoading"
-                class="inline-flex items-center px-3 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50">
+                :class="[
+                  'inline-flex items-center px-3 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 transition-colors',
+                  themeClasses.btnPrimary
+                ]">
           <RefreshCw class="w-4 h-4 mr-2" :class="{ 'animate-spin': isLoading }" />
           Actualiser
         </button>
@@ -197,7 +200,7 @@
                       :class="[
                         'px-3 py-1 text-xs font-medium rounded-full transition-colors',
                         selectedChart === chart.key 
-                          ? 'bg-purple-100 text-purple-700' 
+                          ? `${themeClasses.bgPrimaryLight} ${themeClasses.textPrimary}` 
                           : 'text-gray-500 hover:text-gray-700'
                       ]">
                 {{ chart.label }}
@@ -290,7 +293,11 @@
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div class="flex items-center justify-between mb-6">
           <h3 class="text-lg font-medium text-gray-900">Transactions récentes</h3>
-          <router-link to="/locations" class="text-sm text-purple-600 hover:text-purple-700 font-medium">
+          <router-link to="/locations" :class="[
+            'text-sm font-medium transition-colors',
+            themeClasses.textPrimary,
+            themeClasses.hoverPrimary
+          ]">
             Voir tout
           </router-link>
         </div>
@@ -471,17 +478,19 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useAuthStore } from '@/stores/auth'
-import {
-  DollarSign, BarChart3, TrendingUp, Star, Calendar, UserCheck, UserX,
-  RefreshCw, Plus, Minus, AlertTriangle, Clock, Wifi, Settings
-} from 'lucide-vue-next'
+import { useThemeStore } from '@/stores/theme'
 import MetricCard from '@/components/dashboard/MetricCard.vue'
+import { 
+  RefreshCw, DollarSign, BarChart3, TrendingUp, Star, Calendar, 
+  UserCheck, UserX, Plus, ChevronDown 
+} from 'lucide-vue-next'
 import QuickActionButton from '@/components/dashboard/QuickActionButton.vue'
 
 // Stores
 const authStore = useAuthStore()
+const themeStore = useThemeStore()
 
 // État
 const isLoading = ref(false)
@@ -489,7 +498,8 @@ const selectedPeriod = ref('today')
 const selectedChart = ref('revenue')
 
 // Computed
-const userRole = computed(() => authStore.userRole || 'personnel')
+const userRole = computed(() => authStore.userRole)
+const themeClasses = computed(() => themeStore.themeClasses)
 
 // Options de graphiques selon le profil
 const chartOptions = computed(() => {

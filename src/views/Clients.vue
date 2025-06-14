@@ -11,7 +11,10 @@
           <Download class="w-4 h-4 mr-2" />
           Exporter
         </button>
-        <button @click="openCreateModal" class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transform hover:scale-105 transition-all duration-200">
+        <button @click="openCreateModal" :class="[
+          'inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transform hover:scale-105 transition-all duration-200',
+          themeClasses.btnPrimary
+        ]">
           <Plus class="w-4 h-4 mr-2" />
           Nouveau client
         </button>
@@ -137,208 +140,104 @@
       <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
     </div>
 
-    <!-- Tableau des clients -->
-    <div v-else class="bg-white rounded-lg shadow-sm border border-gray-200">
-      <div class="px-6 py-4 border-b border-gray-200">
-        <div class="flex items-center justify-between">
-          <h3 class="text-lg font-medium text-gray-900">Liste des clients</h3>
-          <div class="flex items-center space-x-2">
-            <button
-              v-for="view in ['grid', 'list']"
-              :key="view"
-              @click="currentView = view"
-              :class="[
-                'p-2 rounded-lg',
-                currentView === view ? 'bg-purple-100 text-purple-600' : 'text-gray-400 hover:text-gray-600'
-              ]"
-            >
-              <component :is="view === 'grid' ? Grid : List" class="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Vue liste -->
-      <div v-if="currentView === 'list'" class="overflow-x-auto">
-        <table class="w-full">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="px-6 py-3 text-left">
-                <input
-                  type="checkbox"
-                  :checked="selectedClients.length === filteredClients.length && filteredClients.length > 0"
-                  @change="toggleSelectAll"
-                  class="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-                />
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Identité</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nationalité</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Inscription</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="client in paginatedClients" :key="client.id" class="hover:bg-gray-50">
-              <td class="px-6 py-4">
-                <input
-                  type="checkbox"
-                  :value="client.id"
-                  v-model="selectedClients"
-                  class="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-                />
-              </td>
-              <td class="px-6 py-4">
-                <div class="flex items-center">
-                  <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                    <User class="w-5 h-5 text-purple-600" />
-                  </div>
-                  <div class="ml-3">
-                    <div class="text-sm font-medium text-gray-900">{{ client.name }} {{ client.firstname }}</div>
-                    <div class="text-sm text-gray-500">{{ client.gender === 'homme' ? 'M.' : 'Mme' }} - {{ calculateAge(client.dob) }} ans</div>
-                  </div>
-                </div>
-              </td>
-              <td class="px-6 py-4">
-                <div class="text-sm text-gray-900">{{ client.phone }}</div>
-                <div class="text-sm text-gray-500">{{ client.email || 'Pas d\'email' }}</div>
-              </td>
-              <td class="px-6 py-4">
-                <div class="text-sm font-medium text-gray-900">{{ formatIdType(client.idType) }}</div>
-                <div class="text-sm text-gray-500">{{ client.idNumber }}</div>
-              </td>
-              <td class="px-6 py-4">
-                <div class="text-sm text-gray-900">{{ client.nationnalite || 'Non renseignée' }}</div>
-              </td>
-              <td class="px-6 py-4">
-                <div class="text-sm text-gray-900">{{ formatDate(client.created_at) }}</div>
-              </td>
-              <td class="px-6 py-4">
-                <div class="flex items-center space-x-2">
-                  <button @click="viewClient(client)" class="text-purple-600 hover:text-purple-900">
-                    <Eye class="w-4 h-4" />
-                  </button>
-                  <button @click="editClient(client)" class="text-blue-600 hover:text-blue-900">
-                    <Edit class="w-4 h-4" />
-                  </button>
-                  <button @click="deleteClient(client)" class="text-red-600 hover:text-red-900">
-                    <Trash2 class="w-4 h-4" />
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Vue grille -->
-      <div v-else class="p-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div
-            v-for="client in paginatedClients"
-            :key="client.id"
-            class="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow"
-          >
-            <div class="flex items-center justify-between mb-4">
-              <div class="flex items-center space-x-3">
-                <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                  <User class="w-6 h-6 text-purple-600" />
-                </div>
-                <div>
-                  <h4 class="text-sm font-medium text-gray-900">{{ client.name }} {{ client.firstname }}</h4>
-                  <p class="text-xs text-gray-500">{{ client.gender === 'homme' ? 'Monsieur' : 'Madame' }}</p>
-                </div>
-              </div>
-              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                {{ calculateAge(client.dob) }} ans
-              </span>
-            </div>
-            
-            <div class="space-y-2 mb-4">
-              <div class="flex items-center justify-between text-sm">
-                <span class="text-gray-500">Téléphone</span>
-                <span class="font-medium">{{ client.phone }}</span>
-              </div>
-              <div class="flex items-center justify-between text-sm">
-                <span class="text-gray-500">Email</span>
-                <span class="font-medium">{{ client.email || 'N/A' }}</span>
-              </div>
-              <div class="flex items-center justify-between text-sm">
-                <span class="text-gray-500">Pièce d'identité</span>
-                <span class="font-medium">{{ formatIdType(client.idType) }}</span>
-              </div>
-              <div class="flex items-center justify-between text-sm">
-                <span class="text-gray-500">Nationalité</span>
-                <span class="font-medium">{{ client.nationnalite || 'N/A' }}</span>
-              </div>
-            </div>
-            
-            <div class="flex items-center justify-between pt-4 border-t border-gray-200">
-              <button @click="viewClient(client)" class="text-purple-600 hover:text-purple-900 text-sm font-medium">
-                Détails
-              </button>
-              <div class="flex items-center space-x-2">
-                <button @click="editClient(client)" class="text-blue-600 hover:text-blue-900">
-                  <Edit class="w-4 h-4" />
-                </button>
-                <button @click="deleteClient(client)" class="text-red-600 hover:text-red-900">
-                  <Trash2 class="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Pagination -->
-      <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-        <div class="flex items-center space-x-2">
-          <span class="text-sm text-gray-700">Afficher</span>
-          <select v-model="itemsPerPage" class="border border-gray-300 rounded px-2 py-1 text-sm">
-            <option :value="10">10</option>
-            <option :value="25">25</option>
-            <option :value="50">50</option>
-            <option :value="100">100</option>
-          </select>
-          <span class="text-sm text-gray-700">par page</span>
-        </div>
-        
+    <!-- Tableau des clients avec le nouveau composant DataTable -->
+    <DataTable
+      v-else
+      title="Liste des clients"
+      :items="paginatedClients"
+      :columns="tableColumns"
+      :selectable="true"
+      :pagination="paginationConfig"
+      item-key="id"
+      empty-title="Aucun client trouvé"
+      empty-message="Aucun client ne correspond aux critères de recherche."
+      @update:current-page="currentPage = $event"
+      @update:items-per-page="itemsPerPage = $event"
+      @selection-change="selectedClients = $event"
+      @sort="handleSort"
+    >
+      <!-- Slot pour l'en-tête avec boutons de vue -->
+      <template #header>
         <div class="flex items-center space-x-2">
           <button
-            @click="currentPage--"
-            :disabled="currentPage === 1"
-            class="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50"
+            v-for="view in ['grid', 'list']"
+            :key="view"
+            @click="currentView = view"
+            :class="[
+              'p-2 rounded-lg transition-colors',
+              currentView === view 
+                ? `${themeClasses.bgPrimaryLight} ${themeClasses.textPrimary}` 
+                : 'text-gray-400 hover:text-gray-600'
+            ]"
           >
-            Précédent
-          </button>
-          
-          <div class="flex items-center space-x-1">
-            <button
-              v-for="page in visiblePages"
-              :key="page"
-              @click="currentPage = page"
-              :class="[
-                'px-3 py-1 text-sm rounded',
-                currentPage === page
-                  ? 'bg-purple-600 text-white'
-                  : 'border border-gray-300 hover:bg-gray-50'
-              ]"
-            >
-              {{ page }}
-            </button>
-          </div>
-          
-          <button
-            @click="currentPage++"
-            :disabled="currentPage === totalPages"
-            class="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50"
-          >
-            Suivant
+            <component :is="view === 'grid' ? Grid : List" class="w-4 h-4" />
           </button>
         </div>
-      </div>
-    </div>
+      </template>
+
+      <!-- Actions en lot -->
+      <template #bulk-actions>
+        <button @click="bulkDelete" class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium text-white bg-red-600 hover:bg-red-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-200">
+          Supprimer
+        </button>
+      </template>
+
+      <!-- Colonne personnalisée pour le client -->
+      <template #column-client="{ item, themeClasses }">
+        <div class="flex items-center">
+          <div :class="[
+            'w-10 h-10 rounded-full flex items-center justify-center',
+            themeClasses.bgPrimary
+          ]">
+            <User class="w-5 h-5 text-white" />
+          </div>
+          <div class="ml-3">
+            <div class="text-sm font-medium text-gray-900">{{ item.name }} {{ item.firstname }}</div>
+            <div class="text-sm text-gray-500">{{ item.gender === 'homme' ? 'M.' : 'Mme' }} - {{ calculateAge(item.dob) }} ans</div>
+          </div>
+        </div>
+      </template>
+
+      <!-- Colonne personnalisée pour le contact -->
+      <template #column-contact="{ item }">
+        <div>
+          <div class="text-sm text-gray-900">{{ item.phone }}</div>
+          <div class="text-sm text-gray-500">{{ item.email || 'Pas d\'email' }}</div>
+        </div>
+      </template>
+
+      <!-- Colonne personnalisée pour l'identité -->
+      <template #column-identity="{ item }">
+        <div>
+          <div class="text-sm font-medium text-gray-900">{{ formatIdType(item.idType) }}</div>
+          <div class="text-sm text-gray-500">{{ item.idNumber }}</div>
+        </div>
+      </template>
+
+      <!-- Colonne personnalisée pour la nationalité -->
+      <template #column-nationality="{ item }">
+        <div class="text-sm text-gray-900">{{ item.nationnalite || 'Non renseignée' }}</div>
+      </template>
+
+      <!-- Actions pour chaque ligne -->
+      <template #actions="{ item, themeClasses }">
+        <div class="flex items-center space-x-2">
+          <button @click="viewClient(item)" :class="[
+            'transition-colors',
+            themeClasses.textPrimary,
+            themeClasses.hoverPrimary
+          ]">
+            <Eye class="w-4 h-4" />
+          </button>
+          <button @click="editClient(item)" class="text-blue-600 hover:text-blue-900">
+            <Edit class="w-4 h-4" />
+          </button>
+          <button @click="deleteClient(item)" class="text-red-600 hover:text-red-900">
+            <Trash2 class="w-4 h-4" />
+          </button>
+        </div>
+      </template>
+    </DataTable>
 
     <!-- Modal de création/édition -->
     <div
@@ -363,7 +262,7 @@
           <!-- Informations personnelles -->
           <div>
             <h4 class="text-md font-medium text-gray-900 mb-4">Informations personnelles</h4>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Nom *</label>
                 <input
@@ -438,7 +337,7 @@
           <!-- Contact -->
           <div>
             <h4 class="text-md font-medium text-gray-900 mb-4">Contact</h4>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Téléphone *</label>
                 <input
@@ -461,7 +360,16 @@
                   placeholder="email@exemple.com"
                 />
               </div>
-              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Profession</label>
+                <input
+                  v-model="form.job"
+                  type="text"
+                  maxlength="50"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  placeholder="Profession"
+                />
+              </div>
               <div class="md:col-span-2">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Adresse</label>
                 <input
@@ -484,23 +392,14 @@
                 />
               </div>
               
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Profession</label>
-                <input
-                  v-model="form.job"
-                  type="text"
-                  maxlength="50"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="Profession"
-                />
-              </div>
+              
             </div>
           </div>
 
           <!-- Pièce d'identité -->
           <div>
             <h4 class="text-md font-medium text-gray-900 mb-4">Pièce d'identité</h4>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Type de pièce *</label>
                 <select
@@ -509,14 +408,14 @@
                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 >
                   <option value="">Sélectionner</option>
-                  <option value="cni">CNI</option>
+                  <option value="cni">Carte Nationale d'Identité</option>
                   <option value="passeport">Passeport</option>
                   <option value="attestation">Attestation</option>
                 </select>
               </div>
               
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Numéro *</label>
+              <div class="md:col-span-2">
+                <label class=" block text-sm font-medium text-gray-700 mb-2">Numéro *</label>
                 <input
                   v-model="form.idNumber"
                   type="text"
@@ -549,7 +448,7 @@
                 />
               </div>
               
-              <div class="md:col-span-2">
+              <div >
                 <label class="block text-sm font-medium text-gray-700 mb-2">Délivrée par *</label>
                 <input
                   v-model="form.id_delivered_by"
@@ -566,7 +465,7 @@
           <!-- Informations familiales -->
           <div>
             <h4 class="text-md font-medium text-gray-900 mb-4">Informations familiales (optionnel)</h4>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Nom du père</label>
                 <input
@@ -595,7 +494,10 @@
             <button type="button" @click="closeModal" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200">
               Annuler
             </button>
-            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200" :disabled="isSaving">
+            <button type="submit" :class="[
+              'inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200',
+              themeClasses.btnPrimary
+            ]" :disabled="isSaving">
               <span v-if="isSaving">Enregistrement...</span>
               <span v-else>{{ isEditing ? 'Mettre à jour' : 'Créer le client' }}</span>
             </button>
@@ -608,11 +510,21 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
+import { useAuthStore } from '@/stores/auth'
+import { useThemeStore } from '@/stores/theme'
 import {
   Plus, Search, Download, Grid, List, User, Eye, Edit, Trash2, X,
-  Users, UserPlus, UserCheck, Globe
+  Users, UserPlus, UserCheck, Globe, Phone, Mail, Calendar
 } from 'lucide-vue-next'
 import { clientsAPI } from '../services/api.js'
+import { DataTable } from '@/components/ui'
+
+// Stores
+const authStore = useAuthStore()
+const themeStore = useThemeStore()
+
+// Computed
+const themeClasses = computed(() => themeStore.themeClasses)
 
 // État
 const showModal = ref(false)
@@ -751,6 +663,45 @@ const visiblePages = computed(() => {
   
   return pages
 })
+
+// Configuration des colonnes pour le DataTable
+const tableColumns = computed(() => [
+  {
+    key: 'client',
+    label: 'Client',
+    type: 'user',
+    sortable: true
+  },
+  {
+    key: 'contact',
+    label: 'Contact',
+    sortable: true
+  },
+  {
+    key: 'identity',
+    label: 'Identité',
+    sortable: true
+  },
+  {
+    key: 'nationality',
+    label: 'Nationalité',
+    sortable: true
+  },
+  {
+    key: 'created_at',
+    label: 'Inscription',
+    type: 'date',
+    sortable: true
+  }
+])
+
+// Configuration de la pagination
+const paginationConfig = computed(() => ({
+  currentPage: currentPage.value,
+  totalPages: totalPages.value,
+  totalItems: filteredClients.value.length,
+  itemsPerPage: itemsPerPage.value
+}))
 
 // Méthodes utilitaires
 const formatDate = (date) => {
@@ -936,6 +887,12 @@ const exportData = () => {
 watch(() => filters.value.search, () => {
   currentPage.value = 1
 })
+
+// Méthodes de gestion des données
+const handleSort = (sortConfig) => {
+  console.log('Tri demandé:', sortConfig)
+  // TODO: Implémenter le tri réel des données
+}
 
 // Chargement initial
 onMounted(async () => {

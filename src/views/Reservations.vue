@@ -11,7 +11,10 @@
           <Download class="w-4 h-4 mr-2" />
           Exporter
         </button>
-        <button @click="openCreateModal" class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transform hover:scale-105 transition-all duration-200">
+        <button @click="openCreateModal" :class="[
+          'inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transform hover:scale-105 transition-all duration-200',
+          themeClasses.btnPrimary
+        ]">
           <Plus class="w-4 h-4 mr-2" />
           Nouvelle réservation
         </button>
@@ -142,142 +145,98 @@
       <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
     </div>
 
-    <!-- Tableau des réservations -->
-    <div v-else class="bg-white rounded-lg shadow-sm border border-gray-200">
-      <div class="px-6 py-4 border-b border-gray-200">
-        <h3 class="text-lg font-medium text-gray-900">Liste des réservations</h3>
-      </div>
-
-      <div class="overflow-x-auto">
-        <table class="w-full">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="px-6 py-3 text-left">
-                <input
-                  type="checkbox"
-                  :checked="selectedReservations.length === filteredReservations.length && filteredReservations.length > 0"
-                  @change="toggleSelectAll"
-                  class="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-                />
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Référence</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dates séjour</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Chambre demandée</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="reservation in paginatedReservations" :key="reservation.id" class="hover:bg-gray-50">
-              <td class="px-6 py-4">
-                <input
-                  type="checkbox"
-                  :value="reservation.id"
-                  v-model="selectedReservations"
-                  class="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-                />
-              </td>
-              <td class="px-6 py-4">
-                <div class="text-sm font-medium text-gray-900">{{ reservation.reference || `RES-${reservation.id}` }}</div>
-                <div class="text-sm text-gray-500">{{ formatDate(reservation.created_at) }}</div>
-              </td>
-              <td class="px-6 py-4">
-                <div class="flex items-center">
-                  <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                    <User class="w-5 h-5 text-purple-600" />
-                  </div>
-                  <div class="ml-3">
-                    <div class="text-sm font-medium text-gray-900">{{ getGuestName(reservation.guest) }}</div>
-                    <div class="text-sm text-gray-500">{{ getGuestPhone(reservation.guest) }}</div>
-                  </div>
-                </div>
-              </td>
-              <td class="px-6 py-4">
-                <div class="text-sm text-gray-900">{{ formatDate(reservation.checkIn) }}</div>
-                <div class="text-sm text-gray-500">{{ formatDate(reservation.checkOut) }}</div>
-                <div class="text-xs text-gray-400">{{ calculateNights(reservation.checkIn, reservation.checkOut) }} nuit(s)</div>
-              </td>
-              <td class="px-6 py-4">
-                <div class="text-sm font-medium text-gray-900">{{ getRoomInfo(reservation.room) }}</div>
-              </td>
-              <td class="px-6 py-4">
-                <span :class="[
-                  'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
-                  getStatusColor(reservation.status)
-                ]">
-                  {{ getStatusLabel(reservation.status) }}
-                </span>
-              </td>
-              <td class="px-6 py-4">
-                <div class="flex items-center space-x-2">
-                  <button @click="viewReservation(reservation)" class="text-purple-600 hover:text-purple-900">
-                    <Eye class="w-4 h-4" />
-                  </button>
-                  <button @click="convertToLocation(reservation)" class="text-green-600 hover:text-green-900" title="Convertir en location">
-                    <ArrowRight class="w-4 h-4" />
-                  </button>
-                  <button @click="editReservation(reservation)" class="text-blue-600 hover:text-blue-900">
-                    <Edit class="w-4 h-4" />
-                  </button>
-                  <button @click="deleteReservation(reservation)" class="text-red-600 hover:text-red-900">
-                    <Trash2 class="w-4 h-4" />
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Pagination -->
-      <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-        <div class="flex items-center space-x-2">
-          <span class="text-sm text-gray-700">Afficher</span>
-          <select v-model="itemsPerPage" class="border border-gray-300 rounded px-2 py-1 text-sm">
-            <option :value="10">10</option>
-            <option :value="25">25</option>
-            <option :value="50">50</option>
-            <option :value="100">100</option>
-          </select>
-          <span class="text-sm text-gray-700">par page</span>
+    <!-- Tableau des réservations avec DataTable -->
+    <DataTable
+      v-else
+      title="Liste des réservations"
+      :items="paginatedReservations"
+      :columns="tableColumns"
+      :selectable="true"
+      :pagination="paginationConfig"
+      item-key="id"
+      empty-title="Aucune réservation trouvée"
+      empty-message="Aucune réservation ne correspond aux critères de recherche."
+      @update:current-page="currentPage = $event"
+      @update:items-per-page="itemsPerPage = $event"
+      @selection-change="selectedReservations = $event"
+      @sort="handleSort"
+    >
+      <!-- Slot pour la colonne référence -->
+      <template #column-reference="{ item }">
+        <div>
+          <div class="text-sm font-medium text-gray-900">{{ item.reference || `RES-${item.id}` }}</div>
+          <div class="text-sm text-gray-500">{{ formatDate(item.created_at) }}</div>
         </div>
-        
-        <div class="flex items-center space-x-2">
-          <button
-            @click="currentPage--"
-            :disabled="currentPage === 1"
-            class="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50"
-          >
-            Précédent
-          </button>
-          
-          <div class="flex items-center space-x-1">
-            <button
-              v-for="page in visiblePages"
-              :key="page"
-              @click="currentPage = page"
-              :class="[
-                'px-3 py-1 text-sm rounded',
-                currentPage === page
-                  ? 'bg-purple-600 text-white'
-                  : 'border border-gray-300 hover:bg-gray-50'
-              ]"
-            >
-              {{ page }}
-            </button>
+      </template>
+
+      <!-- Slot pour la colonne client -->
+      <template #column-guest="{ item, themeClasses }">
+        <div class="flex items-center">
+          <div :class="[
+            'w-10 h-10 rounded-full flex items-center justify-center',
+            themeClasses.bgPrimary
+          ]">
+            <User class="w-5 h-5 text-white" />
           </div>
-          
-          <button
-            @click="currentPage++"
-            :disabled="currentPage === totalPages"
-            class="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50"
-          >
-            Suivant
+          <div class="ml-3">
+            <div class="text-sm font-medium text-gray-900">{{ getGuestName(item.guest) }}</div>
+            <div class="text-sm text-gray-500">{{ getGuestPhone(item.guest) }}</div>
+          </div>
+        </div>
+      </template>
+
+      <!-- Slot pour les dates -->
+      <template #column-dates="{ item }">
+        <div>
+          <div class="text-sm text-gray-900">{{ formatDate(item.checkIn) }}</div>
+          <div class="text-sm text-gray-500">{{ formatDate(item.checkOut) }}</div>
+          <div class="text-xs text-gray-400">{{ calculateNights(item.checkIn, item.checkOut) }} nuit(s)</div>
+        </div>
+      </template>
+
+      <!-- Slot pour la chambre -->
+      <template #column-room="{ item }">
+        <div class="text-sm font-medium text-gray-900">{{ getRoomInfo(item.room) }}</div>
+      </template>
+
+      <!-- Slot pour le statut -->
+      <template #column-status="{ item }">
+        <span :class="[
+          'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+          getStatusColor(item.status)
+        ]">
+          {{ getStatusLabel(item.status) }}
+        </span>
+      </template>
+
+      <!-- Slot pour les actions -->
+      <template #actions="{ item, themeClasses }">
+        <div class="flex items-center space-x-2">
+          <button @click="viewReservation(item)" :class="[themeClasses.textPrimary, 'hover:opacity-80']" title="Voir détails">
+            <Eye class="w-4 h-4" />
+          </button>
+          <button @click="convertToLocation(item)" class="text-green-600 hover:text-green-900" title="Convertir en location">
+            <ArrowRight class="w-4 h-4" />
+          </button>
+          <button @click="editReservation(item)" class="text-blue-600 hover:text-blue-900" title="Modifier">
+            <Edit class="w-4 h-4" />
+          </button>
+          <button @click="deleteReservation(item)" class="text-red-600 hover:text-red-900" title="Supprimer">
+            <Trash2 class="w-4 h-4" />
           </button>
         </div>
-      </div>
-    </div>
+      </template>
+
+      <!-- Actions en lot -->
+      <template #bulk-actions>
+        <button @click="bulkAction('confirmée')" class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium text-white bg-green-600 hover:bg-green-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200">
+          Confirmer
+        </button>
+        <button @click="bulkAction('annulée')" class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium text-white bg-red-600 hover:bg-red-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-200">
+          Annuler
+        </button>
+      </template>
+    </DataTable>
 
     <!-- Modal de création/édition -->
     <div
@@ -365,7 +324,10 @@
             <button type="button" @click="closeModal" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200">
               Annuler
             </button>
-            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200" :disabled="isSaving">
+            <button type="submit" :class="[
+              'inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200',
+              themeClasses.btnPrimary
+            ]" :disabled="isSaving">
               <span v-if="isSaving">Enregistrement...</span>
               <span v-else>{{ isEditing ? 'Mettre à jour' : 'Créer la réservation' }}</span>
             </button>
@@ -378,16 +340,22 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
+import { useAuthStore } from '@/stores/auth'
+import { useThemeStore } from '@/stores/theme'
 import {
-  Plus, Search, Download, Calendar, User, Eye, Edit, Trash2, X,
-  Clock, CheckCircle, DollarSign, ArrowRight
+  Plus, Search, Download, Grid, List, User, Eye, Edit, Trash2, X,
+  Calendar, Clock, CheckCircle, AlertCircle, XCircle, MapPin, ArrowRight
 } from 'lucide-vue-next'
-import { reservationsAPI, locationsAPI, roomsAPI, roomTypesAPI, clientsAPI } from '../services/api.js'
+import { reservationsAPI, roomsAPI, roomTypesAPI, clientsAPI, locationsAPI } from '../services/api.js'
+import { DataTable } from '@/components/ui'
 
-import { useAuthStore } from '../stores/auth.js'
-
-// Store d'authentification
+// Stores
 const authStore = useAuthStore()
+const themeStore = useThemeStore()
+
+// Computed
+const themeClasses = computed(() => themeStore.themeClasses)
+
 // État
 const showModal = ref(false)
 const isEditing = ref(false)
@@ -477,18 +445,45 @@ const paginatedReservations = computed(() => {
   return filteredReservations.value.slice(start, end)
 })
 
-const visiblePages = computed(() => {
-  const pages = []
-  const maxPages = 5
-  let start = Math.max(1, currentPage.value - Math.floor(maxPages / 2))
-  let end = Math.min(totalPages.value, start + maxPages - 1)
-  
-  for (let i = start; i <= end; i++) {
-    pages.push(i)
+// Configuration des colonnes pour le DataTable
+const tableColumns = computed(() => [
+  {
+    key: 'reference',
+    label: 'Référence',
+    sortable: true,
+    class: 'text-sm font-medium text-gray-900'
+  },
+  {
+    key: 'guest',
+    label: 'Client',
+    type: 'user',
+    sortable: true
+  },
+  {
+    key: 'dates',
+    label: 'Dates séjour',
+    sortable: true
+  },
+  {
+    key: 'room',
+    label: 'Chambre demandée',
+    sortable: true
+  },
+  {
+    key: 'status',
+    label: 'Statut',
+    type: 'badge',
+    sortable: true
   }
-  
-  return pages
-})
+])
+
+// Configuration de la pagination
+const paginationConfig = computed(() => ({
+  currentPage: currentPage.value,
+  totalPages: totalPages.value,
+  totalItems: filteredReservations.value.length,
+  itemsPerPage: itemsPerPage.value
+}))
 
 // Méthodes utilitaires
 const formatDate = (date) => {
@@ -592,14 +587,6 @@ const resetFilters = () => {
     status: '',
     period: '',
     roomType: ''
-  }
-}
-
-const toggleSelectAll = () => {
-  if (selectedReservations.value.length === filteredReservations.value.length) {
-    selectedReservations.value = []
-  } else {
-    selectedReservations.value = filteredReservations.value.map(reservation => reservation.id)
   }
 }
 
@@ -732,6 +719,12 @@ const bulkAction = async (action) => {
 const exportData = () => {
   console.log('Export des données de réservations')
   // TODO: implémenter l'export
+}
+
+const handleSort = ({ column, order }) => {
+  // Logique de tri pour le DataTable
+  console.log('Tri par:', column, order)
+  // TODO: implémenter le tri si nécessaire
 }
 
 // Surveillance des filtres de recherche

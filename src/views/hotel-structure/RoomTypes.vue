@@ -47,7 +47,7 @@
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div class="flex items-center">
           <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-            <Users class="w-6 h-6 text-purple-600" />
+            <Users :class="['w-6 h-6', themeClasses.textPrimary]" />
           </div>
           <div class="ml-4">
             <p class="text-sm font-medium text-gray-600">Capacité max</p>
@@ -86,7 +86,7 @@
           <div class="flex items-center justify-between">
             <div class="flex items-center space-x-3">
               <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                <BedDouble class="w-6 h-6 text-purple-600" />
+                <BedDouble :class="['w-6 h-6', themeClasses.textPrimary]" />
               </div>
               <div>
                 <h3 class="text-lg font-semibold text-gray-900">{{ roomType.name }}</h3>
@@ -125,7 +125,7 @@
 
           <!-- Prix -->
           <div class="bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg p-4 text-center">
-            <p class="text-xs text-purple-600 font-medium mb-1">PRIX PAR NUIT</p>
+            <p :class="['text-xs font-medium mb-1', themeClasses.textPrimary]">PRIX PAR NUIT</p>
             <p class="text-2xl font-bold text-purple-700">{{ formatCurrency(roomType.price) }}</p>
           </div>
         </div>
@@ -145,10 +145,10 @@
         class="bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-dashed border-purple-300 rounded-lg p-6 flex flex-col items-center justify-center text-center hover:from-purple-100 hover:to-purple-200 cursor-pointer transition-all duration-200 h-full min-h-[280px]"
       >
         <div class="w-16 h-16 bg-purple-200 rounded-full flex items-center justify-center mb-4">
-          <Plus class="w-8 h-8 text-purple-600" />
+          <Plus :class="['w-8 h-8', themeClasses.textPrimary]" />
         </div>
-        <h3 class="text-lg font-semibold text-purple-700 mb-2">Ajouter un type</h3>
-        <p class="text-sm text-purple-600">Créer un nouveau type de chambre avec ses caractéristiques</p>
+        <h3 :class="['text-lg font-semibold mb-2', themeClasses.textPrimary]">Ajouter un type</h3>
+        <p :class="['text-sm', themeClasses.textPrimary]">Créer un nouveau type de chambre avec ses caractéristiques</p>
       </div>
     </div>
 
@@ -237,7 +237,10 @@
             <button type="button" @click="closeModal" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200">
               Annuler
             </button>
-            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200" :disabled="isSaving">
+            <button type="submit" :class="[
+              'inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200',
+              themeClasses.btnPrimary
+            ]" :disabled="isSaving">
               <span v-if="isSaving">Enregistrement...</span>
               <span v-else>{{ isEditing ? 'Mettre à jour' : 'Créer le type' }}</span>
             </button>
@@ -250,11 +253,15 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useThemeStore } from '@/stores/theme'
 import {
   Plus, Download, Bed, BedDouble, DollarSign, Users, TrendingUp,
   Edit, Trash2, X, User, Baby
 } from 'lucide-vue-next'
 import { roomTypesAPI } from '../../services/api.js'
+
+// Store
+const themeStore = useThemeStore()
 
 // État
 const showModal = ref(false)
@@ -292,6 +299,9 @@ const maxPrice = computed(() => {
   if (roomTypes.value.length === 0) return 0
   return Math.max(...roomTypes.value.map(type => type.price || 0))
 })
+
+// Computed
+const themeClasses = computed(() => themeStore.themeClasses)
 
 // Méthodes utilitaires
 const formatCurrency = (amount) => {

@@ -11,7 +11,11 @@
           <Download class="w-4 h-4 mr-2" />
           Exporter
         </button>
-        <button @click="openCreateModal" class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transform hover:scale-105 transition-all duration-200">
+        <button @click="openCreateModal" 
+        :class="[
+          'inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transform hover:scale-105 transition-all duration-200',
+          themeClasses.btnPrimary
+        ]">
           <Plus class="w-4 h-4 mr-2" />
           Nouvelle location
         </button>
@@ -128,10 +132,16 @@
         
         <div v-if="selectedLocations.length > 0" class="flex items-center space-x-2">
           <span class="text-sm text-gray-500">{{ selectedLocations.length }} sélectionné(s)</span>
-          <button @click="bulkAction('pj')" class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium text-white bg-green-600 hover:bg-green-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200">
+          <button @click="bulkAction('pj')" :class="[
+            'inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium text-white hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200',
+            themeClasses.btnPrimary
+          ]">
             Marquer payé
           </button>
-          <button @click="bulkAction('dj')" class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium text-white bg-yellow-600 hover:bg-yellow-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-all duration-200">
+          <button @click="bulkAction('dj')" :class="[
+            'inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium text-white hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200',
+            themeClasses.btnSecondary
+          ]">
             Dette jour
           </button>
           <button @click="bulkAction('archive')" class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium text-white bg-red-600 hover:bg-red-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-200">
@@ -146,373 +156,264 @@
       <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
     </div>
 
-    <!-- Tableau des locations -->
-    <div v-else class="bg-white rounded-lg shadow-sm border border-gray-200">
-      <div class="px-6 py-4 border-b border-gray-200">
-        <div class="flex items-center justify-between">
-          <h3 class="text-lg font-medium text-gray-900">Liste des locations</h3>
-          <div class="flex items-center space-x-2">
-            <button
-              v-for="view in ['grid', 'list']"
-              :key="view"
-              @click="currentView = view"
-              :class="[
-                'p-2 rounded-lg',
-                currentView === view ? 'bg-purple-100 text-purple-600' : 'text-gray-400 hover:text-gray-600'
-              ]"
-            >
-              <component :is="view === 'grid' ? Grid : List" class="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Vue liste -->
-      <div v-if="currentView === 'list'" class="overflow-x-auto">
-        <table class="w-full">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="px-6 py-3 text-left">
-                <input
-                  type="checkbox"
-                  :checked="selectedLocations.length === filteredLocations.length && filteredLocations.length > 0"
-                  @change="toggleSelectAll"
-                  class="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-                />
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Référence</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Chambre</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dates</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Montant</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="location in paginatedLocations" :key="location.id" class="hover:bg-gray-50">
-              <td class="px-6 py-4">
-                <input
-                  type="checkbox"
-                  :value="location.id"
-                  v-model="selectedLocations"
-                  class="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-                />
-              </td>
-              <td class="px-6 py-4">
-                <div class="text-sm font-medium text-gray-900">{{ location.reference || `LOC-${location.id}` }}</div>
-                <div class="text-sm text-gray-500">{{ formatDate(location.created_at) }}</div>
-              </td>
-              <td class="px-6 py-4">
-                <div class="flex items-center">
-                  <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                    <User class="w-5 h-5 text-purple-600" />
-                  </div>
-                  <div class="ml-3">
-                    <div class="text-sm font-medium text-gray-900">{{ getGuestName(location.guest) }}</div>
-                    <div class="text-sm text-gray-500">{{ getGuestEmail(location.guest) }}</div>
-                  </div>
-                </div>
-              </td>
-              <td class="px-6 py-4">
-                <div class="text-sm font-medium text-gray-900">{{ getRoomNumber(location.room) }}</div>
-                <div class="text-sm text-gray-500">{{ getRoomType(location.room) }}</div>
-              </td>
-              <td class="px-6 py-4">
-                <div class="text-sm text-gray-900">{{ formatDate(location.checkIn) }}</div>
-                <div class="text-sm text-gray-500">{{ formatDate(location.checkOut) }}</div>
-              </td>
-              <td class="px-6 py-4">
-                <div class="text-sm font-medium text-gray-900">{{ formatCurrency(location.totalPrice) }}</div>
-              </td>
-              <td class="px-6 py-4">
-                <span :class="[
-                  'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
-                  getStatusColor(location.status)
-                ]">
-                  {{ getStatusLabel(location.status) }}
-                </span>
-              </td>
-              <td class="px-6 py-4">
-                <div class="flex items-center space-x-2">
-                  <button @click="viewLocation(location)" class="text-purple-600 hover:text-purple-900">
-                    <Eye class="w-4 h-4" />
-                  </button>
-                  <button @click="editLocation(location)" class="text-blue-600 hover:text-blue-900">
-                    <Edit class="w-4 h-4" />
-                  </button>
-                  <button @click="deleteLocation(location)" class="text-red-600 hover:text-red-900">
-                    <Trash2 class="w-4 h-4" />
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Vue grille -->
-      <div v-else class="p-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div
-            v-for="location in paginatedLocations"
-            :key="location.id"
-            class="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow"
-          >
-            <div class="flex items-center justify-between mb-4">
-              <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                  <User class="w-5 h-5 text-purple-600" />
-                </div>
-                <div>
-                  <h4 class="text-sm font-medium text-gray-900">{{ getGuestName(location.guest) }}</h4>
-                  <p class="text-xs text-gray-500">{{ location.reference || `LOC-${location.id}` }}</p>
-                </div>
-              </div>
-              <span :class="[
-                'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium',
-                getStatusColor(location.status)
-              ]">
-                {{ getStatusLabel(location.status) }}
-              </span>
-            </div>
-            
-            <div class="space-y-2 mb-4">
-              <div class="flex items-center justify-between text-sm">
-                <span class="text-gray-500">Chambre</span>
-                <span class="font-medium">{{ getRoomNumber(location.room) }} - {{ getRoomType(location.room) }}</span>
-              </div>
-              <div class="flex items-center justify-between text-sm">
-                <span class="text-gray-500">Arrivée</span>
-                <span class="font-medium">{{ formatDate(location.checkIn) }}</span>
-              </div>
-              <div class="flex items-center justify-between text-sm">
-                <span class="text-gray-500">Départ</span>
-                <span class="font-medium">{{ formatDate(location.checkOut) }}</span>
-              </div>
-              <div class="flex items-center justify-between text-sm">
-                <span class="text-gray-500">Montant</span>
-                <span class="font-medium text-purple-600">{{ formatCurrency(location.totalPrice) }}</span>
-              </div>
-            </div>
-            
-            <div class="flex items-center justify-between pt-4 border-t border-gray-200">
-              <button @click="viewLocation(location)" class="text-purple-600 hover:text-purple-900 text-sm font-medium">
-                Détails
-              </button>
-              <div class="flex items-center space-x-2">
-                <button @click="editLocation(location)" class="text-blue-600 hover:text-blue-900">
-                  <Edit class="w-4 h-4" />
-                </button>
-                <button @click="deleteLocation(location)" class="text-red-600 hover:text-red-900">
-                  <Trash2 class="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Pagination -->
-      <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-        <div class="flex items-center space-x-2">
-          <span class="text-sm text-gray-700">Afficher</span>
-          <select v-model="itemsPerPage" class="border border-gray-300 rounded px-2 py-1 text-sm">
-            <option :value="10">10</option>
-            <option :value="25">25</option>
-            <option :value="50">50</option>
-            <option :value="100">100</option>
-          </select>
-          <span class="text-sm text-gray-700">par page</span>
-        </div>
-        
+    <!-- Tableau des locations avec le nouveau composant DataTable -->
+    <DataTable
+      v-else
+      title="Liste des locations"
+      :items="paginatedLocations"
+      :columns="tableColumns"
+      :selectable="true"
+      :pagination="paginationConfig"
+      item-key="id"
+      empty-title="Aucune location trouvée"
+      empty-message="Aucune location ne correspond aux critères de recherche."
+      @update:current-page="currentPage = $event"
+      @update:items-per-page="itemsPerPage = $event"
+      @selection-change="selectedLocations = $event"
+      @sort="handleSort"
+    >
+      <!-- Slot pour l'en-tête avec boutons de vue -->
+      <template #header>
         <div class="flex items-center space-x-2">
           <button
-            @click="currentPage--"
-            :disabled="currentPage === 1"
-            class="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50"
+            v-for="view in ['grid', 'list']"
+            :key="view"
+            @click="currentView = view"
+            :class="[
+              'p-2 rounded-lg transition-colors',
+              currentView === view 
+                ? `${themeClasses.bgPrimaryLight} ${themeClasses.textPrimary}` 
+                : 'text-gray-400 hover:text-gray-600'
+            ]"
           >
-            Précédent
-          </button>
-          
-          <div class="flex items-center space-x-1">
-            <button
-              v-for="page in visiblePages"
-              :key="page"
-              @click="currentPage = page"
-              :class="[
-                'px-3 py-1 text-sm rounded',
-                currentPage === page
-                  ? 'bg-purple-600 text-white'
-                  : 'border border-gray-300 hover:bg-gray-50'
-              ]"
-            >
-              {{ page }}
-            </button>
-          </div>
-          
-          <button
-            @click="currentPage++"
-            :disabled="currentPage === totalPages"
-            class="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50"
-          >
-            Suivant
+            <component :is="view === 'grid' ? Grid : List" class="w-4 h-4" />
           </button>
         </div>
-      </div>
-    </div>
+      </template>
+
+      <!-- Actions en lot -->
+      <template #bulk-actions>
+        <button @click="bulkAction('pj')" :class="[
+          'inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium text-white hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200',
+          themeClasses.btnPrimary
+        ]">
+          Marquer payé
+        </button>
+        <button @click="bulkAction('dj')" :class="[
+          'inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium text-white hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200',
+          themeClasses.btnSecondary
+        ]">
+          Dette jour
+        </button>
+        <button @click="bulkAction('archive')" class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium text-white bg-red-600 hover:bg-red-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-200">
+          Archiver
+        </button>
+      </template>
+
+      <!-- Colonne personnalisée pour la référence -->
+      <template #column-reference="{ item }">
+        <div>
+          <div class="text-sm font-medium text-gray-900">{{ item.reference || `LOC-${item.id}` }}</div>
+          <div class="text-sm text-gray-500">{{ formatDate(item.created_at) }}</div>
+        </div>
+      </template>
+
+      <!-- Colonne personnalisée pour le client (utilise le type 'user' automatiquement) -->
+      <template #column-guest="{ item, themeClasses }">
+        <div class="flex items-center">
+          <div :class="[
+            'w-10 h-10 rounded-full flex items-center justify-center',
+            themeClasses.bgPrimary
+          ]">
+            <User class="w-5 h-5 text-white" />
+          </div>
+          <div class="ml-3">
+            <div class="text-sm font-medium text-gray-900">{{ getGuestName(item.guest) }}</div>
+            <div class="text-sm text-gray-500">{{ getGuestEmail(item.guest) }}</div>
+          </div>
+        </div>
+      </template>
+
+      <!-- Colonne personnalisée pour la chambre -->
+      <template #column-room="{ item }">
+        <div>
+          <div class="text-sm font-medium text-gray-900">{{ getRoomNumber(item.room) }}</div>
+          <div class="text-sm text-gray-500">{{ getRoomType(item.room) }}</div>
+        </div>
+      </template>
+
+      <!-- Colonne personnalisée pour les dates -->
+      <template #column-dates="{ item }">
+        <div>
+          <div class="text-sm text-gray-900">{{ formatDate(item.checkIn) }}</div>
+          <div class="text-sm text-gray-500">{{ formatDate(item.checkOut) }}</div>
+        </div>
+      </template>
+
+      <!-- Colonne personnalisée pour le statut -->
+      <template #column-status="{ item }">
+        <span :class="[
+          'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+          getStatusColor(item.status)
+        ]">
+          {{ getStatusLabel(item.status) }}
+        </span>
+      </template>
+
+      <!-- Actions pour chaque ligne -->
+      <template #actions="{ item, themeClasses }">
+        <div class="flex items-center space-x-2">
+          <button @click="viewLocation(item)" :class="[
+            'text-sm font-medium transition-colors',
+            themeClasses.textPrimary,
+            themeClasses.hoverPrimary
+          ]">
+            <Eye class="w-4 h-4" />
+          </button>
+          <button @click="editLocation(item)" class="text-blue-600 hover:text-blue-900">
+            <Edit class="w-4 h-4" />
+          </button>
+          <button @click="deleteLocation(item)" class="text-red-600 hover:text-red-900">
+            <Trash2 class="w-4 h-4" />
+          </button>
+        </div>
+      </template>
+    </DataTable>
 
     <!-- Modal de création/édition -->
-    <div
-      v-if="showModal"
-      class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-      @click="closeModal"
+    <Modal
+      v-model="showModal"
+      :title="isEditing ? 'Modifier la location' : 'Nouvelle location'"
+      size="lg"
+      :loading="isSaving"
+      :disabled="isSaving"
+      @close="closeModal"
+      @confirm="saveLocation"
     >
-      <div
-        class="bg-white rounded-lg max-w-2xl w-full mx-4 max-h-screen overflow-y-auto"
-        @click.stop
-      >
-        <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-          <h3 class="text-lg font-medium text-gray-900">
-            {{ isEditing ? 'Modifier la location' : 'Nouvelle location' }}
-          </h3>
-          <button @click="closeModal" class="text-gray-400 hover:text-gray-600">
-            <X class="w-6 h-6" />
-          </button>
-        </div>
-        
-        <form @submit.prevent="saveLocation" class="p-6 space-y-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Client *</label>
-              <select
-                v-model="form.guest"
-                required
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              >
-                <option value="">Sélectionner un client</option>
-                <option v-for="client in clients" :key="client.id" :value="client.id">
-                  {{ client.name }} {{ client.firstname }}
-                </option>
-              </select>
-            </div>
-            
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Chambre *</label>
-              <select
-                v-model="form.room"
-                required
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              >
-                <option value="">Sélectionner une chambre</option>
-                <option v-for="room in availableRooms" :key="room.id" :value="room.id">
-                  Chambre {{ room.number }} - {{ getRoomTypeName(room.type) }}
-                </option>
-              </select>
-            </div>
-            
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Date d'arrivée *</label>
-              <input
-                v-model="form.checkIn"
-                type="datetime-local"
-                required
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              />
-            </div>
-            
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Date de départ *</label>
-              <input
-                v-model="form.checkOut"
-                type="datetime-local"
-                required
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              />
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Nombre d'adultes</label>
-              <input
-                v-model.number="form.adults"
-                type="number"
-                min="1"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              />
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Nombre d'enfants</label>
-              <input
-                v-model.number="form.children"
-                type="number"
-                min="0"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              />
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Prix total</label>
-              <input
-                v-model.number="form.totalPrice"
-                type="number"
-                min="0"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              />
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Mode de paiement</label>
-              <select
-                v-model="form.payment"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              >
-                <option value="espece">Espèces</option>
-                <option value="cheque">Chèque</option>
-                <option value="visa">Carte bancaire</option>
-                <option value="devise">Devise</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Statut de paiement</label>
-              <select
-                v-model="form.status"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              >
-                <option value="pj">Payé jour</option>
-                <option value="dj">Dette jour</option>
-                <option value="dt">Dette totale</option>
-                <option value="dp">Dette payée</option>
-              </select>
-            </div>
+      <form class="p-6 space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Client *</label>
+            <select
+              v-model="form.guest"
+              required
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            >
+              <option value="">Sélectionner un client</option>
+              <option v-for="client in clients" :key="client.id" :value="client.id">
+                {{ client.name }} {{ client.firstname }}
+              </option>
+            </select>
           </div>
           
-          <div class="flex items-center justify-end space-x-3 pt-6 border-t border-gray-200">
-            <button type="button" @click="closeModal" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200">
-              Annuler
-            </button>
-            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200" :disabled="isSaving">
-              <span v-if="isSaving">Enregistrement...</span>
-              <span v-else>{{ isEditing ? 'Mettre à jour' : 'Créer la location' }}</span>
-            </button>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Chambre *</label>
+            <select
+              v-model="form.room"
+              required
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            >
+              <option value="">Sélectionner une chambre</option>
+              <option v-for="room in availableRooms" :key="room.id" :value="room.id">
+                Chambre {{ room.number }} - {{ getRoomTypeName(room.type) }}
+              </option>
+            </select>
           </div>
-        </form>
-      </div>
-    </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Date d'arrivée *</label>
+            <input
+              v-model="form.checkIn"
+              type="datetime-local"
+              required
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            />
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Date de départ *</label>
+            <input
+              v-model="form.checkOut"
+              type="datetime-local"
+              required
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Nombre d'adultes</label>
+            <input
+              v-model.number="form.adults"
+              type="number"
+              min="1"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Nombre d'enfants</label>
+            <input
+              v-model.number="form.children"
+              type="number"
+              min="0"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Prix total</label>
+            <input
+              v-model.number="form.totalPrice"
+              type="number"
+              min="0"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Mode de paiement</label>
+            <select
+              v-model="form.payment"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            >
+              <option value="espece">Espèces</option>
+              <option value="cheque">Chèque</option>
+              <option value="visa">Carte bancaire</option>
+              <option value="devise">Devise</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Statut de paiement</label>
+            <select
+              v-model="form.status"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            >
+              <option value="pj">Payé jour</option>
+              <option value="dj">Dette jour</option>
+              <option value="dt">Dette totale</option>
+              <option value="dp">Dette payée</option>
+            </select>
+          </div>
+        </div>
+      </form>
+    </Modal>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
+import { useAuthStore } from '@/stores/auth'
+import { useThemeStore } from '@/stores/theme'
 import {
-  Plus, Search, Download, Grid, List, User, Eye, Edit, Trash2, X, Calendar, Clock, CheckCircle, DollarSign
+  Plus, Search, Download, Grid, List, User, Eye, Edit, Trash2, Calendar, Clock, CheckCircle, DollarSign
 } from 'lucide-vue-next'
 import { locationsAPI, roomsAPI, roomTypesAPI, clientsAPI, mapStatusFromAPI } from '../services/api.js'
-import { useAuthStore } from '../stores/auth.js'
+import { DataTable, Modal } from '@/components/ui'
 
-// Store d'authentification
+// Stores
 const authStore = useAuthStore()
+const themeStore = useThemeStore()
 
 // État
 const showModal = ref(false)
@@ -553,26 +454,41 @@ const form = ref({
 
 // Computed
 const filteredLocations = computed(() => {
-  let filtered = locations.value
+  let result = locations.value
 
+  // Filtrage par recherche
   if (filters.value.search) {
-    const search = filters.value.search.toLowerCase()
-    filtered = filtered.filter(location => {
+    const searchTerm = filters.value.search.toLowerCase()
+    result = result.filter(location => {
       const guestName = getGuestName(location.guest).toLowerCase()
       const roomNumber = getRoomNumber(location.room).toLowerCase()
       const reference = (location.reference || `LOC-${location.id}`).toLowerCase()
       
-      return guestName.includes(search) || 
-             roomNumber.includes(search) || 
-             reference.includes(search)
+      return guestName.includes(searchTerm) || 
+             roomNumber.includes(searchTerm) || 
+             reference.includes(searchTerm)
     })
   }
 
+  // Filtrage par statut
   if (filters.value.status) {
-    filtered = filtered.filter(location => location.status === filters.value.status)
+    result = result.filter(location => location.status === filters.value.status)
   }
 
-  return filtered
+  // Filtrage par type de chambre
+  if (filters.value.roomType) {
+    result = result.filter(location => location.room?.room_type?.id === parseInt(filters.value.roomType))
+  }
+
+  // Filtrage par dates
+  if (filters.value.dateFrom) {
+    result = result.filter(location => new Date(location.checkIn) >= new Date(filters.value.dateFrom))
+  }
+  if (filters.value.dateTo) {
+    result = result.filter(location => new Date(location.checkOut) <= new Date(filters.value.dateTo))
+  }
+
+  return result
 })
 
 const totalPages = computed(() => Math.ceil(filteredLocations.value.length / itemsPerPage.value))
@@ -620,6 +536,54 @@ const debtLocations = computed(() => {
 const totalLocations = computed(() => {
   return locations.value.length
 })
+
+const themeClasses = computed(() => themeStore.themeClasses)
+
+// Configuration des colonnes pour le DataTable
+const tableColumns = computed(() => [
+  {
+    key: 'reference',
+    label: 'Référence',
+    sortable: true,
+    class: 'text-sm font-medium text-gray-900'
+  },
+  {
+    key: 'guest',
+    label: 'Client',
+    type: 'user',
+    sortable: true
+  },
+  {
+    key: 'room',
+    label: 'Chambre',
+    sortable: true
+  },
+  {
+    key: 'dates',
+    label: 'Dates',
+    sortable: true
+  },
+  {
+    key: 'totalPrice',
+    label: 'Montant',
+    type: 'currency',
+    sortable: true
+  },
+  {
+    key: 'status',
+    label: 'Statut',
+    type: 'badge',
+    sortable: true
+  }
+])
+
+// Configuration de la pagination
+const paginationConfig = computed(() => ({
+  currentPage: currentPage.value,
+  totalPages: totalPages.value,
+  totalItems: filteredLocations.value.length,
+  itemsPerPage: itemsPerPage.value
+}))
 
 // Méthodes utilitaires
 const formatDate = (date) => {
@@ -881,6 +845,13 @@ const exportData = () => {
 watch(() => filters.value.search, () => {
   currentPage.value = 1
 })
+
+// Méthodes de gestion des données
+const handleSort = (sortConfig) => {
+  // Implémentation du tri - pour l'instant on peut juste logger
+  console.log('Tri demandé:', sortConfig)
+  // TODO: Implémenter le tri réel des données
+}
 
 // Chargement initial
 onMounted(async () => {

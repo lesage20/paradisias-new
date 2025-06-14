@@ -4,6 +4,60 @@ export default {
     "./index.html",
     "./src/**/*.{vue,js,ts,jsx,tsx}",
   ],
+  safelist: [
+    // Classes de thèmes pour s'assurer qu'elles sont incluses dans le build
+    'bg-theme-green-paradisias',
+    'bg-theme-green-paradisias-hover',
+    'bg-theme-green-paradisias-light',
+    'bg-theme-salmon-paradisias',
+    'bg-theme-salmon-paradisias-hover',
+    'bg-theme-salmon-primary',
+    'bg-theme-salmon-primary-hover',
+    'bg-theme-salmon-primary-light',
+    'bg-theme-green-secondary',
+    'bg-theme-green-secondary-hover',
+    'text-theme-green-paradisias',
+    'text-theme-green-paradisias-hover',
+    'text-theme-salmon-paradisias',
+    'text-theme-salmon-paradisias-hover',
+    'text-theme-salmon-primary',
+    'text-theme-salmon-primary-hover',
+    'text-theme-green-secondary',
+    'text-theme-green-secondary-hover',
+    'hover:bg-theme-green-paradisias',
+    'hover:bg-theme-green-paradisias-hover',
+    'hover:bg-theme-salmon-paradisias',
+    'hover:bg-theme-salmon-paradisias-hover',
+    'hover:bg-theme-salmon-primary',
+    'hover:bg-theme-salmon-primary-hover',
+    'hover:bg-theme-green-secondary',
+    'hover:bg-theme-green-secondary-hover',
+    'hover:text-theme-green-paradisias',
+    'hover:text-theme-salmon-paradisias',
+    'hover:text-theme-salmon-primary',
+    'hover:text-theme-green-secondary',
+    // Classes de texte pour les boutons
+    'text-white',
+    'text-black',
+    'text-gray-900',
+    'text-gray-800',
+    // Classes d'aperçu des couleurs pour les indicateurs
+    'bg-[#09402C]',
+    'bg-[#c88a85]',
+    // Classes standards pour les autres thèmes
+    {
+      pattern: /bg-(purple|pink|blue|cyan|indigo|emerald|teal|red|orange|amber|rose|slate|gray)-(50|600|700)/,
+    },
+    {
+      pattern: /text-(purple|pink|blue|cyan|indigo|emerald|teal|red|orange|amber|rose|slate|gray)-(600|700)/,
+    },
+    {
+      pattern: /hover:bg-(purple|pink|blue|cyan|indigo|emerald|teal|red|orange|amber|rose|slate|gray)-(600|700)/,
+    },
+    {
+      pattern: /hover:text-(purple|pink|blue|cyan|indigo|emerald|teal|red|orange|amber|rose|slate|gray)-(600|700)/,
+    }
+  ],
   theme: {
     extend: {
       colors: {
@@ -20,6 +74,11 @@ export default {
           100: '#F4EFE9', // Sable Clair
           50:  '#FFFFFF', // Blanc Pur
         },
+        
+        // Couleurs spécifiques Paradisias pour les thèmes
+        'paradisias-green': '#09402C', // Vert foncé Paradisias
+        'paradisias-salmon': '#D99791', // Rose saumon Paradisias
+        
         // Renommage des anciennes palettes pour conserver la logique
         ocean: { // Anciennement paradisias
           50: '#f0f9ff',
@@ -57,6 +116,80 @@ export default {
           800: '#166534',
           900: '#14532d',
         },
+        
+        // Couleurs des thèmes personnalisés
+        theme: {
+          // Violet (thème par défaut)
+          'violet-primary': '#9333ea',
+          'violet-primary-hover': '#7c3aed',
+          'violet-primary-light': '#faf5ff',
+          'violet-secondary': '#db2777',
+          'violet-secondary-hover': '#be185d',
+          
+          // Vert Paradisias
+          'green-paradisias': '#09402C',
+          'green-paradisias-hover': '#0a4d35',
+          'green-paradisias-light': 'rgba(9, 64, 44, 0.1)',
+          'salmon-paradisias': '#c88a85',
+          'salmon-paradisias-hover': '#b87a74',
+          
+          // Saumon Paradisias (inversé) - couleurs plus foncées pour meilleur contraste
+          'salmon-primary': '#c88a85',
+          'salmon-primary-hover': '#b87a74',
+          'salmon-primary-light': 'rgba(200, 138, 133, 0.1)',
+          'green-secondary': '#09402C',
+          'green-secondary-hover': '#0a4d35',
+          
+          // Bleu
+          'blue-primary': '#2563eb',
+          'blue-primary-hover': '#1d4ed8',
+          'blue-primary-light': '#eff6ff',
+          'cyan-secondary': '#0891b2',
+          'cyan-secondary-hover': '#0e7490',
+          
+          // Indigo
+          'indigo-primary': '#4f46e5',
+          'indigo-primary-hover': '#4338ca',
+          'indigo-primary-light': '#eef2ff',
+          'purple-secondary': '#9333ea',
+          'purple-secondary-hover': '#7c3aed',
+          
+          // Émeraude
+          'emerald-primary': '#059669',
+          'emerald-primary-hover': '#047857',
+          'emerald-primary-light': '#ecfdf5',
+          'teal-secondary': '#0d9488',
+          'teal-secondary-hover': '#0f766e',
+          
+          // Rouge
+          'red-primary': '#dc2626',
+          'red-primary-hover': '#b91c1c',
+          'red-primary-light': '#fef2f2',
+          'pink-secondary': '#db2777',
+          'pink-secondary-hover': '#be185d',
+          
+          // Orange
+          'orange-primary': '#ea580c',
+          'orange-primary-hover': '#c2410c',
+          'orange-primary-light': '#fff7ed',
+          'amber-secondary': '#d97706',
+          'amber-secondary-hover': '#b45309',
+          
+          // Rose
+          'pink-primary': '#db2777',
+          'pink-primary-hover': '#be185d',
+          'pink-primary-light': '#fdf2f8',
+          'rose-secondary': '#e11d48',
+          'rose-secondary-hover': '#be123c',
+          
+          // Ardoise
+          'slate-primary': '#475569',
+          'slate-primary-hover': '#334155',
+          'slate-primary-light': '#f8fafc',
+          'gray-secondary': '#6b7280',
+          'gray-secondary-hover': '#4b5563',
+        },
+        
         // Couleurs sémantiques utilisant la nouvelle palette via les variables CSS
         primary: 'var(--paradisias-primary)',
         secondary: 'var(--paradisias-secondary)',
