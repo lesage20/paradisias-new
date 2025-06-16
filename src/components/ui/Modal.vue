@@ -55,10 +55,10 @@
             </div>
 
             <!-- Pied du modal -->
-            <div v-if="$slots.footer || showDefaultButtons" class="px-6 py-4 border-t border-gray-200 bg-gray-50">
+            <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
               <slot name="footer">
                 <!-- Boutons par défaut si showDefaultButtons est true -->
-                <div v-if="showDefaultButtons" class="flex items-center justify-end space-x-3">
+                <div class="flex items-center justify-end space-x-3">
                   <button 
                     type="button" 
                     @click="handleCancel"
@@ -365,35 +365,31 @@ onUnmounted(() => {
 .modal-content-enter-from {
   opacity: 0;
   transform: scale(0.7) translateY(-50px) rotateX(10deg);
-  filter: blur(10px) brightness(0.8);
   box-shadow: 0 0 0 rgba(0, 0, 0, 0);
 }
 
 .modal-content-enter-to {
   opacity: 1;
   transform: scale(1) translateY(0px) rotateX(0deg);
-  filter: blur(0px) brightness(1);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 
 .modal-content-leave-from {
   opacity: 1;
   transform: scale(1) translateY(0px) rotateX(0deg);
-  filter: blur(0px) brightness(1);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 
 .modal-content-leave-to {
   opacity: 0;
   transform: scale(0.85) translateY(30px) rotateX(-5deg);
-  filter: blur(5px) brightness(1.2);
   box-shadow: 0 0 0 rgba(0, 0, 0, 0);
 }
 
 /* Optimisation pour les performances */
 .modal-content-enter-active,
 .modal-content-leave-active {
-  will-change: transform, opacity, filter, box-shadow;
+  will-change: transform, opacity,  box-shadow;
   backface-visibility: hidden;
   perspective: 1000px;
 }
@@ -403,12 +399,10 @@ onUnmounted(() => {
   0% {
     opacity: 0;
     transform: scale(0.6) translateY(-60px) rotateX(15deg);
-    filter: blur(15px) brightness(0.7);
   }
   20% {
     opacity: 0.3;
     transform: scale(0.75) translateY(-30px) rotateX(8deg);
-    filter: blur(8px) brightness(0.85);
   }
   50% {
     opacity: 0.8;

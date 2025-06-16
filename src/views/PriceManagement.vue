@@ -128,12 +128,12 @@
         <!-- Onglet Locations Actives -->
         <div v-if="currentTab === 'active'" class="space-y-4">
           <DataTable
-            title="Locations Actives"
+            title="Séjours Actifs"
             subtitle="Gérez les paiements des séjours en cours"
             :items="activeLocations"
             :columns="activeLocationsColumns"
-            :empty-title="'Aucune location active'"
-            :empty-message="'Aucune location active pour le moment.'"
+            :empty-title="'Aucun séjour actif'"
+            :empty-message="'Aucun séjour actif pour le moment.'"
           >
             <!-- Colonne personnalisée pour le client avec icône -->
             <template #column-guestName="{ item, themeClasses }">
@@ -208,12 +208,12 @@
         <!-- Onglet Locations Passées -->
         <div v-if="currentTab === 'past'" class="space-y-4">
           <DataTable
-            title="Locations Passées"
+            title="Séjours Passés"
             subtitle="Historique des séjours terminés"
             :items="pastLocations"
             :columns="pastLocationsColumns"
-            :empty-title="'Aucune location passée'"
-            :empty-message="'Aucune location passée pour le moment.'"
+            :empty-title="'Aucun séjour passé'"
+            :empty-message="'Aucun séjour passé pour le moment.'"
           >
             <!-- Colonne personnalisée pour le client avec icône -->
             <template #column-guestName="{ item, themeClasses }">
@@ -315,87 +315,69 @@
     </Tabs>
 
     <!-- Modal de Paiement -->
-    <div v-if="showPaymentModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" @click="closePaymentModal">
-      <div class="bg-white rounded-lg max-w-xl w-full mx-4 max-h-screen overflow-y-auto" @click.stop>
-        <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-          <h3 class="text-lg font-medium text-gray-900">
-            {{ selectedLocation ? `Paiement - ${selectedLocation.guest_details?.name + ' ' + selectedLocation.guest_details?.firstname}` : 'Nouveau Paiement' }}
-          </h3>
-          <button @click="closePaymentModal" class="text-gray-400 hover:text-gray-600">
-            <X class="w-6 h-6" />
-          </button>
+    <Modal
+      v-model="showPaymentModal"
+      :title="selectedLocation ? `Paiement - ${selectedLocation.guest_details?.name + ' ' + selectedLocation.guest_details?.firstname}` : 'Nouveau Paiement'"
+      size="lg"
+      :loading="isProcessing"
+      :disabled="isProcessing"
+      @close="closePaymentModal"
+      @confirm="processPayment"
+    >
+      <form class="p-6">
+        <div v-if="selectedLocation" class="bg-gray-100 rounded-lg p-4 mb-2">
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <span class="text-gray-600">Chambre:</span>
+              <span class="font-medium ml-2">{{ selectedLocation.room_details?.number }}</span>
+            </div>
+            <div>
+              <span class="text-gray-600">Prix total:</span>
+              <span class="font-medium ml-2">{{ formatCurrency(selectedLocation.totalPrice) }}</span>
+            </div>
+            <div>
+              <span class="text-gray-600">Déjà payé:</span>
+              <span class="font-medium ml-2 text-green-600">{{ formatCurrency(selectedLocation.amountPaid) }}</span>
+            </div>
+            <div>
+              <span class="text-gray-600">Dette restante:</span>
+              <span class="font-medium ml-2 text-red-600">{{ formatCurrency(selectedLocation.amountDue) }}</span>
+            </div>
+          </div>
         </div>
-        
-        <form @submit.prevent="processPayment" class="p-6 ">
-          <div v-if="selectedLocation" class="bg-gray-100 rounded-lg p-4 mb-2">
-            <div class="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <span class="text-gray-600">Chambre:</span>
-                <span class="font-medium ml-2">{{ selectedLocation.room_details?.number }}</span>
-              </div>
-              <div>
-                <span class="text-gray-600">Prix total:</span>
-                <span class="font-medium ml-2">{{ formatCurrency(selectedLocation.totalPrice) }}</span>
-              </div>
-              <div>
-                <span class="text-gray-600">Déjà payé:</span>
-                <span class="font-medium ml-2 text-green-600">{{ formatCurrency(selectedLocation.amountPaid) }}</span>
-              </div>
-              <div>
-                <span class="text-gray-600">Dette restante:</span>
-                <span class="font-medium ml-2 text-red-600">{{ formatCurrency(selectedLocation.amountDue) }}</span>
-              </div>
-            </div>
+
+        <div class="grid grid-cols-1  gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Type de paiement</label>
+            <select v-model="paymentForm.status" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+              <option value="pj">Payer jour actuel (PJ)</option>
+              <option value="dp">Dette Payée (DP)</option>
+              <option value="deposit">Payer tout le séjour (Deposit)</option>
+            </select>
           </div>
-
-          <div class="grid grid-cols-1  gap-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Type de paiement</label>
-              <select v-model="paymentForm.status" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                <option value="pj">Payer jour actuel (PJ)</option>
-                <option value="dp">Dette Payée (DP)</option>
-                <option value="deposit">Payer tout le séjour (Deposit)</option>
-              </select>
-            </div>
-            
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Méthode de paiement</label>
-              <select v-model="paymentForm.method" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                <option value="espece">Espèces</option>
-                <option value="cheque">Chèque</option>
-                <option value="visa">Carte bancaire</option>
-                <option value="devise">Devise</option>
-              </select>
-            </div>
-
-            <div v-if="paymentForm.type === 'dp'">
-              <label class="block text-sm font-medium text-gray-700 mb-2">Nombre de jours</label>
-              <input v-model.number="paymentForm.days" type="number" min="1" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Montant</label>
-              <input v-model.number="paymentForm.amount" type="number" step="0.01" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
-            </div>
-          </div>
-
-          <!-- <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Notes (optionnel)</label>
-            <textarea v-model="paymentForm.notes" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"></textarea>
-          </div> -->
           
-          <div class="flex items-center justify-end space-x-3 pt-6 border-t border-gray-200">
-            <button type="button" @click="closePaymentModal" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-              Annuler
-            </button>
-            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800" :disabled="isProcessing">
-              <span v-if="isProcessing">Traitement...</span>
-              <span v-else>Confirmer le paiement</span>
-            </button>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Méthode de paiement</label>
+            <select v-model="paymentForm.method" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+              <option value="espece">Espèces</option>
+              <option value="cheque">Chèque</option>
+              <option value="visa">Carte bancaire</option>
+              <option value="devise">Devise</option>
+            </select>
           </div>
-        </form>
-      </div>
-    </div>
+
+          <div v-if="paymentForm.type === 'dp'">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Nombre de jours</label>
+            <input v-model.number="paymentForm.days" type="number" min="1" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Montant</label>
+            <input v-model.number="paymentForm.amount" type="number" step="0.01" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
+          </div>
+        </div>
+      </form>
+    </Modal>
   </div>
 </template>
 
@@ -407,7 +389,7 @@ import {
   Search, Bed, History, X, User, Plus, Calendar, Clock, CheckCircle, ChevronUp, ChevronDown, CreditCard
 } from 'lucide-vue-next'
 import Tabs from '@/components/ui/Tabs.vue'
-import DataTable from '@/components/ui/DataTable.vue'
+import { DataTable, Modal } from '@/components/ui'
 
 // État
 const isLoading = ref(false)
@@ -442,13 +424,13 @@ const paymentForm = ref({
 const tabs = computed(() => [
   {
     id: 'active',
-    label: 'Locations Actives',
+    label: 'Séjours Actifs',
     icon: Bed,
     count: activeLocations.value.length
   },
   {
     id: 'past',
-    label: 'Locations Passées',
+    label: 'Séjours Passés',
     icon: History,
     count: pastLocations.value.length
   },

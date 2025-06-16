@@ -18,7 +18,7 @@
             <a href="#testimonials" class="text-gray-700 hover:text-[#09402C] transition-colors font-medium">Avis</a>
             <a href="#contact" class="text-gray-700 hover:text-[#09402C] transition-colors font-medium">Contact</a>
           </div>
-          <div class="flex items-center space-x-6">
+          <div class="flex items-center space-x-6" v-if="!isAuthenticated">
             <button @click="$router.push('/register')" class="text-[#09402C] font-semibold hover:text-[#D99791] transition-colors">
               Créer un compte
             </button>
@@ -26,6 +26,11 @@
               Connexion
             </button>
           </div>
+          <div class="flex items-center space-x-6" v-else>
+            <button @click="$router.push('/dashboard')" class="text-[#09402C] font-semibold hover:text-[#D99791] transition-colors">
+              Dashboard
+            </button>
+            </div>
         </div>
       </div>
     </nav>
@@ -33,7 +38,15 @@
     <!-- Hero Section -->
     <section id="accueil" class="relative h-screen flex items-center justify-center overflow-hidden">
       <!-- Image de fond avec filtre noir transparent optimisé -->
-      <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3')] bg-cover bg-center"></div>
+      <OptimizedImage
+        src="https://images.unsplash.com/photo-1566073771259-6a8506099945"
+        alt="Hotel Paradisias"
+        :width="2000"
+        :height="1200"
+        loading="eager"
+        container-class="absolute inset-0"
+        image-class="w-full h-full object-cover"
+      />
       <div class="absolute inset-0 bg-black/60"></div>
       <div class="absolute inset-0 bg-gradient-to-b from-[#09402C]/30 via-transparent to-[#09402C]/40"></div>
       
@@ -55,17 +68,9 @@
             <button class="bg-[#D99791] text-white px-10 py-4 rounded-full font-semibold text-xl hover:bg-[#c88a85] transition-all transform hover:scale-105 shadow-2xl">
               Réserver Maintenant
             </button>
-            <!-- <button class="border-2 border-white text-white px-10 py-4 rounded-full font-semibold text-xl hover:bg-white hover:text-[#09402C] transition-all shadow-2xl">
-              Découvrir l'Hôtel
-            </button> -->
           </div>
         </div>
       </div>
-      <!-- <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
-        <svg class="w-8 h-8 text-white drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-        </svg>
-      </div> -->
     </section>
 
     <!-- About Section -->
@@ -145,12 +150,18 @@
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <!-- Chambre Standard -->
             <div class="bg-white rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-2">
-              <div class="h-64 bg-gradient-to-br from-[#09402C] to-[#0a4d35] relative">
-                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1631049307264-da0ec9d70304?ixlib=rb-4.0.3')] bg-cover bg-center"></div>
+              <OptimizedImage
+                src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304"
+                alt="Chambre Standard"
+                :width="800"
+                :height="400"
+                container-class="h-64 relative"
+                fallback-text="Image chambre non disponible"
+              >
                 <div class="absolute top-4 right-4 bg-[#D99791] text-white px-4 py-2 rounded-full font-semibold">
                   À partir de 25,000 FCFA
                 </div>
-              </div>
+              </OptimizedImage>
               <div class="p-8">
                 <h3 class="text-2xl font-bold text-[#09402C] mb-4">Chambre Standard</h3>
                 <p class="text-gray-600 mb-6">Chambre confortable avec lit double, climatisation, TV satellite et salle de bain privée.</p>
@@ -173,12 +184,18 @@
 
             <!-- Chambre Deluxe -->
             <div class="bg-white rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-2">
-              <div class="h-64 bg-gradient-to-br from-[#09402C] to-[#0a4d35] relative">
-                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1618773928121-c32242e63f39?ixlib=rb-4.0.3')] bg-cover bg-center"></div>
+              <OptimizedImage
+                src="https://images.unsplash.com/photo-1618773928121-c32242e63f39"
+                alt="Chambre Deluxe"
+                :width="800"
+                :height="400"
+                container-class="h-64 relative"
+                fallback-text="Image chambre non disponible"
+              >
                 <div class="absolute top-4 right-4 bg-[#D99791] text-white px-4 py-2 rounded-full font-semibold">
                   À partir de 35,000 FCFA
                 </div>
-              </div>
+              </OptimizedImage>
               <div class="p-8">
                 <h3 class="text-2xl font-bold text-[#09402C] mb-4">Chambre Deluxe</h3>
                 <p class="text-gray-600 mb-6">Chambre spacieuse avec vue panoramique, minibar et espace salon privé.</p>
@@ -201,12 +218,18 @@
 
             <!-- Suite Présidentielle -->
             <div class="bg-white rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-2">
-              <div class="h-64 bg-gradient-to-br from-[#09402C] to-[#0a4d35] relative">
-                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?ixlib=rb-4.0.3')] bg-cover bg-center"></div>
+              <OptimizedImage
+                src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b"
+                alt="Suite Présidentielle"
+                :width="800"
+                :height="400"
+                container-class="h-64 relative"
+                fallback-text="Image suite non disponible"
+              >
                 <div class="absolute top-4 right-4 bg-[#D99791] text-white px-4 py-2 rounded-full font-semibold">
                   À partir de 50,000 FCFA
                 </div>
-              </div>
+              </OptimizedImage>
               <div class="p-8">
                 <h3 class="text-2xl font-bold text-[#09402C] mb-4">Suite Présidentielle</h3>
                 <p class="text-gray-600 mb-6">Suite luxueuse avec terrasse privée, jacuzzi et service personnalisé.</p>
@@ -548,6 +571,37 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
+import { useAuthStore } from '@/stores/auth'
+import { OptimizedImage } from '@/components/ui'
+
+const authStore = useAuthStore()
+
+const isAuthenticated = computed(() => authStore.isAuthenticated)
+
+// Fonction pour gérer les erreurs d'images
+const handleImageError = (event) => {
+  console.warn('Erreur de chargement d\'image:', event.target.src)
+  // Remplacer par une image de fallback ou un placeholder
+  event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+CiAgPHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzZiNzI4MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIG5vbiBkaXNwb25pYmxlPC90ZXh0Pgo8L3N2Zz4='
+  event.target.alt = 'Image non disponible'
+}
+
+// Fonction pour précharger les images critiques
+const preloadCriticalImages = () => {
+  const criticalImages = [
+    'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80'
+  ]
+  
+  criticalImages.forEach(src => {
+    const img = new Image()
+    img.src = src
+  })
+}
+
+// Précharger les images au montage du composant
+preloadCriticalImages()
+
 // Smooth scroll pour la navigation
 const scrollToSection = (sectionId) => {
   const element = document.getElementById(sectionId)

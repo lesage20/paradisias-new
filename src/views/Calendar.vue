@@ -18,10 +18,10 @@
                     class="inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
                     <ChevronRight class="w-4 h-4" />
                 </button>
-                <button @click="goToToday"
-                    class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800">
-                    Cette semaine
-                </button>
+                <PrimaryButton 
+                    @click="goToToday"
+                    text="Cette semaine"
+                />
             </div>
         </div>
 
@@ -269,8 +269,9 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import {
-    Calendar, ChevronLeft, ChevronRight, TrendingUp, DollarSign, Users, Search, Bed
+    Calendar, ChevronLeft, ChevronRight, TrendingUp, DollarSign, Users, Search, Bed, User, Eye, Edit, Trash2, Plus, RefreshCw, Clock, CheckCircle, AlertCircle
 } from 'lucide-vue-next'
+import { PrimaryButton } from '@/components/ui'
 import { locationsAPI, roomsAPI, roomTypesAPI, clientsAPI } from '../services/api.js'
 
 // État

@@ -11,18 +11,16 @@
           <Download class="w-4 h-4 mr-2" />
           Exporter
         </button>
-        <button @click="openCreateModal" :class="[
-          'inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transform hover:scale-105 transition-all duration-200',
-          themeClasses.btnPrimary
-        ]">
-          <Plus class="w-4 h-4 mr-2" />
-          Nouvelle réservation
-        </button>
+        <PrimaryButton 
+          @click="openCreateModal"
+          :icon-left="Plus"
+          text="Nouvelle réservation"
+        />
       </div>
     </div>
 
     <!-- Statistiques rapides -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div class="flex items-center">
           <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -130,9 +128,12 @@
         
         <div v-if="selectedReservations.length > 0" class="flex items-center space-x-2">
           <span class="text-sm text-gray-500">{{ selectedReservations.length }} sélectionné(s)</span>
-          <button @click="bulkAction('confirmée')" class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium text-white bg-green-600 hover:bg-green-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200">
-            Confirmer
-          </button>
+          <PrimaryButton 
+            @click="bulkAction('confirmée')"
+            text="Confirmer"
+            size="sm"
+            flat
+          />
           <button @click="bulkAction('annulée')" class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium text-white bg-red-600 hover:bg-red-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-200">
             Annuler
           </button>
@@ -166,23 +167,23 @@
         <div>
           <div class="text-sm font-medium text-gray-900">{{ item.reference || `RES-${item.id}` }}</div>
           <div class="text-sm text-gray-500">{{ formatDate(item.created_at) }}</div>
-        </div>
+      </div>
       </template>
 
       <!-- Slot pour la colonne client -->
       <template #column-guest="{ item, themeClasses }">
-        <div class="flex items-center">
+                <div class="flex items-center">
           <div :class="[
             'w-10 h-10 rounded-full flex items-center justify-center',
             themeClasses.bgPrimary
           ]">
             <User class="w-5 h-5 text-white" />
-          </div>
-          <div class="ml-3">
+                  </div>
+                  <div class="ml-3">
             <div class="text-sm font-medium text-gray-900">{{ getGuestName(item.guest) }}</div>
             <div class="text-sm text-gray-500">{{ getGuestPhone(item.guest) }}</div>
-          </div>
-        </div>
+                  </div>
+                </div>
       </template>
 
       <!-- Slot pour les dates -->
@@ -201,25 +202,25 @@
 
       <!-- Slot pour le statut -->
       <template #column-status="{ item }">
-        <span :class="[
-          'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+                <span :class="[
+                  'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
           getStatusColor(item.status)
-        ]">
+                ]">
           {{ getStatusLabel(item.status) }}
-        </span>
+                </span>
       </template>
 
       <!-- Slot pour les actions -->
       <template #actions="{ item, themeClasses }">
-        <div class="flex items-center space-x-2">
+                <div class="flex items-center space-x-2">
           <button @click="viewReservation(item)" :class="[themeClasses.textPrimary, 'hover:opacity-80']" title="Voir détails">
-            <Eye class="w-4 h-4" />
-          </button>
+                    <Eye class="w-4 h-4" />
+                  </button>
           <button @click="convertToLocation(item)" class="text-green-600 hover:text-green-900" title="Convertir en location">
-            <ArrowRight class="w-4 h-4" />
-          </button>
+                    <ArrowRight class="w-4 h-4" />
+                  </button>
           <button @click="editReservation(item)" class="text-blue-600 hover:text-blue-900" title="Modifier">
-            <Edit class="w-4 h-4" />
+                    <Edit class="w-4 h-4" />
           </button>
           <button @click="deleteReservation(item)" class="text-red-600 hover:text-red-900" title="Supprimer">
             <Trash2 class="w-4 h-4" />
@@ -239,26 +240,17 @@
     </DataTable>
 
     <!-- Modal de création/édition -->
-    <div
-      v-if="showModal"
-      class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-      @click="closeModal"
+    <Modal
+      v-model="showModal"
+      :title="isEditing ? 'Modifier la réservation' : 'Nouvelle réservation'"
+      size="sm"
+      :loading="isSaving"
+      :disabled="isSaving"
+      @close="closeModal"
+      @confirm="saveReservation"
     >
-      <div
-        class="bg-white rounded-lg max-w-2xl w-full mx-4 max-h-screen overflow-y-auto"
-        @click.stop
-      >
-        <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-          <h3 class="text-lg font-medium text-gray-900">
-            {{ isEditing ? 'Modifier la réservation' : 'Nouvelle réservation' }}
-          </h3>
-          <button @click="closeModal" class="text-gray-400 hover:text-gray-600">
-            <X class="w-6 h-6" />
-          </button>
-        </div>
-        
-        <form @submit.prevent="saveReservation" class="p-6 space-y-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <form class="p-6 space-y-6">
+        <div class="grid grid-cols-1 gap-3">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Client *</label>
               <select
@@ -319,22 +311,8 @@
               </select>
             </div>
           </div>
-          
-          <div class="flex items-center justify-end space-x-3 pt-6 border-t border-gray-200">
-            <button type="button" @click="closeModal" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200">
-              Annuler
-            </button>
-            <button type="submit" :class="[
-              'inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200',
-              themeClasses.btnPrimary
-            ]" :disabled="isSaving">
-              <span v-if="isSaving">Enregistrement...</span>
-              <span v-else>{{ isEditing ? 'Mettre à jour' : 'Créer la réservation' }}</span>
-            </button>
-          </div>
         </form>
-      </div>
-    </div>
+    </Modal>
   </div>
 </template>
 
@@ -347,7 +325,7 @@ import {
   Calendar, Clock, CheckCircle, AlertCircle, XCircle, MapPin, ArrowRight
 } from 'lucide-vue-next'
 import { reservationsAPI, roomsAPI, roomTypesAPI, clientsAPI, locationsAPI } from '../services/api.js'
-import { DataTable } from '@/components/ui'
+import { DataTable, Modal, PrimaryButton } from '@/components/ui'
 
 // Stores
 const authStore = useAuthStore()

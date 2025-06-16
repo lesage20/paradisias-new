@@ -240,271 +240,246 @@
     </DataTable>
 
     <!-- Modal de création/édition -->
-    <div
-      v-if="showModal"
-      class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-      @click="closeModal"
+    <Modal
+      v-model="showModal"
+      :title="isEditing ? 'Modifier le client' : 'Nouveau client'"
+      size="xl"
+      :loading="isSaving"
+      :disabled="isSaving"
+      @close="closeModal"
+      @confirm="saveClient"
     >
-      <div
-        class="bg-white rounded-lg max-w-4xl w-full mx-4 max-h-screen overflow-y-auto"
-        @click.stop
-      >
-        <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-          <h3 class="text-lg font-medium text-gray-900">
-            {{ isEditing ? 'Modifier le client' : 'Nouveau client' }}
-          </h3>
-          <button @click="closeModal" class="text-gray-400 hover:text-gray-600">
-            <X class="w-6 h-6" />
-          </button>
+      <form class="p-6 space-y-6">
+        <!-- Informations personnelles -->
+        <div>
+          <h4 class="text-md font-medium text-gray-900 mb-4">Informations personnelles</h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Nom *</label>
+              <input
+                v-model="form.name"
+                type="text"
+                required
+                maxlength="50"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                placeholder="Nom de famille"
+              />
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Prénom(s) *</label>
+              <input
+                v-model="form.firstname"
+                type="text"
+                required
+                maxlength="100"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                placeholder="Prénom(s)"
+              />
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Genre *</label>
+              <select
+                v-model="form.gender"
+                required
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              >
+                <option value="">Sélectionner</option>
+                <option value="homme">Homme</option>
+                <option value="femme">Femme</option>
+              </select>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Date de naissance *</label>
+              <input
+                v-model="form.dob"
+                type="date"
+                required
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              />
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Lieu de naissance</label>
+              <input
+                v-model="form.place_of_birth"
+                type="text"
+                maxlength="50"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                placeholder="Ville de naissance"
+              />
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Nationalité</label>
+              <input
+                v-model="form.nationnalite"
+                type="text"
+                maxlength="50"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                placeholder="Ivoirienne, Française, etc."
+              />
+            </div>
+          </div>
         </div>
-        
-        <form @submit.prevent="saveClient" class="p-6 space-y-6">
-          <!-- Informations personnelles -->
-          <div>
-            <h4 class="text-md font-medium text-gray-900 mb-4">Informations personnelles</h4>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Nom *</label>
-                <input
-                  v-model="form.name"
-                  type="text"
-                  required
-                  maxlength="50"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="Nom de famille"
-                />
-              </div>
-              
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Prénom(s) *</label>
-                <input
-                  v-model="form.firstname"
-                  type="text"
-                  required
-                  maxlength="100"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="Prénom(s)"
-                />
-              </div>
-              
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Genre *</label>
-                <select
-                  v-model="form.gender"
-                  required
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                >
-                  <option value="">Sélectionner</option>
-                  <option value="homme">Homme</option>
-                  <option value="femme">Femme</option>
-                </select>
-              </div>
-              
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Date de naissance *</label>
-                <input
-                  v-model="form.dob"
-                  type="date"
-                  required
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                />
-              </div>
-              
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Lieu de naissance</label>
-                <input
-                  v-model="form.place_of_birth"
-                  type="text"
-                  maxlength="50"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="Ville de naissance"
-                />
-              </div>
-              
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Nationalité</label>
-                <input
-                  v-model="form.nationnalite"
-                  type="text"
-                  maxlength="50"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="Ivoirienne, Française, etc."
-                />
-              </div>
-            </div>
-          </div>
 
-          <!-- Contact -->
-          <div>
-            <h4 class="text-md font-medium text-gray-900 mb-4">Contact</h4>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Téléphone *</label>
-                <input
-                  v-model="form.phone"
-                  type="tel"
-                  required
-                  maxlength="50"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="+225 XX XX XX XX"
-                />
-              </div>
-              
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                <input
-                  v-model="form.email"
-                  type="email"
-                  maxlength="250"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="email@exemple.com"
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Profession</label>
-                <input
-                  v-model="form.job"
-                  type="text"
-                  maxlength="50"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="Profession"
-                />
-              </div>
-              <div class="md:col-span-2">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Adresse</label>
-                <input
-                  v-model="form.address"
-                  type="text"
-                  maxlength="50"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="Adresse complète"
-                />
-              </div>
-              
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Domicile</label>
-                <input
-                  v-model="form.domicile"
-                  type="text"
-                  maxlength="150"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="Lieu de résidence"
-                />
-              </div>
-              
-              
+        <!-- Contact -->
+        <div>
+          <h4 class="text-md font-medium text-gray-900 mb-4">Contact</h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Téléphone *</label>
+              <input
+                v-model="form.phone"
+                type="tel"
+                required
+                maxlength="50"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                placeholder="+225 XX XX XX XX"
+              />
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+              <input
+                v-model="form.email"
+                type="email"
+                maxlength="250"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                placeholder="email@exemple.com"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Profession</label>
+              <input
+                v-model="form.job"
+                type="text"
+                maxlength="50"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                placeholder="Profession"
+              />
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Adresse</label>
+              <input
+                v-model="form.address"
+                type="text"
+                maxlength="50"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                placeholder="Adresse complète"
+              />
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Domicile</label>
+              <input
+                v-model="form.domicile"
+                type="text"
+                maxlength="150"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                placeholder="Lieu de résidence"
+              />
             </div>
           </div>
+        </div>
 
-          <!-- Pièce d'identité -->
-          <div>
-            <h4 class="text-md font-medium text-gray-900 mb-4">Pièce d'identité</h4>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Type de pièce *</label>
-                <select
-                  v-model="form.idType"
-                  required
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                >
-                  <option value="">Sélectionner</option>
-                  <option value="cni">Carte Nationale d'Identité</option>
-                  <option value="passeport">Passeport</option>
-                  <option value="attestation">Attestation</option>
-                </select>
-              </div>
-              
-              <div class="md:col-span-2">
-                <label class=" block text-sm font-medium text-gray-700 mb-2">Numéro *</label>
-                <input
-                  v-model="form.idNumber"
-                  type="text"
-                  required
-                  maxlength="20"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="Numéro de la pièce"
-                />
-              </div>
-              
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Date de délivrance *</label>
-                <input
-                  v-model="form.id_delivered_at"
-                  type="date"
-                  required
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                />
-              </div>
-              
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Lieu de délivrance *</label>
-                <input
-                  v-model="form.id_delivered_place"
-                  type="text"
-                  required
-                  maxlength="150"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="Lieu de délivrance"
-                />
-              </div>
-              
-              <div >
-                <label class="block text-sm font-medium text-gray-700 mb-2">Délivrée par *</label>
-                <input
-                  v-model="form.id_delivered_by"
-                  type="text"
-                  required
-                  maxlength="150"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="Autorité de délivrance"
-                />
-              </div>
+        <!-- Pièce d'identité -->
+        <div>
+          <h4 class="text-md font-medium text-gray-900 mb-4">Pièce d'identité</h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Type de pièce *</label>
+              <select
+                v-model="form.idType"
+                required
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              >
+                <option value="">Sélectionner</option>
+                <option value="cni">Carte Nationale d'Identité</option>
+                <option value="passeport">Passeport</option>
+                <option value="attestation">Attestation</option>
+              </select>
+            </div>
+            
+            <div class="md:col-span-2">
+              <label class=" block text-sm font-medium text-gray-700 mb-2">Numéro *</label>
+              <input
+                v-model="form.idNumber"
+                type="text"
+                required
+                maxlength="20"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                placeholder="Numéro de la pièce"
+              />
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Date de délivrance *</label>
+              <input
+                v-model="form.id_delivered_at"
+                type="date"
+                required
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              />
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Lieu de délivrance *</label>
+              <input
+                v-model="form.id_delivered_place"
+                type="text"
+                required
+                maxlength="150"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                placeholder="Lieu de délivrance"
+              />
+            </div>
+            
+            <div >
+              <label class="block text-sm font-medium text-gray-700 mb-2">Délivrée par *</label>
+              <input
+                v-model="form.id_delivered_by"
+                type="text"
+                required
+                maxlength="150"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                placeholder="Autorité de délivrance"
+              />
             </div>
           </div>
+        </div>
 
-          <!-- Informations familiales -->
-          <div>
-            <h4 class="text-md font-medium text-gray-900 mb-4">Informations familiales (optionnel)</h4>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Nom du père</label>
-                <input
-                  v-model="form.father"
-                  type="text"
-                  maxlength="150"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="Nom complet du père"
-                />
-              </div>
-              
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Nom de la mère</label>
-                <input
-                  v-model="form.mother"
-                  type="text"
-                  maxlength="150"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="Nom complet de la mère"
-                />
-              </div>
+        <!-- Informations familiales -->
+        <div>
+          <h4 class="text-md font-medium text-gray-900 mb-4">Informations familiales (optionnel)</h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Nom du père</label>
+              <input
+                v-model="form.father"
+                type="text"
+                maxlength="150"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                placeholder="Nom complet du père"
+              />
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Nom de la mère</label>
+              <input
+                v-model="form.mother"
+                type="text"
+                maxlength="150"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                placeholder="Nom complet de la mère"
+              />
             </div>
           </div>
-          
-          <div class="flex items-center justify-end space-x-3 pt-6 border-t border-gray-200">
-            <button type="button" @click="closeModal" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200">
-              Annuler
-            </button>
-            <button type="submit" :class="[
-              'inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200',
-              themeClasses.btnPrimary
-            ]" :disabled="isSaving">
-              <span v-if="isSaving">Enregistrement...</span>
-              <span v-else>{{ isEditing ? 'Mettre à jour' : 'Créer le client' }}</span>
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+        </div>
+      </form>
+    </Modal>
   </div>
 </template>
 
@@ -517,7 +492,7 @@ import {
   Users, UserPlus, UserCheck, Globe, Phone, Mail, Calendar
 } from 'lucide-vue-next'
 import { clientsAPI } from '../services/api.js'
-import { DataTable } from '@/components/ui'
+import { DataTable, Modal } from '@/components/ui'
 
 // Stores
 const authStore = useAuthStore()

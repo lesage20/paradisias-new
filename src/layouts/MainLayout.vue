@@ -128,7 +128,7 @@
           <div class="flex items-center justify-between">
             <div>
               <h1 class="text-2xl font-bold text-gray-900">{{ pageTitle }}</h1>
-              <nav class="flex mt-1" aria-label="Breadcrumb">
+              <!-- <nav class="flex mt-1" aria-label="Breadcrumb">
                 <ol class="flex items-center space-x-2">
                   <li>
                     <router-link to="/" :class="[
@@ -144,7 +144,7 @@
                     <span class="text-sm font-medium text-gray-900">{{ crumb }}</span>
                   </li>
                 </ol>
-              </nav>
+              </nav> -->
             </div>
 
             <!-- Actions de la page -->

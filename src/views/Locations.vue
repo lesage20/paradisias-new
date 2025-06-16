@@ -3,8 +3,8 @@
     <!-- Header avec actions -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900">Locations Actives</h1>
-        <p class="text-gray-600 mt-1">Gestion des clients actuellement présents dans l'hôtel</p>
+        <h1 class="text-2xl font-bold text-gray-900">Séjours</h1>
+        <p class="text-gray-600 mt-1">Gestion des clients présents dans l'hôtel</p>
       </div>
       <div class="mt-4 sm:mt-0 flex items-center space-x-3">
         <button @click="exportData" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200">
@@ -17,13 +17,13 @@
           themeClasses.btnPrimary
         ]">
           <Plus class="w-4 h-4 mr-2" />
-          Nouvelle location
+          Nouveau séjour
         </button>
       </div>
     </div>
 
     <!-- Statistiques rapides -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div class="flex items-center">
           <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -159,7 +159,7 @@
     <!-- Tableau des locations avec le nouveau composant DataTable -->
     <DataTable
       v-else
-      title="Liste des locations"
+      title="Liste des séjours"
       :items="paginatedLocations"
       :columns="tableColumns"
       :selectable="true"
@@ -291,7 +291,7 @@
       @confirm="saveLocation"
     >
       <form class="p-6 space-y-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Client *</label>
             <select
@@ -383,7 +383,7 @@
             </select>
           </div>
 
-          <div>
+          <!-- <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Statut de paiement</label>
             <select
               v-model="form.status"
@@ -394,7 +394,7 @@
               <option value="dt">Dette totale</option>
               <option value="dp">Dette payée</option>
             </select>
-          </div>
+          </div> -->
         </div>
       </form>
     </Modal>
