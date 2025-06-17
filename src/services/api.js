@@ -443,6 +443,55 @@ export const clientsAPI = {
 }
 
 // ========================================
+// APIS RAPPORTS ET DASHBOARD
+// ========================================
+
+export const reportsAPI = {
+  // Récupérer les KPI du dashboard
+  async getDashboardKPI(period = 'today') {
+    const params = new URLSearchParams()
+    if (period) {
+      params.append('period', period)
+    }
+    
+    const endpoint = `/reports/dashboard/kpi${params.toString() ? '?' + params.toString() : ''}`
+    return await apiRequest(endpoint)
+  },
+
+  // Autres méthodes de rapports à ajouter au besoin
+  async getFinancialReport(filters = {}) {
+    const params = new URLSearchParams()
+    
+    if (filters.startDate) {
+      params.append('start_date', filters.startDate)
+    }
+    if (filters.endDate) {
+      params.append('end_date', filters.endDate)
+    }
+    if (filters.type) {
+      params.append('type', filters.type)
+    }
+
+    const endpoint = `/reports/financial/${params.toString() ? '?' + params.toString() : ''}`
+    return await apiRequest(endpoint)
+  },
+
+  async getOccupancyReport(filters = {}) {
+    const params = new URLSearchParams()
+    
+    if (filters.startDate) {
+      params.append('start_date', filters.startDate)
+    }
+    if (filters.endDate) {
+      params.append('end_date', filters.endDate)
+    }
+
+    const endpoint = `/reports/occupancy/${params.toString() ? '?' + params.toString() : ''}`
+    return await apiRequest(endpoint)
+  },
+}
+
+// ========================================
 // HELPERS POUR MAPPING DES STATUTS
 // ========================================
 

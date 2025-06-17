@@ -346,6 +346,12 @@ const navigationItems = computed(() => {
 
   const staffItems = [
     {
+      name: 'Tableau de bord',
+      icon: LayoutDashboard,
+      to: '/dashboard',
+      routeName: 'Dashboard'
+    },
+    {
       name: 'Locations',
       icon: MapPin,
       to: '/locations',

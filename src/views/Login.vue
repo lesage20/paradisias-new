@@ -190,7 +190,7 @@ const login = async () => {
       
       // Redirection
       setTimeout(() => {
-        const redirectPath = route.query.redirect || '/'
+        const redirectPath = route.query.redirect || '/dashboard'
         router.push(redirectPath)
       }, 1000)
     } else {

@@ -37,18 +37,16 @@
         <!-- Métriques stratégiques -->
         <MetricCard
           title="Revenus"
-          :value="formatCurrency(metrics.revenue)"
-          :previousValue="formatCurrency(metrics.previousRevenue)"
-          :trend="metrics.revenueTrend"
+          :value="formatCurrency(metrics.revenu_total)"
+          :previousValue="formatCurrency(metrics.revenu_total_precedent)"
           icon="DollarSign"
           color="green"
         />
         
         <MetricCard
           title="Taux d'occupation"
-          :value="metrics.occupancyRate + '%'"
-          :previousValue="metrics.previousOccupancyRate + '%'"
-          :trend="metrics.occupancyTrend"
+          :value="metrics.taux_occupation + ' %'"
+          :previousValue="metrics.taux_occupation_precedent + ' %'"
           icon="BarChart3"
           color="blue"
         />
@@ -56,18 +54,16 @@
         <MetricCard
           title="RevPAR"
           :value="formatCurrency(metrics.revpar)"
-          :previousValue="formatCurrency(metrics.previousRevpar)"
-          :trend="metrics.revparTrend"
+          :previousValue="formatCurrency(metrics.revpar_precedent)"
           icon="TrendingUp"
           color="purple"
         />
         
         <MetricCard
-          title="Satisfaction"
-          :value="metrics.satisfaction + '/5'"
-          :previousValue="metrics.previousSatisfaction + '/5'"
-          :trend="metrics.satisfactionTrend"
-          icon="Star"
+          title="Nombre de séjours"
+          :value="metrics.nombre_locations"
+          :previousValue="metrics.nombre_locations_precedent"
+          icon="Users"
           color="yellow"
         />
       </template>
@@ -149,42 +145,6 @@
       </template>
     </div>
 
-    <!-- Deuxième ligne de métriques pour le Propriétaire (admin) -->
-    <div v-if="userRole === 'admin'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <MetricCard
-        title="Revenus du jour"
-        :value="formatCurrency(metrics.dailyRevenue)"
-        :previousValue="formatCurrency(metrics.previousDailyRevenue)"
-        :trend="metrics.dailyRevenueTrend"
-        icon="DollarSign"
-        color="emerald"
-      />
-      
-      <MetricCard
-        title="Locations actives"
-        :value="metrics.activeBookings"
-        :previousValue="metrics.previousActiveBookings"
-        :trend="metrics.activeBookingsTrend"
-        icon="Calendar"
-        color="indigo"
-      />
-      
-      <MetricCard
-        title="Check-ins prévus"
-        :value="metrics.expectedCheckins"
-        icon="UserCheck"
-        color="orange"
-        :showTrend="false"
-      />
-      
-      <MetricCard
-        title="Check-outs prévus"
-        :value="metrics.expectedCheckouts"
-        icon="UserX"
-        color="red"
-        :showTrend="false"
-      />
-    </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Graphique principal (adapté selon le profil) -->
@@ -293,7 +253,7 @@
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div class="flex items-center justify-between mb-6">
           <h3 class="text-lg font-medium text-gray-900">Transactions récentes</h3>
-          <router-link to="/locations" :class="[
+          <router-link to="/price-management" :class="[
             'text-sm font-medium transition-colors',
             themeClasses.textPrimary,
             themeClasses.hoverPrimary
@@ -487,6 +447,7 @@ import {
   UserCheck, UserX, Plus, ChevronDown 
 } from 'lucide-vue-next'
 import QuickActionButton from '@/components/dashboard/QuickActionButton.vue'
+import { reportsAPI } from '@/services/api'
 
 // Stores
 const authStore = useAuthStore()
@@ -507,8 +468,8 @@ const chartOptions = computed(() => {
     return [
       { key: 'revenue', label: 'Revenus' },
       { key: 'occupancy', label: 'Occupation' },
-      { key: 'satisfaction', label: 'Satisfaction' },
-      { key: 'forecast', label: 'Prévisions' },
+      // { key: 'satisfaction', label: 'Satisfaction' },
+      // { key: 'forecast', label: 'Prévisions' },
       { key: 'daily', label: 'Journalier' },
       { key: 'bookings', label: 'Réservations' }
     ]
@@ -517,7 +478,7 @@ const chartOptions = computed(() => {
       { key: 'daily', label: 'Journalier' },
       { key: 'occupancy', label: 'Occupation' },
       { key: 'bookings', label: 'Réservations' },
-      { key: 'satisfaction', label: 'Satisfaction' }
+      // { key: 'satisfaction', label: 'Satisfaction' }
     ]
   } else {
     return [
@@ -538,96 +499,79 @@ const getChartTitle = () => {
   }
 }
 
-// Données mockées (à remplacer par des appels API)
+// Données des métriques (remplacées par l'API)
 const metrics = ref({
   // Métriques propriétaire/gérant
-  revenue: 125000,
-  previousRevenue: 98000,
-  revenueTrend: 'up',
-  occupancyRate: 78,
-  previousOccupancyRate: 65,
-  occupancyTrend: 'up',
-  revpar: 89500,
-  previousRevpar: 76000,
-  revparTrend: 'up',
-  satisfaction: 4.2,
-  previousSatisfaction: 3.9,
-  satisfactionTrend: 'up',
+  revenue: 0,
+  previousRevenue: 0,
+  revenueTrend: 'stable',
+  occupancyRate: 0,
+  previousOccupancyRate: 0,
+  occupancyTrend: 'stable',
+  revpar: 0,
+  previousRevpar: 0,
+  revparTrend: 'stable',
+  satisfaction: 0,
+  previousSatisfaction: 0,
+  satisfactionTrend: 'stable',
   
   // Métriques personnel/caissier
-  dailyRevenue: 15000,
-  previousDailyRevenue: 12000,
-  dailyRevenueTrend: 'up',
-  activeBookings: 23,
-  previousActiveBookings: 18,
-  activeBookingsTrend: 'up',
-  expectedCheckins: 8,
-  expectedCheckouts: 5
+  dailyRevenue: 0,
+  previousDailyRevenue: 0,
+  dailyRevenueTrend: 'stable',
+  activeBookings: 0,
+  previousActiveBookings: 0,
+  activeBookingsTrend: 'stable',
+  expectedCheckins: 0,
+  expectedCheckouts: 0
 })
 
 const roomStatus = ref({
-  available: 12,
-  occupied: 23,
-  cleaning: 3,
-  outOfService: 2
+  available: 0,
+  occupied: 0,
+  cleaning: 0,
+  outOfService: 0
 })
 
 const occupancyPercentage = computed(() => {
   const total = roomStatus.value.available + roomStatus.value.occupied + 
                 roomStatus.value.cleaning + roomStatus.value.outOfService
-  return (roomStatus.value.occupied / total) * 100
+  return total > 0 ? (roomStatus.value.occupied / total) * 100 : 0
 })
 
-const recentTransactions = ref([
-  {
-    id: 1,
-    type: 'revenue',
-    description: 'Location Chambre 205',
-    amount: 45000,
-    time: 'Il y a 2h'
-  },
-  {
-    id: 2,
-    type: 'expense',
-    description: 'Maintenance climatisation',
-    amount: 15000,
-    time: 'Il y a 4h'
-  },
-  {
-    id: 3,
-    type: 'revenue',
-    description: 'Location Chambre 101',
-    amount: 35000,
-    time: 'Il y a 6h'
-  }
-])
+const recentTransactions = ref([])
 
-const alerts = ref([
-  {
-    id: 1,
-    title: 'Maintenance requise',
-    message: 'Climatisation Chambre 304 en panne',
-    priority: 'high',
-    icon: 'AlertTriangle',
-    time: 'Il y a 1h'
-  },
-  {
-    id: 2,
-    title: 'Check-in en retard',
-    message: 'Client Smith - Arrivée prévue 14h',
-    priority: 'medium',
-    icon: 'Clock',
-    time: 'Il y a 30min'
-  },
-  {
-    id: 3,
-    title: 'Connexion WiFi',
-    message: 'Problème réseau Étage 2',
-    priority: 'low',
-    icon: 'Wifi',
-    time: 'Il y a 45min'
+const alerts = ref([])
+
+// Fonction pour récupérer les KPI depuis l'API via le service centralisé
+const fetchKPIData = async () => {
+  try {
+    const data = await reportsAPI.getDashboardKPI(selectedPeriod.value)
+    // Mise à jour des métriques avec les données de l'API
+    if (data) {
+      metrics.value = data
+    }
+    
+    
+    // Mise à jour des transactions récentes
+    if (data.recentTransactions) {
+      recentTransactions.value = data.recentTransactions
+    }
+    
+    // Mise à jour des alertes
+    if (data.alerts) {
+      alerts.value = data.alerts
+    }
+    
+  } catch (error) {
+    console.error('Erreur lors de la récupération des KPI:', error)
+    
+    // En cas d'erreur d'authentification, le service API se charge déjà de la redirection
+    // On peut juste afficher une notification à l'utilisateur ici
+    
+    throw error
   }
-])
+}
 
 // Méthodes
 const formatCurrency = (amount) => {
@@ -646,18 +590,20 @@ const refreshData = async () => {
   isLoading.value = true
   
   try {
-    // Ici on appellera les vraies APIs
-    // await fetchDashboardData(selectedPeriod.value)
-    
-    // Simulation d'appel API
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
+    await fetchKPIData()
   } catch (error) {
     console.error('Erreur lors du chargement des données:', error)
+    // Vous pouvez ajouter ici une notification d'erreur pour l'utilisateur
+    // par exemple avec un store de notifications ou un toast
   } finally {
     isLoading.value = false
   }
 }
+
+// Watcher pour recharger les données quand la période change
+watch(selectedPeriod, () => {
+  refreshData()
+})
 
 onMounted(() => {
   refreshData()

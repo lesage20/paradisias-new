@@ -77,16 +77,16 @@ const routes = [
         meta: { 
           title: 'Tableau de bord',
           breadcrumb: [{ text: 'Accueil', active: true }],
-          adminOnly: true
+          // adminOnly: true
         },
-        beforeEnter: (to, from, next) => {
-          const authStore = useAuthStore()
-          if (!authStore.isAdmin) {
-            next({ name: 'Locations' })
-          } else {
-            next()
-          }
-        }
+        // beforeEnter: (to, from, next) => {
+        //   const authStore = useAuthStore()
+        //   if (!authStore.isAdmin) {
+        //     next({ name: 'Locations' })
+        //   } else {
+        //     next()
+        //   }
+        // }
       },
       {
         path: '/locations',

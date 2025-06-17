@@ -8,19 +8,19 @@
         <!-- Tendance -->
         <div v-if="showTrend && trend" class="flex items-center mt-2">
           <component 
-            :is="trend === 'up' ? TrendingUp : TrendingDown" 
+            :is="trend === 'up' ? TrendingUp : trend === 'down' ? TrendingDown : ''" 
             :class="[
               'w-4 h-4 mr-1',
-              trend === 'up' ? 'text-green-500' : 'text-red-500'
+              trend === 'up' ? 'text-green-500' : trend === 'down' ? 'text-red-500' : 'text-gray-500'
             ]" 
           />
           <span 
             :class="[
               'text-sm font-medium',
-              trend === 'up' ? 'text-green-600' : 'text-red-600'
+              trend === 'up' ? 'text-green-600' : trend === 'down' ? 'text-red-600' : 'text-gray-600'
             ]"
           >
-            {{ getTrendText() }}
+            {{ getTrendText }}
           </span>
         </div>
       </div>
@@ -39,7 +39,7 @@
 <script setup>
 import { computed } from 'vue'
 import { 
-  TrendingUp, TrendingDown, DollarSign, BarChart3, Star, Calendar, 
+  TrendingUp, TrendingDown,  DollarSign, BarChart3, Star, Calendar, 
   UserCheck, UserX, Users
 } from 'lucide-vue-next'
 
@@ -56,11 +56,11 @@ const props = defineProps({
     type: [String, Number],
     default: null
   },
-  trend: {
-    type: String,
-    validator: value => ['up', 'down', null, undefined].includes(value),
-    default: null
-  },
+  // trend: {
+  //   type: String,
+  //   validator: value => ['up', 'down', 'equal', null, undefined].includes(value),
+  //   default: null
+  // },
   icon: {
     type: String,
     required: true
@@ -105,20 +105,34 @@ const getColorClasses = () => {
   return colorMap[props.color] || colorMap.blue
 }
 
-const getTrendText = () => {
-  if (!props.previousValue || !props.trend) return ''
+
+const trend = computed(() => {
+  if (!props.previousValue) return null
+  const current = parseFloat(props.value.toString().replace(/[^\d.-]/g, ''))
+  const previous = parseFloat(props.previousValue.toString().replace(/[^\d.-]/g, ''))
+  return current > previous ? 'up' : current < previous ? 'down' : 'equal'
+})
+
+const getTrendText = computed(() => {
+  if (!props.previousValue) return ''
   
   // Calculer le pourcentage de variation
   const current = parseFloat(props.value.toString().replace(/[^\d.-]/g, ''))
   const previous = parseFloat(props.previousValue.toString().replace(/[^\d.-]/g, ''))
   
   if (isNaN(current) || isNaN(previous) || previous === 0) {
-    return props.trend === 'up' ? 'En hausse' : 'En baisse'
+    if (trend.value == 'up') {
+      return 'En hausse'
+    } else if (trend.value == 'down') {
+      return 'En baisse'
+    } else {
+      return 'Stable'
+    }
   }
   
   const percentage = Math.abs(((current - previous) / previous) * 100).toFixed(1)
-  const direction = props.trend === 'up' ? '+' : '-'
+  const direction = trend.value === 'up' ? '+' : '-'
   
   return `${direction}${percentage}%`
-}
+})
 </script> 

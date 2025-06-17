@@ -50,24 +50,26 @@
       <div class="absolute inset-0 bg-black/60"></div>
       <div class="absolute inset-0 bg-gradient-to-b from-[#09402C]/30 via-transparent to-[#09402C]/40"></div>
       
-      <div class="relative z-10 text-center text-white px-4 max-w-5xl mx-auto">
-        <div class="animate-fadeInUp">
-          <img src="@/assets/images/logo3-removebg-preview.png" alt="Logo Paradisias Hotel" class="h-24 w-auto mx-auto mb-8 drop-shadow-2xl" />
-          <h1 class="text-6xl md:text-8xl font-bold mb-8 leading-tight drop-shadow-2xl">
-            Bienvenue au
-            <span class="text-[#D99791] block">Paradis</span>
-          </h1>
-          <p class="text-2xl md:text-3xl mb-6 text-gray-100 font-light drop-shadow-lg">
-            Maison d'Hôtes Man - Côte d'Ivoire
-          </p>
-          <p class="text-xl md:text-2xl mb-12 max-w-3xl mx-auto leading-relaxed text-gray-200 drop-shadow-lg">
-            Découvrez l'élégance et la sérénité dans un cadre naturel exceptionnel. 
-            Une expérience unique vous attend dans notre havre de paix.
-          </p>
-          <div class="flex flex-col sm:flex-row gap-6 justify-center">
-            <button class="bg-[#D99791] text-white px-10 py-4 rounded-full font-semibold text-xl hover:bg-[#c88a85] transition-all transform hover:scale-105 shadow-2xl">
-              Réserver Maintenant
-            </button>
+      <div class="relative z-10 w-full flex items-center justify-center px-4">
+        <div class="text-center text-white max-w-5xl mx-auto">
+          <div class="animate-fadeInUp">
+            <img src="@/assets/images/logo3-removebg-preview.png" alt="Logo Paradisias Hotel" class="h-24 w-auto mx-auto mb-8 drop-shadow-2xl" />
+            <h1 class="text-6xl md:text-8xl font-bold mb-8 leading-tight drop-shadow-2xl text-center">
+              Bienvenue au
+              <span class="text-[#D99791] block">Paradis</span>
+            </h1>
+            <p class="text-2xl md:text-3xl mb-6 text-gray-100 font-light drop-shadow-lg text-center">
+              Maison d'Hôtes Man - Côte d'Ivoire
+            </p>
+            <p class="text-xl md:text-2xl mb-12 max-w-3xl mx-auto leading-relaxed text-gray-200 drop-shadow-lg text-center">
+              Découvrez l'élégance et la sérénité dans un cadre naturel exceptionnel. 
+              Une expérience unique vous attend dans notre havre de paix.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-6 justify-center items-center">
+              <button class="bg-[#D99791] text-white px-10 py-4 rounded-full font-semibold text-xl hover:bg-[#c88a85] transition-all transform hover:scale-105 shadow-2xl">
+                Réserver Maintenant
+              </button>
+            </div>
           </div>
         </div>
       </div>
