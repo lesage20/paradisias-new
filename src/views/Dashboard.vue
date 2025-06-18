@@ -268,20 +268,22 @@
             <div class="flex items-center space-x-3">
               <div :class="[
                 'w-10 h-10 rounded-full flex items-center justify-center',
-                transaction.type === 'revenue' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
+                'bg-green-100 text-green-600' 
               ]">
-                <component :is="transaction.type === 'revenue' ? 'Plus' : 'Minus'" class="w-5 h-5" />
+                <component :is="User" class="w-5 h-5" />
               </div>
               <div>
-                <p class="text-sm font-medium text-gray-900">{{ transaction.description }}</p>
-                <p class="text-xs text-gray-500">{{ transaction.time }}</p>
+                <p class="text-sm font-medium text-gray-900 mb-1">{{ transaction.booking_details.guest_name }} <span class="text-xs text-gray-500"> Effectué {{ formatTimeAgo(transaction.created_at) }}</span></p>
+                <p class="text-xs text-gray-500">
+                  Chambre <b>{{ transaction.booking_details.room_number }}</b>
+                  du <b>{{ format(transaction.booking_details.check_in, 'dd/MM/yyyy') }}</b> au <b>{{ format(transaction.booking_details.check_out, 'dd/MM/yyyy') }}</b>
+                </p>
               </div>
             </div>
             <span :class="[
-              'text-sm font-medium',
-              transaction.type === 'revenue' ? 'text-green-600' : 'text-red-600'
+              'text-sm font-medium','text-green-600' 
             ]">
-              {{ transaction.type === 'revenue' ? '+' : '-' }}{{ formatCurrency(transaction.amount) }}
+              +{{ formatCurrency(transaction.amount) }}
             </span>
           </div>
         </div>
@@ -336,7 +338,7 @@
           <QuickActionButton
             icon="Users"
             label="Gérer clients"
-            @click="$router.push('/guests')"
+            @click="$router.push('/clients')"
             color="blue"
           />
           <QuickActionButton
@@ -376,7 +378,7 @@
           <QuickActionButton
             icon="Users"
             label="Gérer clients"
-            @click="$router.push('/guests')"
+            @click="$router.push('/clients')"
             color="blue"
           />
           <QuickActionButton
@@ -444,10 +446,11 @@ import { useThemeStore } from '@/stores/theme'
 import MetricCard from '@/components/dashboard/MetricCard.vue'
 import { 
   RefreshCw, DollarSign, BarChart3, TrendingUp, Star, Calendar, 
-  UserCheck, UserX, Plus, ChevronDown 
+  UserCheck, UserX,User, Plus, ChevronDown, Minus 
 } from 'lucide-vue-next'
 import QuickActionButton from '@/components/dashboard/QuickActionButton.vue'
-import { reportsAPI } from '@/services/api'
+import { reportsAPI, paymentsAPI } from '@/services/api'
+import { format } from 'date-fns'
 
 // Stores
 const authStore = useAuthStore()
@@ -547,15 +550,10 @@ const alerts = ref([])
 const fetchKPIData = async () => {
   try {
     const data = await reportsAPI.getDashboardKPI(selectedPeriod.value)
+    
     // Mise à jour des métriques avec les données de l'API
     if (data) {
       metrics.value = data
-    }
-    
-    
-    // Mise à jour des transactions récentes
-    if (data.recentTransactions) {
-      recentTransactions.value = data.recentTransactions
     }
     
     // Mise à jour des alertes
@@ -570,6 +568,46 @@ const fetchKPIData = async () => {
     // On peut juste afficher une notification à l'utilisateur ici
     
     throw error
+  }
+}
+
+// Fonction pour récupérer les transactions récentes via l'API des paiements
+const fetchRecentTransactions = async () => {
+  try {
+    // Récupérer les paiements récents (par exemple les 10 derniers)
+    const payments = await paymentsAPI.getPayments({
+      // Filtrer par date récente ou limiter le nombre de résultats
+      // Les filtres exacts dépendent de votre API backend
+    })
+    
+    // Transformer les données de paiements en format transaction pour l'affichage
+    if (payments && Array.isArray(payments)) {
+      recentTransactions.value = payments.slice(0, 10)
+    }
+    
+  } catch (error) {
+    console.error('Erreur lors de la récupération des transactions récentes:', error)
+    // En cas d'erreur, on garde les transactions vides
+    recentTransactions.value = []
+  }
+}
+
+// Helper pour formater le temps écoulé
+const formatTimeAgo = (dateString) => {
+  if (!dateString) return 'Date inconnue'
+  
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffInHours = Math.floor((now - date) / (1000 * 60 * 60))
+  
+  if (diffInHours < 1) {
+    const diffInMinutes = Math.floor((now - date) / (1000 * 60))
+    return `il y a ${diffInMinutes} min`
+  } else if (diffInHours < 24) {
+    return `il y a ${diffInHours}h`
+  } else {
+    const diffInDays = Math.floor(diffInHours / 24)
+    return `il y a ${diffInDays} jour${diffInDays > 1 ? 's' : ''}`
   }
 }
 
@@ -591,6 +629,7 @@ const refreshData = async () => {
   
   try {
     await fetchKPIData()
+    await fetchRecentTransactions()
   } catch (error) {
     console.error('Erreur lors du chargement des données:', error)
     // Vous pouvez ajouter ici une notification d'erreur pour l'utilisateur

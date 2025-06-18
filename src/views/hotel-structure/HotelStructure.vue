@@ -78,7 +78,7 @@
       </div>
 
       <!-- Étages -->
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-pointer" 
+      <!-- <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-pointer" 
            @click="$router.push('/structure/floors')">
         <div class="p-6">
           <div class="flex items-center justify-between mb-4">
@@ -93,7 +93,7 @@
             <span>{{ floorsData.length }} étage(s) configuré(s)</span>
           </div>
         </div>
-      </div>
+      </div> -->
 
       <!-- Chambres -->
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-pointer" 
@@ -114,7 +114,7 @@
       </div>
 
       <!-- Gestion des prix -->
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-pointer" 
+      <!-- <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-pointer" 
            @click="$router.push('/structure/price-manager')">
         <div class="p-6">
           <div class="flex items-center justify-between mb-4">
@@ -129,7 +129,7 @@
             <span>Tarifs saisonniers actifs</span>
           </div>
         </div>
-      </div>
+      </div> -->
 
       <!-- Coupons et réductions -->
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-pointer" 
@@ -150,7 +150,7 @@
       </div>
 
       <!-- Service ménage -->
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-pointer" 
+      <!-- <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-pointer" 
            @click="$router.push('/structure/housekeeping')">
         <div class="p-6">
           <div class="flex items-center justify-between mb-4">
@@ -165,21 +165,20 @@
             <span>{{ pendingHousekeeping }} tâche(s) en attente</span>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
 
     <!-- Aperçu rapide des chambres -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-      <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+      <!-- <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
         <h3 class="text-lg font-medium text-gray-900">Aperçu des chambres</h3>
         <router-link to="/structure/rooms" class="text-sm text-purple-600 hover:text-purple-700 font-medium">
           Voir toutes les chambres
         </router-link>
-      </div>
+      </div> -->
       
       <div class="p-6">
-        <!-- Vue par étage -->
-        <div class="space-y-6">
+        <!-- <div class="space-y-6">
           <div v-for="floor in floorsOverview" :key="floor.number" class="border border-gray-200 rounded-lg p-4">
             <div class="flex items-center justify-between mb-4">
               <h4 class="font-medium text-gray-900">{{ floor.name }}</h4>
@@ -201,12 +200,12 @@
               </div>
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
 
     <!-- Légende des statuts -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <!-- <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <h3 class="text-lg font-medium text-gray-900 mb-4">Légende des statuts</h3>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div class="flex items-center space-x-2">
@@ -226,7 +225,7 @@
           <span class="text-sm text-gray-700">Hors service</span>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
