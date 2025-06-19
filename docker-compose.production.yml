@@ -1,8 +1,7 @@
 services:
   paradisias-app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    # Utiliser l'image depuis Docker Hub au lieu de build local
+    image: votre-username/paradisias-hotel:latest
     container_name: paradisias-hotel-app
     ports:
       - "9000:80"
@@ -11,12 +10,14 @@ services:
     environment:
       - TZ=Africa/Abidjan
       - API_BASE_URL=http://localhost:9001
+
     volumes:
       # Volume pour les logs nginx
       - ./logs:/var/log/nginx
     labels:
       - "com.docker.compose.project=paradisias"
       - "com.docker.compose.service=app"
+      
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80/"]
       interval: 30s
@@ -24,18 +25,6 @@ services:
       retries: 3
       start_period: 40s
 
-  # Service nginx-proxy optionnel pour le reverse proxy
-  # nginx-proxy:
-  #   image: nginx:alpine
-  #   container_name: paradisias-proxy
-  #   ports:
-  #     - "8080:80"
-  #   volumes:
-  #     - ./proxy.conf:/etc/nginx/nginx.conf:ro
-  #   depends_on:
-  #     - paradisias-app
-  #   restart: unless-stopped
-
 networks:
   default:
-    name: paradisias-network 
+    name: paradisias-network

@@ -12,7 +12,7 @@ export const useAuthStore = defineStore('auth', () => {
   const isLoading = ref(false)
 
   // URL de l'API - compatible avec l'ancien système
-  const apiUrl = ref('http://localhost:9001/')
+  const apiUrl = ref(window.APP_CONFIG?.API_BASE_URL || import.meta.env.VITE_API_BASE_URL || 'http://localhost:9001/')
 
   // Getters
   const isAuthenticated = computed(() => loggedIn.value && !!token.value)
