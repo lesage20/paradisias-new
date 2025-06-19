@@ -413,14 +413,15 @@ router.beforeEach(async (to, from) => {
 
   // Vérifier la validité du token avec l'API
   try {
-    const apiUrl = authStore.apiUrl
-    await axios.post(`${apiUrl}auth/token/verify/`, { 
+    const apiUrl = authStore.getApiUrl()
+    await axios.post(`${apiUrl}/auth/token/verify/`, { 
       token: authStore.token 
     })
     
     return true
   } catch (error) {
-    console.warn('Token invalide, redirection vers login:', error)
+    console.warn('Token invalide')
+    console.error(error)
     authStore.logout()
     
     return { 

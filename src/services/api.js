@@ -1,7 +1,7 @@
 import { useAuthStore } from '@/stores/auth'
 
 // Configuration de base pour l'API avec priorité sur window.APP_CONFIG
-const API_BASE_URL = window.APP_CONFIG?.API_BASE_URL || import.meta.env.VITE_API_BASE_URL || 'http://localhost:9001'
+const API_BASE_URL = window.APP_CONFIG?.API_BASE_URL || import.meta.env.VITE_API_BASE_URL || 'http://localhost:9001/'
 
 // Mode développement - pour tester sans authentification (à désactiver en production)
 const DEV_MODE = process.env.NODE_ENV === 'development'

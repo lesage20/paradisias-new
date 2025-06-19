@@ -1,6 +1,5 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
-import axios from 'axios'
 
 export const useAuthStore = defineStore('auth', () => {
   // État
@@ -11,28 +10,77 @@ export const useAuthStore = defineStore('auth', () => {
   const profile = ref({})
   const isLoading = ref(false)
 
-  // URL de l'API - compatible avec l'ancien système
-  const apiUrl = ref(window.APP_CONFIG?.API_BASE_URL || import.meta.env.VITE_API_BASE_URL || 'http://localhost:9001/')
+  // Fonction pour obtenir l'URL API de manière dynamique
+  const getApiUrl = () => {
+    return window.APP_CONFIG?.API_BASE_URL || import.meta.env.VITE_API_BASE_URL || 'http://localhost:9001/'
+  }
 
   // Getters
   const isAuthenticated = computed(() => loggedIn.value && !!token.value)
   const userRole = computed(() => user.value?.groups?.[0]?.name || null)
   const isAdmin = computed(() => userRole.value === 'admin')
 
+  // Helper pour les requêtes HTTP avec authentification
+  const apiRequest = async (endpoint, options = {}) => {
+    const url = `${getApiUrl()}${endpoint}`
+    
+    const defaultOptions = {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+
+    // Ajouter l'authentification si disponible
+    if (token.value) {
+      defaultOptions.headers['Authorization'] = `Bearer ${token.value}`
+    }
+
+    const config = {
+      ...defaultOptions,
+      ...options,
+      headers: {
+        ...defaultOptions.headers,
+        ...options.headers,
+      },
+    }
+
+    try {
+      const response = await fetch(url, config)
+      
+      if (!response.ok) {
+        if (response.status === 401) {
+          console.error('❌ Erreur 401: Non authentifié')
+          logout() // Déconnexion automatique si le token est invalide
+          throw new Error('Authentification requise. Veuillez vous reconnecter.')
+        }
+        
+        const errorData = await response.text()
+        throw new Error(`Erreur HTTP ${response.status}: ${errorData}`)
+      }
+
+      return await response.json()
+    } catch (error) {
+      console.error(`❌ Erreur API sur ${endpoint}:`, error.message)
+      throw error
+    }
+  }
+
   // Actions
   const login = async (credentials) => {
     isLoading.value = true
     
     try {
-        console.log('login', apiUrl.value)
-      const response = await axios.post(`${apiUrl.value}auth/login/`, {
-        username: credentials.username,
-        password: credentials.password
+      console.log('Tentative de connexion sur:', getApiUrl())
+      
+      const data = await apiRequest('/auth/login/', {
+        method: 'POST',
+        body: JSON.stringify({
+          username: credentials.username,
+          password: credentials.password
+        }),
       })
 
       // Structure de réponse attendue : { access_token, user: { ... } }
-      const data = response.data
-      
       loggedIn.value = true
       token.value = data.access_token
       user.value = data.user
@@ -45,13 +93,8 @@ export const useAuthStore = defineStore('auth', () => {
       // Récupérer le profil utilisateur si disponible
       if (data.user.profil) {
         try {
-          const profileResponse = await axios.get(
-            `${apiUrl.value}accounts/profiles/${data.user.profil}`,
-            {
-              headers: { Authorization: `Bearer ${token.value}` }
-            }
-          )
-          profile.value = profileResponse.data
+          const profileData = await apiRequest(`/accounts/profiles/${data.user.profil}`)
+          profile.value = profileData
         } catch (profileErr) {
           console.warn('Impossible de charger le profil utilisateur:', profileErr)
         }
@@ -63,14 +106,12 @@ export const useAuthStore = defineStore('auth', () => {
       
       let errorMessage = 'Une erreur est survenue lors de la connexion'
       
-      if (error.response) {
-        if (error.response.status === 400 || error.response.status === 401) {
-          errorMessage = 'Nom d\'utilisateur ou mot de passe incorrect'
-        } else {
-          errorMessage = `Erreur serveur (${error.response.status})`
-        }
-      } else if (error.message === 'Network Error') {
+      if (error.message.includes('401')) {
+        errorMessage = 'Nom d\'utilisateur ou mot de passe incorrect'
+      } else if (error.message.includes('Network Error') || error.message.includes('fetch')) {
         errorMessage = 'Impossible de se connecter au serveur'
+      } else if (error.message.includes('500')) {
+        errorMessage = 'Erreur serveur interne'
       }
 
       return { success: false, error: errorMessage }
@@ -93,8 +134,11 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     try {
-      await axios.post(`${apiUrl.value}auth/token/verify/`, {
-        token: token.value
+      await apiRequest('/auth/token/verify/', {
+        method: 'POST',
+        body: JSON.stringify({
+          token: token.value
+        }),
       })
       return true
     } catch (error) {
@@ -120,12 +164,12 @@ export const useAuthStore = defineStore('auth', () => {
     permissions,
     profile,
     isLoading,
-    apiUrl,
     
     // Getters
     isAuthenticated,
     userRole,
     isAdmin,
+    getApiUrl, // Exposer la fonction pour le debug
     
     // Actions
     login,
