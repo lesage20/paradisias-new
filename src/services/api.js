@@ -458,6 +458,27 @@ export const reportsAPI = {
     return await apiRequest(endpoint)
   },
 
+  // Récupérer les données des graphiques du dashboard
+  async getDashboardCharts(filters = {}) {
+    const params = new URLSearchParams()
+    
+    if (filters.type) {
+      params.append('type', filters.type)
+    }
+    if (filters.period) {
+      params.append('period', filters.period)
+    }
+    if (filters.startDate) {
+      params.append('start_date', filters.startDate)
+    }
+    if (filters.endDate) {
+      params.append('end_date', filters.endDate)
+    }
+
+    const endpoint = `/reports/dashboard/charts/${params.toString() ? '?' + params.toString() : ''}`
+    return await apiRequest(endpoint)
+  },
+
   // Autres méthodes de rapports à ajouter au besoin
   async getFinancialReport(filters = {}) {
     const params = new URLSearchParams()

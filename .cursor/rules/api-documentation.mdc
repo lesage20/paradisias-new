@@ -1,0 +1,6 @@
+---
+description: api documentation rule for everything
+globs: 
+alwaysApply: false
+---
+si tu dois faire une fonctionalité vérifie si l'url de la documentation de l'api  est disponible sinon vérifie dans le fichier json de documentation api pour voir les api necessaire pour la fonctionalité demandée ensuite les champs et nom de variable doivent etre choisi en fonction des champs de la documentation voici le lien de la documentaion: http://localhost:9001/?format=openapi
