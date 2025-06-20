@@ -88,7 +88,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Graphique principal (adapté selon le profil) -->
       <div class="lg:col-span-2">
-        <DashboardChart :user-role="currentUser?.groups?.[0]?.name || 'guest'" :period="selectedPeriod" />
+        <DashboardChart :user-role="userRole" :period="selectedPeriod" />
       </div>
 
       <!-- État des chambres en temps réel -->

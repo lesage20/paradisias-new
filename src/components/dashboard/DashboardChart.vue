@@ -1,18 +1,38 @@
 <template>
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div class="flex items-center justify-between mb-6">
-            <h3 class="text-lg font-medium text-gray-900">
-                {{ chartTitle }}
-            </h3>
-            <div class="flex items-center space-x-2">
-                <button v-for="chart in chartButtonOptions" :key="chart.key" @click="selectChart(chart.key)" :class="[
-                    'px-3 py-1 text-xs font-medium rounded-full transition-colors',
-                    selectedChart === chart.key
-                        ? `${themeClasses.bgPrimaryLight} ${themeClasses.textPrimary}`
-                        : 'text-gray-500 hover:text-gray-700'
-                ]">
-                    {{ chart.label }}
-                </button>
+            <div>
+                <h3 class="text-lg font-medium text-gray-900">
+                    {{ chartData.title || chartTitle }}
+                </h3>
+                <p v-if="chartData.subtitle" class="text-sm text-gray-500 mt-1">
+                    {{ chartData.subtitle }}
+                </p>
+                <p v-if="chartData.total !== undefined && chartData.unit"
+                    class="text-xs text-purple-600 font-medium mt-1">
+                    Total: {{ chartData.total.toLocaleString('fr-FR') }} {{ chartData.unit }}
+                </p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <!-- Sélecteur de période -->
+                <select v-model="selectedPeriod" @change="onPeriodChange"
+                    class="px-3 py-1 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                    <option v-for="period in periodOptions" :key="period.value" :value="period.value">
+                        {{ period.label }}
+                    </option>
+                </select>
+
+                <!-- Boutons de types de graphiques -->
+                <div class="flex items-center space-x-2">
+                    <button v-for="chart in chartButtonOptions" :key="chart.key" @click="selectChart(chart.key)" :class="[
+                        'px-3 py-1 text-xs font-medium rounded-full transition-colors',
+                        selectedChart === chart.key
+                            ? `${themeClasses.bgPrimaryLight} ${themeClasses.textPrimary}`
+                            : 'text-gray-500 hover:text-gray-700'
+                    ]">
+                        {{ chart.label }}
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -71,30 +91,43 @@ const props = defineProps({
 const themeStore = useThemeStore()
 
 // État réactif
-const selectedChart = ref('revenue')
+const selectedChart = ref('revenus')
+const selectedPeriod = ref('day')
 const isLoading = ref(false)
 const error = ref(null)
 const chartData = ref({
     series: [],
-    categories: []
+    categories: [],
+    title: '',
+    subtitle: '',
+    unit: '',
+    total: 0,
+    periodInfo: ''
 })
+
+// Options de périodes
+const periodOptions = ref([
+    { value: 'day', label: 'Jour' },
+    { value: 'week', label: 'Semaine' },
+    { value: 'month', label: 'Mois' },
+    { value: 'year', label: 'Année' }
+])
 
 // Options de graphiques selon le rôle utilisateur
 const availableCharts = computed(() => {
     const charts = {
         admin: [
-            { key: 'revenue', label: 'Revenus', type: 'bar' },
-            { key: 'occupancy', label: 'Occupation', type: 'line' },
-            { key: 'reservations', label: 'Réservations', type: 'area' },
-            { key: 'payments', label: 'Paiements', type: 'bar' }
+            { key: 'revenus', label: 'Revenus', type: 'bar' },
+            { key: 'occupation', label: 'Occupation', type: 'area' },
+            { key: 'reservations', label: 'Réservations', type: 'area' }
         ],
         manager: [
-            { key: 'revenue', label: 'Revenus', type: 'bar' },
-            { key: 'occupancy', label: 'Occupation', type: 'line' },
+            { key: 'revenus', label: 'Revenus', type: 'bar' },
+            { key: 'occupation', label: 'Occupation', type: 'area' },
             { key: 'reservations', label: 'Réservations', type: 'area' }
         ],
         receptionist: [
-            { key: 'occupancy', label: 'Occupation', type: 'line' },
+            { key: 'occupation', label: 'Occupation', type: 'area' },
             { key: 'reservations', label: 'Réservations', type: 'area' }
         ]
     }
@@ -127,36 +160,86 @@ const apexChartOptions = computed(() => ({
         },
         zoom: {
             enabled: false
+        },
+        animations: {
+            enabled: true,
+            easing: 'easeinout',
+            speed: 800,
+            animateGradually: {
+                enabled: true,
+                delay: 150
+            },
+            dynamicAnimation: {
+                enabled: true,
+                speed: 350
+            }
         }
     },
-    colors: [themeStore.primaryColor, themeStore.secondaryColor, '#10B981', '#F59E0B'],
+    // colors: [themeStore.primaryColor, themeStore.secondaryColor, '#10B981', '#F59E0B'],
+    plotOptions: {
+        bar: {
+            borderRadius: 4,
+            dataLabels: {
+                position: 'top'
+            }
+        },
+        area: {
+            fillTo: 'origin'
+        }
+    },
     dataLabels: {
         enabled: false
     },
     stroke: {
+        show: true,  // TOUJOURS afficher le stroke
         curve: 'smooth',
-        width: chartType.value === 'line' ? 3 : 0
+        width: chartType.value === 'line' ? 4 : chartType.value === 'area' ? 3 : 0,
+        lineCap: 'round'
+    },
+    markers: {
+        size: chartType.value === 'line' ? 6 : chartType.value === 'area' ? 4 : 0,
+        strokeColors: '#fff',
+        strokeWidth: 2,
+        hover: {
+            size: chartType.value === 'line' ? 8 : 6,
+            sizeOffset: 3
+        }
+    },
+    fill: {
+        type: chartType.value === 'area' ? 'gradient' : 'solid',
+        gradient: {
+            shade: 'light',
+            type: 'vertical',
+            shadeIntensity: 0.25,
+            gradientToColors: [themeStore.secondaryColor],
+            inverseColors: false,
+            opacityFrom: 0.7,
+            opacityTo: 0.3,
+            stops: [0, 100]
+        }
     },
     xaxis: {
         categories: chartData.value.categories,
         labels: {
             style: {
-                colors: '#6B7280'
+                colors: themeStore.primaryColor
             }
         }
     },
     yaxis: {
         labels: {
             style: {
-                colors: '#6B7280'
+                colors: themeStore.primaryColor
             },
             formatter: function (value) {
-                if (selectedChart.value === 'revenue' || selectedChart.value === 'payments') {
-                    return value.toLocaleString('fr-FR') + ' FCFA'
+                if (chartData.value.unit) {
+                    return value.toLocaleString('fr-FR') + ' ' + chartData.value.unit
                 }
                 return value
             }
-        }
+        },
+        forceNiceScale: true,
+        decimalsInFloat: 0
     },
     grid: {
         borderColor: '#E5E7EB',
@@ -166,15 +249,15 @@ const apexChartOptions = computed(() => ({
         position: 'bottom',
         horizontalAlign: 'center',
         labels: {
-            colors: '#6B7280'
+            colors: themeStore.primaryColor
         }
     },
     tooltip: {
         theme: 'light',
         y: {
             formatter: function (value) {
-                if (selectedChart.value === 'revenue' || selectedChart.value === 'payments') {
-                    return value.toLocaleString('fr-FR') + ' FCFA'
+                if (chartData.value.unit) {
+                    return value.toLocaleString('fr-FR') + ' ' + chartData.value.unit
                 }
                 return value
             }
@@ -199,25 +282,62 @@ const selectChart = (chartKey) => {
     fetchChartData()
 }
 
+const onPeriodChange = () => {
+    fetchChartData()
+}
+
+const getDataName = () => {
+    switch (selectedChart.value) {
+        case 'revenus':
+            return 'Revenus'
+        case 'occupation':
+            return 'Taux d\'occupation'
+        case 'reservations':
+            return 'Réservations'
+        default:
+            return 'Données'
+    }
+}
+
 const fetchChartData = async () => {
     isLoading.value = true
     error.value = null
 
     try {
-        console.log('Récupération des données graphiques:', selectedChart.value, props.period)
+        console.log('Récupération des données graphiques:', selectedChart.value, selectedPeriod.value)
 
         const response = await reportsAPI.getDashboardCharts({
             type: selectedChart.value,
-            period: props.period
+            period: selectedPeriod.value
         })
 
-        if (response && response.data) {
+        if (response && response.labels && response.data) {
+            console.log('=== DONNÉES REÇUES DE L\'API ===')
+            console.log('Response:', response)
+            console.log('Chart Type:', chartType.value)
+            console.log('Selected Chart:', selectedChart.value)
+
             chartData.value = {
-                series: response.data.series || [],
-                categories: response.data.categories || []
+                series: [{ name: getDataName(), data: response.data }],
+                categories: response.labels,
+                title: response.chart_title || getDataName(),
+                subtitle: response.chart_subtitle || '',
+                unit: response.unit || '',
+                total: response.total || 0,
+                periodInfo: response.period_info || ''
             }
+
+            console.log('=== CONFIGURATION DU GRAPHIQUE ===')
+            console.log('ChartData configuré:', chartData.value)
+            console.log('Stroke config:', {
+                show: true,
+                curve: 'smooth',
+                width: chartType.value === 'line' ? 4 : chartType.value === 'area' ? 3 : 0,
+                type: chartType.value
+            })
         } else {
             // Données de test si l'API ne retourne rien
+            console.log('Utilisation des données de test')
             generateTestData()
         }
 
@@ -233,39 +353,53 @@ const fetchChartData = async () => {
 }
 
 const generateTestData = () => {
-    const testData = {
-        revenue: {
-            series: [
-                { name: 'Revenus', data: [65000, 59000, 80000, 81000, 56000, 55000, 40000] }
-            ],
-            categories: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
-        },
-        occupancy: {
-            series: [
-                { name: 'Taux d\'occupation', data: [65, 59, 80, 81, 56, 55, 40] }
-            ],
-            categories: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
-        },
-        reservations: {
-            series: [
-                { name: 'Nouvelles réservations', data: [10, 15, 12, 8, 14, 16, 18] },
-                { name: 'Confirmées', data: [8, 12, 10, 6, 12, 14, 15] }
-            ],
-            categories: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
-        },
-        payments: {
-            series: [
-                { name: 'Paiements reçus', data: [45000, 52000, 48000, 61000, 42000, 58000, 67000] }
-            ],
-            categories: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
+    // Données de test selon la période
+    const getTestDataByPeriod = () => {
+        switch (selectedPeriod.value) {
+            case 'day':
+                return {
+                    categories: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
+                    multiplier: 1
+                }
+            case 'week':
+                return {
+                    categories: ['S1', 'S2', 'S3', 'S4'],
+                    multiplier: 7
+                }
+            case 'month':
+                return {
+                    categories: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'],
+                    multiplier: 30
+                }
+            case 'year':
+                return {
+                    categories: ['2020', '2021', '2022', '2023', '2024'],
+                    multiplier: 365
+                }
+            default:
+                return {
+                    categories: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
+                    multiplier: 1
+                }
         }
     }
 
-    chartData.value = testData[selectedChart.value] || testData.revenue
+    const periodData = getTestDataByPeriod()
+    const baseData = [65, 59, 80, 81, 56, 55, 40].slice(0, periodData.categories.length)
+
+    chartData.value = {
+        series: [{ name: getDataName(), data: baseData.map(v => v * 1000 * periodData.multiplier) }],
+        categories: periodData.categories,
+        title: `${getDataName()} - Test`,
+        subtitle: `Période de test`,
+        unit: selectedChart.value === 'revenus' ? 'FCFA' : selectedChart.value === 'occupation' ? '%' : '',
+        total: baseData.reduce((acc, v) => acc + (v * 1000 * periodData.multiplier), 0),
+        periodInfo: `Test ${selectedPeriod.value}`
+    }
 }
 
 // Watchers
-watch(() => props.period, () => {
+watch(selectedPeriod, () => {
     fetchChartData()
 })
 

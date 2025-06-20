@@ -7,12 +7,12 @@
         <p class="text-gray-600 mt-1">Gestion des clients présents dans l'hôtel</p>
       </div>
       <div class="mt-4 sm:mt-0 flex items-center space-x-3">
-        <button @click="exportData" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200">
+        <button @click="exportData"
+          class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200">
           <Download class="w-4 h-4 mr-2" />
           Exporter
         </button>
-        <button @click="openCreateModal" 
-        :class="[
+        <button @click="openCreateModal" :class="[
           'inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transform hover:scale-105 transition-all duration-200',
           themeClasses.btnPrimary
         ]">
@@ -35,7 +35,7 @@
           </div>
         </div>
       </div>
-      
+
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div class="flex items-center">
           <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -47,7 +47,7 @@
           </div>
         </div>
       </div>
-      
+
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div class="flex items-center">
           <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
@@ -59,7 +59,7 @@
           </div>
         </div>
       </div>
-      
+
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div class="flex items-center">
           <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -80,18 +80,15 @@
           <label class="block text-sm font-medium text-gray-700 mb-2">Recherche</label>
           <div class="relative">
             <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              v-model="filters.search"
-              type="text"
-              placeholder="Client, chambre, réservation..."
-              class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            />
+            <input v-model="filters.search" type="text" placeholder="Client, chambre, réservation..."
+              class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
           </div>
         </div>
-        
+
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">Statut</label>
-          <select v-model="filters.status" @change="loadLocations" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+          <select v-model="filters.status" @change="loadLocations"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
             <option value="">Tous les statuts</option>
             <option value="pj">Payé jour</option>
             <option value="dj">Dette jour</option>
@@ -100,28 +97,20 @@
             <option value="archive">Archivée</option>
           </select>
         </div>
-        
+
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">Date d'arrivée</label>
-          <input
-            v-model="filters.dateFrom"
-            type="date"
-            @change="loadLocations"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-          />
+          <input v-model="filters.dateFrom" type="date" @change="loadLocations"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
         </div>
-        
+
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">Date de départ</label>
-          <input
-            v-model="filters.dateTo"
-            type="date"
-            @change="loadLocations"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-          />
+          <input v-model="filters.dateTo" type="date" @change="loadLocations"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
         </div>
       </div>
-      
+
       <div class="mt-4 flex items-center justify-between">
         <div class="flex items-center space-x-4">
           <button @click="resetFilters" class="text-sm text-gray-500 hover:text-gray-700">
@@ -129,7 +118,7 @@
           </button>
           <span class="text-sm text-gray-500">{{ filteredLocations.length }} résultat(s)</span>
         </div>
-        
+
         <div v-if="selectedLocations.length > 0" class="flex items-center space-x-2">
           <span class="text-sm text-gray-500">{{ selectedLocations.length }} sélectionné(s)</span>
           <button @click="bulkAction('pj')" :class="[
@@ -144,7 +133,8 @@
           ]">
             Dette jour
           </button>
-          <button @click="bulkAction('archive')" class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium text-white bg-red-600 hover:bg-red-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-200">
+          <button @click="bulkAction('archive')"
+            class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium text-white bg-red-600 hover:bg-red-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-200">
             Archiver
           </button>
         </div>
@@ -157,35 +147,20 @@
     </div>
 
     <!-- Tableau des locations avec le nouveau composant DataTable -->
-    <DataTable
-      v-else
-      title="Liste des séjours"
-      :items="paginatedLocations"
-      :columns="tableColumns"
-      :selectable="true"
-      :pagination="paginationConfig"
-      item-key="id"
-      empty-title="Aucune location trouvée"
+    <DataTable v-else title="Liste des séjours" :items="paginatedLocations" :columns="tableColumns" :selectable="true"
+      :pagination="paginationConfig" item-key="id" empty-title="Aucune location trouvée"
       empty-message="Aucune location ne correspond aux critères de recherche."
-      @update:current-page="currentPage = $event"
-      @update:items-per-page="itemsPerPage = $event"
-      @selection-change="selectedLocations = $event"
-      @sort="handleSort"
-    >
+      @update:current-page="currentPage = $event" @update:items-per-page="itemsPerPage = $event"
+      @selection-change="selectedLocations = $event" @sort="handleSort">
       <!-- Slot pour l'en-tête avec boutons de vue -->
       <template #header>
         <div class="flex items-center space-x-2">
-          <button
-            v-for="view in ['grid', 'list']"
-            :key="view"
-            @click="currentView = view"
-            :class="[
-              'p-2 rounded-lg transition-colors',
-              currentView === view 
-                ? `${themeClasses.bgPrimaryLight} ${themeClasses.textPrimary}` 
-                : 'text-gray-400 hover:text-gray-600'
-            ]"
-          >
+          <button v-for="view in ['grid', 'list']" :key="view" @click="currentView = view" :class="[
+            'p-2 rounded-lg transition-colors',
+            currentView === view
+              ? `${themeClasses.bgPrimaryLight} ${themeClasses.textPrimary}`
+              : 'text-gray-400 hover:text-gray-600'
+          ]">
             <component :is="view === 'grid' ? Grid : List" class="w-4 h-4" />
           </button>
         </div>
@@ -205,7 +180,8 @@
         ]">
           Dette jour
         </button>
-        <button @click="bulkAction('archive')" class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium text-white bg-red-600 hover:bg-red-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-200">
+        <button @click="bulkAction('archive')"
+          class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium text-white bg-red-600 hover:bg-red-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-200">
           Archiver
         </button>
       </template>
@@ -281,86 +257,57 @@
     </DataTable>
 
     <!-- Modal de création/édition -->
-    <Modal
-      v-model="showModal"
-      :title="isEditing ? 'Modifier la location' : 'Nouvelle location'"
-      size="lg"
-      :loading="isSaving"
-      :disabled="isSaving"
-      @close="closeModal"
-      @confirm="saveLocation"
-    >
+    <Modal v-model="showModal" :title="isEditing ? 'Modifier la location' : 'Nouvelle location'" size="lg"
+      :loading="isSaving" :disabled="isSaving" @close="closeModal" @confirm="saveLocation">
       <form class="p-6 space-y-6">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Client *</label>
-            <select
-              v-model="form.guest"
-              required
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            >
+            <select v-model="form.guest" required
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
               <option value="">Sélectionner un client</option>
               <option v-for="client in clients" :key="client.id" :value="client.id">
                 {{ client.name }} {{ client.firstname }}
               </option>
             </select>
           </div>
-          
+
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Chambre *</label>
-            <select
-              v-model="form.room"
-              required
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            >
+            <select v-model="form.room" required
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
               <option value="">Sélectionner une chambre</option>
               <option v-for="room in availableRooms" :key="room.id" :value="room.id">
                 Chambre {{ room.number }} - {{ getRoomTypeName(room.type) }}
               </option>
             </select>
           </div>
-          
+
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Date d'arrivée *</label>
-            <input
-              v-model="form.checkIn"
-              type="datetime-local"
-              required
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            />
+            <input v-model="form.checkIn" type="datetime-local" required
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
           </div>
-          
+
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Date de départ *</label>
-            <input
-              v-model="form.checkOut"
-              type="datetime-local"
-              required
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            />
+            <input v-model="form.checkOut" type="datetime-local" required
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
           </div>
 
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Nombre d'adultes</label>
-            <input
-              v-model.number="form.adults"
-              type="number"
-              min="1"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            />
+            <input v-model.number="form.adults" type="number" min="1"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
           </div>
 
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Nombre d'enfants</label>
-            <input
-              v-model.number="form.children"
-              type="number"
-              min="0"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            />
+            <input v-model.number="form.children" type="number" min="0"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
           </div>
 
-          <div>
+          <!-- <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Prix total</label>
             <input
               v-model.number="form.totalPrice"
@@ -368,14 +315,12 @@
               min="0"
               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             />
-          </div>
+          </div> -->
 
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Mode de paiement</label>
-            <select
-              v-model="form.payment"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            >
+            <select v-model="form.payment"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
               <option value="espece">Espèces</option>
               <option value="cheque">Chèque</option>
               <option value="visa">Carte bancaire</option>
@@ -383,18 +328,6 @@
             </select>
           </div>
 
-          <!-- <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Statut de paiement</label>
-            <select
-              v-model="form.status"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            >
-              <option value="pj">Payé jour</option>
-              <option value="dj">Dette jour</option>
-              <option value="dt">Dette totale</option>
-              <option value="dp">Dette payée</option>
-            </select>
-          </div> -->
         </div>
       </form>
     </Modal>
@@ -463,10 +396,10 @@ const filteredLocations = computed(() => {
       const guestName = getGuestName(location.guest).toLowerCase()
       const roomNumber = getRoomNumber(location.room).toLowerCase()
       const reference = (location.reference || `LOC-${location.id}`).toLowerCase()
-      
-      return guestName.includes(searchTerm) || 
-             roomNumber.includes(searchTerm) || 
-             reference.includes(searchTerm)
+
+      return guestName.includes(searchTerm) ||
+        roomNumber.includes(searchTerm) ||
+        reference.includes(searchTerm)
     })
   }
 
@@ -504,11 +437,11 @@ const visiblePages = computed(() => {
   const maxPages = 5
   let start = Math.max(1, currentPage.value - Math.floor(maxPages / 2))
   let end = Math.min(totalPages.value, start + maxPages - 1)
-  
+
   for (let i = start; i <= end; i++) {
     pages.push(i)
   }
-  
+
   return pages
 })
 
@@ -640,7 +573,7 @@ const getRoomNumber = (roomId) => {
 const getRoomType = (roomId) => {
   const room = rooms.value.find(r => r.id === roomId)
   if (!room) return 'N/A'
-  
+
   const roomType = roomTypes.value.find(rt => rt.id === room.type)
   return roomType?.name || 'Standard'
 }
@@ -654,7 +587,7 @@ const getRoomTypeName = (typeId) => {
 const loadLocations = async () => {
   try {
     isLoading.value = true
-    
+
     const apiFilters = {}
     if (filters.value.dateFrom) {
       apiFilters.checkIn_date = filters.value.dateFrom
@@ -662,7 +595,7 @@ const loadLocations = async () => {
     if (filters.value.dateTo) {
       apiFilters.checkOut_date = filters.value.dateTo
     }
-    
+
     const response = await locationsAPI.getLocations(apiFilters)
     locations.value = response || []
   } catch (error) {
@@ -730,7 +663,7 @@ const openCreateModal = () => {
     children: 0,
     totalPrice: 0,
     payment: 'espece',
-    status: 'pj'
+    status: "ongoing"
   }
   showModal.value = true
 }
@@ -760,7 +693,7 @@ const closeModal = () => {
 const saveLocation = async () => {
   try {
     isSaving.value = true
-    
+
     const locationData = {
       guest: form.value.guest,
       room: form.value.room,
@@ -773,13 +706,13 @@ const saveLocation = async () => {
       status: form.value.status,
       recorded_by: authStore.profile?.id || 1 // Utiliser l'ID de l'utilisateur connecté
     }
-    
+
     if (isEditing.value) {
       await locationsAPI.updateLocation(form.value.id, locationData)
     } else {
       // Créer la nouvelle location
       await locationsAPI.createLocation(locationData)
-      
+
       // Mettre à jour automatiquement le statut de la chambre à "Occupée Propre"
       if (form.value.room) {
         try {
@@ -791,11 +724,11 @@ const saveLocation = async () => {
         }
       }
     }
-    
+
     await loadLocations()
     await loadRooms() // Recharger les chambres pour refléter le changement de statut
     closeModal()
-    
+
   } catch (error) {
     console.error('Erreur lors de la sauvegarde:', error)
     // TODO: afficher une notification d'erreur
@@ -827,7 +760,7 @@ const bulkAction = async (action) => {
       for (const locationId of selectedLocations.value) {
         await locationsAPI.patchLocation(locationId, { status: action })
       }
-      
+
       selectedLocations.value = []
       await loadLocations()
     } catch (error) {
@@ -862,4 +795,4 @@ onMounted(async () => {
     loadRoomTypes()
   ])
 })
-</script> 
+</script>
