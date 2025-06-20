@@ -91,63 +91,8 @@
         <DashboardChart :user-role="userRole" :period="selectedPeriod" />
       </div>
 
-      <!-- État des chambres en temps réel -->
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 class="text-lg font-medium text-gray-900 mb-6">État des chambres</h3>
-
-        <div class="space-y-4">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-              <div class="w-3 h-3 bg-green-500 rounded-full"></div>
-              <span class="text-sm text-gray-700">Libres</span>
-            </div>
-            <span class="text-sm font-medium text-gray-900">{{ roomStatus.available }}</span>
-          </div>
-
-          <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-              <div class="w-3 h-3 bg-red-500 rounded-full"></div>
-              <span class="text-sm text-gray-700">Occupées</span>
-            </div>
-            <span class="text-sm font-medium text-gray-900">{{ roomStatus.occupied }}</span>
-          </div>
-
-          <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-              <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
-              <span class="text-sm text-gray-700">Ménage</span>
-            </div>
-            <span class="text-sm font-medium text-gray-900">{{ roomStatus.cleaning }}</span>
-          </div>
-
-          <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-              <div class="w-3 h-3 bg-gray-500 rounded-full"></div>
-              <span class="text-sm text-gray-700">Hors service</span>
-            </div>
-            <span class="text-sm font-medium text-gray-900">{{ roomStatus.outOfService }}</span>
-          </div>
-        </div>
-
-        <!-- Graphique circulaire d'occupation -->
-        <div class="mt-6 pt-6 border-t border-gray-200">
-          <div class="relative h-32 flex items-center justify-center">
-            <div class="relative w-24 h-24">
-              <!-- SVG Donut Chart -->
-              <svg class="w-24 h-24 transform -rotate-90" viewBox="0 0 36 36">
-                <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none"
-                  stroke="#e5e7eb" stroke-width="3" />
-                <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none"
-                  stroke="#8b5cf6" stroke-width="3" :stroke-dasharray="`${occupancyPercentage}, 100`" />
-              </svg>
-              <div class="absolute inset-0 flex items-center justify-center">
-                <span class="text-lg font-semibold text-gray-900">{{ Math.round(occupancyPercentage) }}%</span>
-              </div>
-            </div>
-          </div>
-          <p class="text-center text-sm text-gray-500 mt-2">Taux d'occupation</p>
-        </div>
-      </div>
+      <!-- État des chambres avec ApexCharts -->
+      <RoomStatusChart ref="roomStatusChartRef" />
     </div>
 
     <!-- Transactions récentes et alertes -->
@@ -272,6 +217,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useThemeStore } from '@/stores/theme'
 import MetricCard from '@/components/dashboard/MetricCard.vue'
 import DashboardChart from '@/components/dashboard/DashboardChart.vue'
+import RoomStatusChart from '@/components/dashboard/RoomStatusChart.vue'
 import {
   RefreshCw, DollarSign, BarChart3, TrendingUp, Star, Calendar,
   UserCheck, UserX, User, Plus, ChevronDown, Minus
@@ -288,6 +234,7 @@ const themeStore = useThemeStore()
 const isLoading = ref(false)
 const selectedPeriod = ref('today')
 const selectedChart = ref('revenue')
+const roomStatusChartRef = ref(null)
 
 // Computed
 const userRole = computed(() => authStore.userRole)
@@ -357,18 +304,7 @@ const metrics = ref({
   expectedCheckouts: 0
 })
 
-const roomStatus = ref({
-  available: 0,
-  occupied: 0,
-  cleaning: 0,
-  outOfService: 0
-})
-
-const occupancyPercentage = computed(() => {
-  const total = roomStatus.value.available + roomStatus.value.occupied +
-    roomStatus.value.cleaning + roomStatus.value.outOfService
-  return total > 0 ? (roomStatus.value.occupied / total) * 100 : 0
-})
+// Variables supprimées car maintenant gérées par le composant RoomStatusChart
 
 const recentTransactions = ref([])
 
@@ -456,8 +392,11 @@ const refreshData = async () => {
   isLoading.value = true
 
   try {
-    await fetchKPIData()
-    await fetchRecentTransactions()
+    await Promise.all([
+      fetchKPIData(),
+      fetchRecentTransactions(),
+      roomStatusChartRef.value?.refreshData()
+    ])
   } catch (error) {
     console.error('Erreur lors du chargement des données:', error)
     // Vous pouvez ajouter ici une notification d'erreur pour l'utilisateur

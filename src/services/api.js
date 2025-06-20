@@ -510,6 +510,11 @@ export const reportsAPI = {
     const endpoint = `/reports/occupancy/${params.toString() ? '?' + params.toString() : ''}`
     return await apiRequest(endpoint)
   },
+
+  // Récupérer les données du graphique de statut des chambres
+  async getRoomStatusChart() {
+    return await apiRequest('/reports/dashboard/room-status-chart')
+  },
 }
 
 // ========================================
