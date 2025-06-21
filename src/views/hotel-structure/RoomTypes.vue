@@ -7,11 +7,13 @@
         <p class="text-gray-600 mt-1">Configuration des différents types de chambres et tarifs</p>
       </div>
       <div class="mt-4 sm:mt-0 flex items-center space-x-3">
-        <button @click="exportData" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200">
+        <button @click="exportData"
+          class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200">
           <Download class="w-4 h-4 mr-2" />
           Exporter
         </button>
-        <button @click="openCreateModal" class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transform hover:scale-105 transition-all duration-200">
+        <button @click="openCreateModal"
+          class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transform hover:scale-105 transition-all duration-200">
           <Plus class="w-4 h-4 mr-2" />
           Nouveau type
         </button>
@@ -31,7 +33,7 @@
           </div>
         </div>
       </div>
-      
+
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div class="flex items-center">
           <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -43,7 +45,7 @@
           </div>
         </div>
       </div>
-      
+
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div class="flex items-center">
           <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -55,7 +57,7 @@
           </div>
         </div>
       </div>
-      
+
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div class="flex items-center">
           <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
@@ -76,11 +78,8 @@
 
     <!-- Grille des types de chambres -->
     <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div
-        v-for="roomType in roomTypes"
-        :key="roomType.id"
-        class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200"
-      >
+      <div v-for="roomType in roomTypes" :key="roomType.id"
+        class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
         <!-- En-tête avec icône -->
         <div class="p-6 border-b border-gray-200">
           <div class="flex items-center justify-between">
@@ -140,10 +139,8 @@
       </div>
 
       <!-- Carte pour ajouter un nouveau type -->
-      <div
-        @click="openCreateModal"
-        class="bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-dashed border-purple-300 rounded-lg p-6 flex flex-col items-center justify-center text-center hover:from-purple-100 hover:to-purple-200 cursor-pointer transition-all duration-200 h-full min-h-[280px]"
-      >
+      <div @click="openCreateModal"
+        class="bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-dashed border-purple-300 rounded-lg p-6 flex flex-col items-center justify-center text-center hover:from-purple-100 hover:to-purple-200 cursor-pointer transition-all duration-200 h-full min-h-[280px]">
         <div class="w-16 h-16 bg-purple-200 rounded-full flex items-center justify-center mb-4">
           <Plus :class="['w-8 h-8', themeClasses.textPrimary]" />
         </div>
@@ -153,15 +150,8 @@
     </div>
 
     <!-- Modal de création/édition -->
-    <div
-      v-if="showModal"
-      class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-      @click="closeModal"
-    >
-      <div
-        class="bg-white rounded-lg max-w-2xl w-full mx-4 max-h-screen overflow-y-auto"
-        @click.stop
-      >
+    <div v-if="showModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" @click="closeModal">
+      <div class="bg-white rounded-lg max-w-2xl w-full mx-4 max-h-screen overflow-y-auto" @click.stop>
         <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
           <h3 class="text-lg font-medium text-gray-900">
             {{ isEditing ? 'Modifier le type de chambre' : 'Nouveau type de chambre' }}
@@ -170,71 +160,48 @@
             <X class="w-6 h-6" />
           </button>
         </div>
-        
+
         <form @submit.prevent="saveRoomType" class="p-6 space-y-6">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="md:col-span-2">
               <label class="block text-sm font-medium text-gray-700 mb-2">Nom du type *</label>
-              <input
-                v-model="form.name"
-                type="text"
-                required
-                maxlength="100"
+              <input v-model="form.name" type="text" required maxlength="100"
                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                placeholder="Ex: Suite Présidentielle, Chambre Standard..."
-              />
+                placeholder="Ex: Suite Présidentielle, Chambre Standard..." />
             </div>
-            
+
             <div class="md:col-span-2">
               <label class="block text-sm font-medium text-gray-700 mb-2">Description *</label>
-              <textarea
-                v-model="form.description"
-                required
-                rows="4"
+              <textarea v-model="form.description" required rows="4"
                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                placeholder="Décrivez les caractéristiques et équipements de ce type de chambre..."
-              ></textarea>
+                placeholder="Décrivez les caractéristiques et équipements de ce type de chambre..."></textarea>
             </div>
-            
+
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Nombre d'adultes</label>
-              <input
-                v-model.number="form.numberAdult"
-                type="number"
-                min="1"
-                max="10"
+              <input v-model.number="form.numberAdult" type="number" min="1" max="10"
                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                placeholder="2"
-              />
+                placeholder="2" />
             </div>
-            
+
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Nombre d'enfants</label>
-              <input
-                v-model.number="form.numberChildren"
-                type="number"
-                min="0"
-                max="5"
+              <input v-model.number="form.numberChildren" type="number" min="0" max="5"
                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                placeholder="0"
-              />
+                placeholder="0" />
             </div>
-            
+
             <div class="md:col-span-2">
               <label class="block text-sm font-medium text-gray-700 mb-2">Prix par nuit (FCFA) *</label>
-              <input
-                v-model.number="form.price"
-                type="number"
-                required
-                min="0"
+              <input v-model.number="form.price" type="number" required min="0"
                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                placeholder="50000"
-              />
+                placeholder="50000" />
             </div>
           </div>
-          
+
           <div class="flex items-center justify-end space-x-3 pt-6 border-t border-gray-200">
-            <button type="button" @click="closeModal" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200">
+            <button type="button" @click="closeModal"
+              class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200">
               Annuler
             </button>
             <button type="submit" :class="[
@@ -254,14 +221,16 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useThemeStore } from '@/stores/theme'
+import { useAlerts } from '@/composables/useAlerts'
 import {
   Plus, Download, Bed, BedDouble, DollarSign, Users, TrendingUp,
   Edit, Trash2, X, User, Baby
 } from 'lucide-vue-next'
 import { roomTypesAPI } from '../../services/api.js'
 
-// Store
+// Store et composables
 const themeStore = useThemeStore()
+const { showToast, showConfirm, handleApiError, handleApiSuccess } = useAlerts()
 
 // État
 const showModal = ref(false)
@@ -326,6 +295,7 @@ const loadRoomTypes = async () => {
     roomTypes.value = response || []
   } catch (error) {
     console.error('Erreur lors du chargement des types de chambres:', error)
+    handleApiError(error, 'Erreur lors du chargement des types de chambres')
   } finally {
     isLoading.value = false
   }
@@ -365,33 +335,40 @@ const closeModal = () => {
 const saveRoomType = async () => {
   try {
     isSaving.value = true
-    
+
     const roomTypeData = { ...form.value }
     delete roomTypeData.id
-    
+
     if (isEditing.value) {
       await roomTypesAPI.updateRoomType(form.value.id, roomTypeData)
+      handleApiSuccess('Type de chambre mis à jour avec succès')
     } else {
       await roomTypesAPI.createRoomType(roomTypeData)
+      handleApiSuccess('Type de chambre créé avec succès')
     }
-    
+
     await loadRoomTypes()
     closeModal()
-    
+
   } catch (error) {
     console.error('Erreur lors de la sauvegarde:', error)
+    handleApiError(error, 'Erreur lors de la sauvegarde du type de chambre')
   } finally {
     isSaving.value = false
   }
 }
 
 const deleteRoomType = async (roomType) => {
-  if (confirm(`Êtes-vous sûr de vouloir supprimer le type "${roomType.name}" ?`)) {
+  const result = await showConfirm.delete(roomType.name)
+
+  if (result.isConfirmed) {
     try {
       await roomTypesAPI.deleteRoomType(roomType.id)
       await loadRoomTypes()
+      handleApiSuccess('Type de chambre supprimé avec succès')
     } catch (error) {
       console.error('Erreur lors de la suppression:', error)
+      handleApiError(error, 'Erreur lors de la suppression du type de chambre')
     }
   }
 }
@@ -405,4 +382,4 @@ const exportData = () => {
 onMounted(async () => {
   await loadRoomTypes()
 })
-</script> 
+</script>

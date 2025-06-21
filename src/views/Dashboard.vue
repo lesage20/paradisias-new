@@ -208,6 +208,29 @@
         </template>
       </div>
     </div>
+
+    <!-- Boutons de test pour le système d'alertes (à supprimer après test) -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mt-6">
+      <h3 class="text-lg font-medium text-gray-900 mb-4">Test du système d'alertes</h3>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <button @click="testToasts"
+          class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+          Test Toasts
+        </button>
+        <button @click="testAlerts"
+          class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
+          Test Alertes
+        </button>
+        <button @click="testConfirm"
+          class="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors">
+          Test Confirmation
+        </button>
+        <button @click="testLoading"
+          class="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors">
+          Test Loading
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -215,6 +238,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useThemeStore } from '@/stores/theme'
+import { useAlerts } from '@/composables/useAlerts'
 import MetricCard from '@/components/dashboard/MetricCard.vue'
 import DashboardChart from '@/components/dashboard/DashboardChart.vue'
 import RoomStatusChart from '@/components/dashboard/RoomStatusChart.vue'
@@ -226,9 +250,17 @@ import QuickActionButton from '@/components/dashboard/QuickActionButton.vue'
 import { reportsAPI, paymentsAPI } from '@/services/api'
 import { format } from 'date-fns'
 
-// Stores
+// Stores et composables
 const authStore = useAuthStore()
 const themeStore = useThemeStore()
+const {
+  showToast,
+  showAlert,
+  showConfirm,
+  showLoading,
+  handleApiError,
+  handleApiSuccess
+} = useAlerts()
 
 // État
 const isLoading = ref(false)
@@ -397,10 +429,10 @@ const refreshData = async () => {
       fetchRecentTransactions(),
       roomStatusChartRef.value?.refreshData()
     ])
+    handleApiSuccess('Données actualisées avec succès!')
   } catch (error) {
     console.error('Erreur lors du chargement des données:', error)
-    // Vous pouvez ajouter ici une notification d'erreur pour l'utilisateur
-    // par exemple avec un store de notifications ou un toast
+    handleApiError(error, 'Erreur lors de l\'actualisation des données')
   } finally {
     isLoading.value = false
   }
@@ -410,6 +442,41 @@ const refreshData = async () => {
 watch(selectedPeriod, () => {
   refreshData()
 })
+
+// Fonctions de test pour le système d'alertes (à supprimer après test)
+const testToasts = () => {
+  showToast.success('Succès! Opération réussie')
+  setTimeout(() => showToast.error('Erreur! Quelque chose s\'est mal passé'), 1000)
+  setTimeout(() => showToast.warning('Attention! Vérifiez vos données'), 2000)
+  setTimeout(() => showToast.info('Information importante'), 3000)
+}
+
+const testAlerts = async () => {
+  await showAlert.success('Succès!', 'Votre opération a été réalisée avec succès')
+  await showAlert.error('Erreur!', 'Une erreur s\'est produite')
+  await showAlert.warning('Attention!', 'Vérifiez vos données avant de continuer')
+  await showAlert.info('Information', 'Voici une information importante')
+}
+
+const testConfirm = async () => {
+  const result = await showConfirm.delete('Chambre 101')
+  if (result.isConfirmed) {
+    showToast.success('Élément supprimé!')
+  } else {
+    showToast.info('Suppression annulée')
+  }
+}
+
+const testLoading = async () => {
+  showLoading.show('Chargement des données...', 'Veuillez patienter')
+  setTimeout(() => {
+    showLoading.update('Finalisation...', 'Presque terminé')
+  }, 2000)
+  setTimeout(() => {
+    showLoading.hide()
+    showToast.success('Chargement terminé!')
+  }, 4000)
+}
 
 onMounted(() => {
   refreshData()

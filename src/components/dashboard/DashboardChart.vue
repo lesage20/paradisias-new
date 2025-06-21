@@ -117,12 +117,12 @@ const periodOptions = ref([
 const availableCharts = computed(() => {
     const charts = {
         admin: [
-            { key: 'revenus', label: 'Revenus', type: 'bar' },
+            { key: 'revenus', label: 'Revenus', type: 'area' },
             { key: 'occupation', label: 'Occupation', type: 'area' },
             { key: 'reservations', label: 'Réservations', type: 'area' }
         ],
         manager: [
-            { key: 'revenus', label: 'Revenus', type: 'bar' },
+            { key: 'revenus', label: 'Revenus', type: 'area' },
             { key: 'occupation', label: 'Occupation', type: 'area' },
             { key: 'reservations', label: 'Réservations', type: 'area' }
         ],

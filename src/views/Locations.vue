@@ -338,15 +338,17 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useThemeStore } from '@/stores/theme'
+import { useAlerts } from '@/composables/useAlerts'
 import {
   Plus, Search, Download, Grid, List, User, Eye, Edit, Trash2, Calendar, Clock, CheckCircle, DollarSign
 } from 'lucide-vue-next'
 import { locationsAPI, roomsAPI, roomTypesAPI, clientsAPI, mapStatusFromAPI } from '../services/api.js'
 import { DataTable, Modal } from '@/components/ui'
 
-// Stores
+// Stores et composables
 const authStore = useAuthStore()
 const themeStore = useThemeStore()
+const { showToast, showConfirm, handleApiError, handleApiSuccess } = useAlerts()
 
 // État
 const showModal = ref(false)
@@ -600,7 +602,7 @@ const loadLocations = async () => {
     locations.value = response || []
   } catch (error) {
     console.error('Erreur lors du chargement des locations:', error)
-    // Optionnel: afficher une notification d'erreur
+    handleApiError(error, 'Erreur lors du chargement des locations')
   } finally {
     isLoading.value = false
   }
@@ -612,6 +614,7 @@ const loadClients = async () => {
     clients.value = response || []
   } catch (error) {
     console.error('Erreur lors du chargement des clients:', error)
+    handleApiError(error, 'Erreur lors du chargement des clients')
   }
 }
 
@@ -621,6 +624,7 @@ const loadRooms = async () => {
     rooms.value = response || []
   } catch (error) {
     console.error('Erreur lors du chargement des chambres:', error)
+    handleApiError(error, 'Erreur lors du chargement des chambres')
   }
 }
 
@@ -630,6 +634,7 @@ const loadRoomTypes = async () => {
     roomTypes.value = response || []
   } catch (error) {
     console.error('Erreur lors du chargement des types de chambres:', error)
+    handleApiError(error, 'Erreur lors du chargement des types de chambres')
   }
 }
 
@@ -709,6 +714,7 @@ const saveLocation = async () => {
 
     if (isEditing.value) {
       await locationsAPI.updateLocation(form.value.id, locationData)
+      handleApiSuccess('Location mise à jour avec succès')
     } else {
       // Créer la nouvelle location
       await locationsAPI.createLocation(locationData)
@@ -723,6 +729,7 @@ const saveLocation = async () => {
           // Ne pas bloquer la création de location si la mise à jour de chambre échoue
         }
       }
+      handleApiSuccess('Location créée avec succès')
     }
 
     await loadLocations()
@@ -731,7 +738,7 @@ const saveLocation = async () => {
 
   } catch (error) {
     console.error('Erreur lors de la sauvegarde:', error)
-    // TODO: afficher une notification d'erreur
+    handleApiError(error, 'Erreur lors de la sauvegarde de la location')
   } finally {
     isSaving.value = false
   }
@@ -743,18 +750,28 @@ const viewLocation = (location) => {
 }
 
 const deleteLocation = async (location) => {
-  if (confirm(`Êtes-vous sûr de vouloir supprimer la location ${location.reference || `LOC-${location.id}`} ?`)) {
+  const result = await showConfirm.delete(location.reference || `LOC-${location.id}`)
+
+  if (result.isConfirmed) {
     try {
       await locationsAPI.deleteLocation(location.id)
       await loadLocations()
+      handleApiSuccess('Location supprimée avec succès')
     } catch (error) {
       console.error('Erreur lors de la suppression:', error)
+      handleApiError(error, 'Erreur lors de la suppression de la location')
     }
   }
 }
 
 const bulkAction = async (action) => {
-  if (confirm(`Appliquer l'action "${getStatusLabel(action)}" aux ${selectedLocations.value.length} locations sélectionnées ?`)) {
+  const result = await showConfirm.action(
+    'Action en masse',
+    `Appliquer l'action "${getStatusLabel(action)}" aux ${selectedLocations.value.length} locations sélectionnées ?`,
+    'Confirmer'
+  )
+
+  if (result.isConfirmed) {
     try {
       // Effectuer l'action en masse
       for (const locationId of selectedLocations.value) {
@@ -763,8 +780,10 @@ const bulkAction = async (action) => {
 
       selectedLocations.value = []
       await loadLocations()
+      handleApiSuccess(`Action "${getStatusLabel(action)}" appliquée avec succès`)
     } catch (error) {
       console.error('Erreur lors de l\'action en masse:', error)
+      handleApiError(error, 'Erreur lors de l\'action en masse')
     }
   }
 }
