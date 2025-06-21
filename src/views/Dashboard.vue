@@ -49,15 +49,14 @@
 
       <!-- Métriques pour Gérant - Vue opérationnelle + quelques stratégiques -->
       <template v-else-if="userRole === 'manager'">
-        <MetricCard title="Revenus du jour" :value="formatCurrency(metrics.dailyRevenue)"
-          :previousValue="formatCurrency(metrics.previousDailyRevenue)" :trend="metrics.dailyRevenueTrend"
-          icon="DollarSign" color="green" />
+        <MetricCard title="Revenus du jour" :value="formatCurrency(Number(metrics.revenus_jour))"
+          :previousValue="formatCurrency(metrics.revenu_total_precedent)" icon="DollarSign" color="green" />
 
         <MetricCard title="Taux d'occupation" :value="metrics.occupancyRate + '%'"
           :previousValue="metrics.previousOccupancyRate + '%'" :trend="metrics.occupancyTrend" icon="BarChart3"
           color="blue" />
 
-        <MetricCard title="Locations actives" :value="metrics.activeBookings"
+        <MetricCard title="Locations actives" :value="metrics.locations_actives"
           :previousValue="metrics.previousActiveBookings" :trend="metrics.activeBookingsTrend" icon="Calendar"
           color="purple" />
 
@@ -68,18 +67,18 @@
 
       <!-- Métriques pour Personnel/Caissier - Vue limitée aux opérations quotidiennes -->
       <template v-else>
-        <MetricCard title="Revenus du jour" :value="formatCurrency(metrics.dailyRevenue)"
+        <MetricCard title="Revenus du jour" :value="formatCurrency(metrics.revenus_jour)"
           :previousValue="formatCurrency(metrics.previousDailyRevenue)" :trend="metrics.dailyRevenueTrend"
           icon="DollarSign" color="green" />
 
-        <MetricCard title="Locations actives" :value="metrics.activeBookings"
+        <MetricCard title="Locations actives" :value="metrics.locations_actives"
           :previousValue="metrics.previousActiveBookings" :trend="metrics.activeBookingsTrend" icon="Calendar"
           color="blue" />
 
-        <MetricCard title="Check-ins prévus" :value="metrics.expectedCheckins" icon="UserCheck" color="purple"
+        <MetricCard title="Check-ins prévus" :value="metrics.entrees_prevues" icon="UserCheck" color="purple"
           :showTrend="false" />
 
-        <MetricCard title="Check-outs prévus" :value="metrics.expectedCheckouts" icon="UserX" color="orange"
+        <MetricCard title="Check-outs prévus" :value="metrics.sorties_prevues" icon="UserX" color="orange"
           :showTrend="false" />
       </template>
     </div>
