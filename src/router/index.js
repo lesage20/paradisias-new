@@ -352,7 +352,7 @@ const routes = [
         },
         children: [
           {
-            path: '',
+            path: 'statistics',
             name: 'Statistics',
             component: Statistics,
             meta: { title: 'Statistiques' }
