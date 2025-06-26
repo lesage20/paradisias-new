@@ -566,3 +566,87 @@ export const mapStatusToAPI = (status, type = 'locations') => {
   }
   return status
 }
+
+// ========================================
+// APIS POUR L'ADMINISTRATION
+// ========================================
+
+// Service pour les employés
+export const employeesAPI = {
+  async getEmployees() {
+    return await apiRequest('/accounts/employes/')
+  },
+
+  async getEmployee(id) {
+    return await apiRequest(`/accounts/employes/${id}/`)
+  },
+
+  async createEmployee(employeeData) {
+    return await apiRequest('/accounts/employes/', {
+      method: 'POST',
+      body: JSON.stringify(employeeData),
+    })
+  },
+
+  async updateEmployee(id, employeeData) {
+    return await apiRequest(`/accounts/employes/${id}/`, {
+      method: 'PUT',
+      body: JSON.stringify(employeeData),
+    })
+  },
+
+  async patchEmployee(id, partialData) {
+    return await apiRequest(`/accounts/employes/${id}/`, {
+      method: 'PATCH',
+      body: JSON.stringify(partialData),
+    })
+  },
+
+  async deleteEmployee(id) {
+    return await apiRequest(`/accounts/employes/${id}/`, {
+      method: 'DELETE',
+    })
+  },
+}
+
+// Service pour les groupes/rôles
+export const rolesAPI = {
+  async getRoles() {
+    return await apiRequest('/accounts/groups/')
+  },
+
+  async getRole(id) {
+    return await apiRequest(`/accounts/groups/${id}/`)
+  },
+
+  async createRole(roleData) {
+    return await apiRequest('/accounts/groups/', {
+      method: 'POST',
+      body: JSON.stringify(roleData),
+    })
+  },
+
+  async updateRole(id, roleData) {
+    return await apiRequest(`/accounts/groups/${id}/`, {
+      method: 'PUT',
+      body: JSON.stringify(roleData),
+    })
+  },
+
+  async patchRole(id, partialData) {
+    return await apiRequest(`/accounts/groups/${id}/`, {
+      method: 'PATCH',
+      body: JSON.stringify(partialData),
+    })
+  },
+
+  async deleteRole(id) {
+    return await apiRequest(`/accounts/groups/${id}/`, {
+      method: 'DELETE',
+    })
+  },
+}
+
+// ========================================
+// UTILITAIRES DE MAPPING
+// ========================================
